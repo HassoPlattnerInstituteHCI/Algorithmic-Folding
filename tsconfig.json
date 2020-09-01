@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "module": "commonjs",
+    "lib": ["dom", "es6"],
+    "target": "esnext",
+    "sourceMap": true,
+    "types": ["node"],
+    "preserveSymlinks": true,
+  },
+  "include": [
+    ".d.ts",
+    "./*.ts",
+    "./**/*.ts"
+  ]
+}
