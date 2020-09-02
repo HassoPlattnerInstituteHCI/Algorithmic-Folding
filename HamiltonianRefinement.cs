@@ -159,5 +159,35 @@ namespace inClassHacking{
       }
       return returnList;
     }
+
+    void walkAround(Strip strip, DualgraphTriangle triangle, int indexFrom){ 
+      int startingIndex = triangle.getStartPoint(indexFrom);
+      Console.WriteLine(triangle.index + "  " + startingIndex);
+      for(int i = 0; i<6; i++){
+        if((startingIndex+i)%6 == 1){
+          if(triangle.neighbor.bSide != -1){
+            walkAround(strip, input[triangle.neighbor.bSide].Item1, triangle.index);
+          }
+        }
+        if((startingIndex+i)%6 == 3){
+          if(triangle.neighbor.aSide != -1){
+            walkAround(strip, input[triangle.neighbor.aSide].Item1, triangle.index);
+          }
+        }
+        if((startingIndex+i)%6 == 5){
+          if(triangle.neighbor.cSide != -1){
+            walkAround(strip, input[triangle.neighbor.cSide].Item1, triangle.index);
+          }
+        }
+        strip.addTriangle(triangle.triangulation[(startingIndex+i)%6]);
+        Console.WriteLine("added no. " + (startingIndex+i)%6 + " : " + triangle.triangulation[(startingIndex+i)%6].ToString());
+      }
+    }
+
+    
+
+    public void walkAround(Strip strip){
+      walkAround(strip, input[0].Item1, -1);
+    }
   }
 }

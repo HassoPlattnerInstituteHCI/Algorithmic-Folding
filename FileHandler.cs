@@ -90,10 +90,10 @@ namespace inClassHacking
             return hex;
         } 
         // public static string 
-        public List<Triangle> importSTL()
+        public List<Triangle> importSTL(string filename)
         {
             List<Triangle> triangles = new List<Triangle>();
-            string[] stl = File.ReadAllLines("input.stl");
+            string[] stl = File.ReadAllLines(filename);
             int val =0;
             Point3D a=null, b =null, c = null;
             foreach (string line in stl)

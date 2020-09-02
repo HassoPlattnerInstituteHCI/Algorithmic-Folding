@@ -100,14 +100,17 @@ namespace inClassHacking
             double posY =2*stripWidth;
             while (posY<triangle.getHeight()){
                 //continue turning, we have not reached the bottom
-                turn (); // change direction
+
+                //destroys solution for my example
+                // turn (); // change direction
+
                 double flat = (triangle.b.getDistance(triangle.c)*posY)/triangle.getHeight();
                 flat += cornerExtension(triangle);
                 addPlain(flat);
                 addCornerGadget(MountainValley.Valley);
                 posY +=stripWidth;
             }
-            turn (); 
+            // turn (); 
             addPlain (triangle.b.getDistance(triangle.c)+cornerExtension(triangle)+stripWidth);
             if (DEBUG) Console.WriteLine("added triangle to strip");
         }

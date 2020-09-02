@@ -42,6 +42,10 @@ namespace inClassHacking
                 ) / (2 * adj_side1 * adj_side2)
             );
         }
+
+        public override string ToString(){
+          return a.ToString() + ", " + b.ToString() + ", " + c.ToString();
+        }
     }
     class Point3D
     {
@@ -63,11 +67,23 @@ namespace inClassHacking
             return dist;
         }
 
-        public static bool operator==(Point3D p, Point3D p2){
-          return (p.x == p2.x & p.y == p2.y & p.z == p2.z);
+        public static bool operator==(Point3D p1, Point3D p2){
+          return (p1.x == p2.x & p1.y == p2.y & p1.z == p2.z);
         }
-        public static bool operator!=(Point3D p, Point3D p2){
-          return !(p==p2);
+        public static bool operator!=(Point3D p1, Point3D p2){
+          return !(p1==p2);
+        }
+
+        public static Point3D operator+(Point3D p1, Point3D p2){
+          return new Point3D(p1.x+p2.x, p1.y+p2.y, p1.z+p2.z);
+        }
+
+        public static Point3D operator/(Point3D p, int i){
+          return new Point3D(p.x/i, p.y/i, p.z/i);
+        }
+
+        public override string ToString(){
+          return "(" + x + ", " + y + ", " + z + ")";
         }
     }
     public class Line
@@ -87,34 +103,79 @@ namespace inClassHacking
     }
 
   class DualgraphTriangle: Triangle{
-    Point3D center;
+    public Point3D center, middleOfEdgeA, middleOfEdgeB, middleOfEdgeC;
     public int index;
     public Neighbors neighbor;
+    public List<Triangle> triangulation = new List<Triangle>(); // List of 6 smaller triangles: from (cornerA, center, middleOfEdgeB) to (middleOfEdgeC, center, cornerA)
 
     public DualgraphTriangle(Point3D a, Point3D b, Point3D c): base(a, b, c){
       index = -1;
       neighbor = new Neighbors(-1, -1, -1);
       calculateCenter();
+      calculateMiddleOfEdges();
+      triangulate();
     }
 
     public DualgraphTriangle(Point3D a, Point3D b, Point3D c, int index): base(a, b, c){
       this.index = index;
       neighbor = new Neighbors(-1, -1, -1);
       calculateCenter();
+      calculateMiddleOfEdges();
+      triangulate();
     }
 
     public DualgraphTriangle(Triangle triangle, int index): base(triangle.a, triangle.b, triangle.c){
       this.index = index;
       neighbor = new Neighbors(-1, -1, -1);
       calculateCenter();
+      calculateMiddleOfEdges();
+      triangulate();
     }
 
     private void calculateCenter(){
       double centerX = (a.x + b.x + c.x)/3;
       double centerY = (a.y + b.y + c.y)/3;
       double centerZ = (a.z + b.z + c.z)/3;
-
       center = new Point3D(centerX,centerY, centerZ);
     }
+
+    private void calculateMiddleOfEdges(){
+      middleOfEdgeA = (b+c)/2;
+      middleOfEdgeB = (a+c)/2;
+      middleOfEdgeC = (a+b)/2;
+
+    }
+
+    public void triangulate(){
+      triangulation.Add(new Triangle(a, center, middleOfEdgeB));
+      triangulation.Add(new Triangle(middleOfEdgeB, center, c));
+      triangulation.Add(new Triangle(c, center, middleOfEdgeA));
+      triangulation.Add(new Triangle(middleOfEdgeA, center, b));
+      triangulation.Add(new Triangle(b, center, middleOfEdgeC));
+      triangulation.Add(new Triangle(middleOfEdgeC, center, a));
+    }
+
+    public int getStartPoint(int index){ //returns position of first triangle out of triangulation-list that has to be added to the strip dependend on the path of dualpath (index of triangle added before)
+      if(index == -1){
+        return 0;
+      }else if(index == neighbor.aSide){
+        neighbor.aSide = -1;
+        return 3;
+      }else if(index == neighbor.bSide){
+        neighbor.bSide = -1;
+        return 1;
+      }else if(index == neighbor.cSide){
+        neighbor.cSide = -1;
+        return 5;
+      }else{
+        Console.WriteLine("Access to triangle does not match dualgraph. Try to access " + this.index + " from " + index);
+        return -1;
+      }
+    }
+
+    public override string ToString(){
+      return index.ToString() + ": " + base.ToString() + " center: " + center.ToString();
+    }
+
   }
 }
