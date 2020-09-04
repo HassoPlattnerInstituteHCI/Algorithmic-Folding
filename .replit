@@ -1,0 +1,2 @@
+language = "typescript"
+run = "ts-node index"
