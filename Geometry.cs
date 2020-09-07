@@ -93,7 +93,7 @@ namespace inClassHacking
     }
 
     struct Neighbors{
-      public int aSide, bSide, cSide; //index of DualgraphTriangles that share an edge (a, b or c)
+      public int aSide, bSide, cSide; //index of DualgraphTriangles that share an edge 
 
       public Neighbors(int aSide, int bSide, int cSide){
         this.aSide = aSide;
@@ -102,17 +102,17 @@ namespace inClassHacking
       }
     }
 
-  class DualgraphTriangle: Triangle{
-    public Point3D center, middleOfEdgeA, middleOfEdgeB, middleOfEdgeC;
+  class DualgraphTriangle: Triangle{ //special class for calculation of dualgraph and hamiltonian refinement
+    public Point3D center, centerOfEdgeA, centerOfEdgeB, centerOfEdgeC;
     public int index;
     public Neighbors neighbor;
-    public List<Triangle> triangulation = new List<Triangle>(); // List of 6 smaller triangles: from (cornerA, center, middleOfEdgeB) to (middleOfEdgeC, center, cornerA)
+    public List<Triangle> triangulation = new List<Triangle>(); 
 
     public DualgraphTriangle(Point3D a, Point3D b, Point3D c): base(a, b, c){
       index = -1;
       neighbor = new Neighbors(-1, -1, -1);
       calculateCenter();
-      calculateMiddleOfEdges();
+      calculateCenterOfEdges();
       triangulate();
     }
 
@@ -120,7 +120,7 @@ namespace inClassHacking
       this.index = index;
       neighbor = new Neighbors(-1, -1, -1);
       calculateCenter();
-      calculateMiddleOfEdges();
+      calculateCenterOfEdges();
       triangulate();
     }
 
@@ -128,7 +128,7 @@ namespace inClassHacking
       this.index = index;
       neighbor = new Neighbors(-1, -1, -1);
       calculateCenter();
-      calculateMiddleOfEdges();
+      calculateCenterOfEdges();
       triangulate();
     }
 
@@ -139,30 +139,22 @@ namespace inClassHacking
       center = new Point3D(centerX,centerY, centerZ);
     }
 
-    private void calculateMiddleOfEdges(){
-      middleOfEdgeA = (b+c)/2;
-      middleOfEdgeB = (a+c)/2;
-      middleOfEdgeC = (a+b)/2;
-
+    private void calculateCenterOfEdges(){
+      centerOfEdgeA = (b+c)/2;
+      centerOfEdgeB = (a+c)/2;
+      centerOfEdgeC = (a+b)/2;
     }
 
     public void triangulate(){
-      triangulation.Add(new Triangle(a, center, middleOfEdgeB));
-      triangulation.Add(new Triangle(middleOfEdgeB, center, c));
-      triangulation.Add(new Triangle(c, center, middleOfEdgeA));
-      triangulation.Add(new Triangle(middleOfEdgeA, center, b));
-      triangulation.Add(new Triangle(b, center, middleOfEdgeC));
-      triangulation.Add(new Triangle(middleOfEdgeC, center, a));
-
-      // triangulation.Add(new Triangle(middleOfEdgeB, c, center));
-      // triangulation.Add(new Triangle(center, c, middleOfEdgeA));
-      // triangulation.Add(new Triangle(middleOfEdgeA, b, center));
-      // triangulation.Add(new Triangle(center, b, middleOfEdgeC));
-      // triangulation.Add(new Triangle(middleOfEdgeC, a, center));
-      // triangulation.Add(new Triangle(center, a, middleOfEdgeB));
+      triangulation.Add(new Triangle(a, center, centerOfEdgeB));
+      triangulation.Add(new Triangle(centerOfEdgeB, center, c));
+      triangulation.Add(new Triangle(c, center, centerOfEdgeA));
+      triangulation.Add(new Triangle(centerOfEdgeA, center, b));
+      triangulation.Add(new Triangle(b, center, centerOfEdgeC));
+      triangulation.Add(new Triangle(centerOfEdgeC, center, a));
     }
 
-    public int getStartPoint(int index){ //returns position of first triangle out of triangulation-list that has to be added to the strip dependend on the path of dualpath (index of triangle added before)
+    public int getStartPoint(int index){ //returns position of first triangle out of triangulation-list that has to be added to the strip dependend on dualpath (index of triangle added before)
       if(index == -1){
         return 0;
       }else if(index == neighbor.aSide){
@@ -175,7 +167,7 @@ namespace inClassHacking
         neighbor.cSide = -1;
         return 5;
       }else{
-        Console.WriteLine("Access to triangle does not match dualgraph. Try to access " + this.index + " from " + index);
+        Console.WriteLine("Access to triangle does not match dualgraph. Trying to access " + this.index + " from " + index);
         return -1;
       }
     }

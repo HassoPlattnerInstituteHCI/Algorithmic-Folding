@@ -1,3 +1,3 @@
-in StripFolding line 105 "addTriangle()": deleted one "turn();"
+in StripFolding.cs tunr() in addCornerGadget() was doubled (already called in addTriangle())
 
-in FileHandler SVG_init(List<string> svg, Strip strip) --> to SVG_init(List<string> svg) because strip is never used
+in FileHandler SVG_init(List<string> svg, Strip strip) --> changed to SVG_init(List<string> svg) because strip is never used

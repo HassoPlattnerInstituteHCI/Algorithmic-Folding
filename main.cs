@@ -7,9 +7,9 @@ namespace inClassHacking
 {
     class MainClass
     {
-        public static double stripWidth = 1; 
+        public static double stripWidth = 5; 
         public const bool DEBUG = true;
-        public const bool withHamiltonianRefilement = true;
+        public const bool withHamiltonianRefinement = true;
         public static Debug debug = new Debug(stripWidth);
 
         public static void Main(string[] args)
@@ -19,16 +19,13 @@ namespace inClassHacking
             List<Triangle> stl = f.importSTL("input.stl");
             // List<Triangle> stl = f.importSTL("test.stl");
             
-
-            if(withHamiltonianRefilement){
-              HamiltonianRefinement hamilton = new HamiltonianRefinement();
+            if(withHamiltonianRefinement){
+              HamiltonianRefinement hamiltonian = new HamiltonianRefinement();
               foreach(var triangle in stl){
-                hamilton.addTriangle(triangle);
+                hamiltonian.addTriangle(triangle);
               }
-              hamilton.createDualGraph();
-              foreach(var it in hamilton.dualGraph) Console.WriteLine(it);
-
-              hamilton.walkAround(s); //adds triangles to strip with hamiltonian refinement
+              hamiltonian.createDualGraph();
+              hamiltonian.toStrip(s); //adds triangles to strip with hamiltonian refinement
               
             }else{
               foreach (var triangle in stl)
@@ -38,7 +35,6 @@ namespace inClassHacking
             }
           f.exportSVG(s);
           if(DEBUG) debug.createDebuggingOutput();
-            
         }
     }
 }

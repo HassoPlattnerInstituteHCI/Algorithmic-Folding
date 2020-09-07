@@ -51,7 +51,7 @@ namespace inClassHacking
                 addFold(mv,-45);
                 addFold(mv,45);
             }
-            turn();
+            // turn(); //turn() is called in addTriangle(), would be doubled here
         }
         public void turn(){
                 if (d == Direction.Right)
@@ -96,34 +96,32 @@ namespace inClassHacking
         public void addTriangle(Triangle triangle)
         {
             addPlain (Math.Tan(0.5*Math.PI-triangle.beta)*2*stripWidth);
-            if(DEBUG) MainClass.debug.drawRect(Math.Tan(0.5*Math.PI-triangle.beta)*2*stripWidth, d);
+            if(DEBUG) MainClass.debug.draw(Math.Tan(0.5*Math.PI-triangle.beta)*2*stripWidth, d);
             addCornerGadget(MountainValley.Valley);
             double posY =2*stripWidth;
             while (posY<triangle.getHeight()){
                 //continue turning, we have not reached the bottom
-
-                //destroys solution for my example
-                // turn (); // change direction
+                turn (); // change direction
 
                 double flat = (triangle.b.getDistance(triangle.c)*posY)/triangle.getHeight();
                 flat += cornerExtension(triangle);
                 addPlain(flat);
-                if(DEBUG) MainClass.debug.drawRect(flat,  d);
+                if(DEBUG) MainClass.debug.draw(flat,  d);
                 addCornerGadget(MountainValley.Valley);
                 posY +=stripWidth;
             }
-            // turn (); 
+            turn (); 
             addPlain (triangle.b.getDistance(triangle.c)+cornerExtension(triangle)+stripWidth);
-            if(DEBUG) MainClass.debug.drawRect(triangle.b.getDistance(triangle.c)+cornerExtension(triangle)+stripWidth, d);
+            if(DEBUG) MainClass.debug.draw(triangle.b.getDistance(triangle.c)+cornerExtension(triangle)+stripWidth, d);
+
             if(d == Direction.Right){
               addFold(MountainValley.Valley, 90);
               turn();
               addPlain(triangle.b.getDistance(triangle.c)+cornerExtension(triangle)+stripWidth);
-              if(DEBUG) MainClass.debug.drawRect(triangle.b.getDistance(triangle.c)+cornerExtension(triangle)+stripWidth, d);
+              if(DEBUG) MainClass.debug.draw(triangle.b.getDistance(triangle.c)+cornerExtension(triangle)+stripWidth, d);
             }
             if (DEBUG) Console.WriteLine("added triangle to strip");
         }
-
     }
 
     public class Plain
@@ -198,6 +196,4 @@ namespace inClassHacking
             return t;
         }
     }
-
-
 }
