@@ -16,7 +16,7 @@ namespace inClassHacking
         public void exportSVG(Strip strip)
         {
             List<string> svg = new List<string>();
-            SVG_init(svg, strip);
+            SVG_init(svg);
             SVG_addPaper(svg, strip);
             double x = 1;
             foreach (Segment s in strip.getSegments())
@@ -49,7 +49,7 @@ namespace inClassHacking
                     "\"/>"
                    );
         }
-        public List<string> SVG_init(List<string> svg, Strip strip)
+        public List<string> SVG_init(List<string> svg)
         {
             svg.Add("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
             svg.Add("<svg version = \"1.1\" " +

@@ -153,6 +153,13 @@ namespace inClassHacking
       triangulation.Add(new Triangle(middleOfEdgeA, center, b));
       triangulation.Add(new Triangle(b, center, middleOfEdgeC));
       triangulation.Add(new Triangle(middleOfEdgeC, center, a));
+
+      // triangulation.Add(new Triangle(middleOfEdgeB, c, center));
+      // triangulation.Add(new Triangle(center, c, middleOfEdgeA));
+      // triangulation.Add(new Triangle(middleOfEdgeA, b, center));
+      // triangulation.Add(new Triangle(center, b, middleOfEdgeC));
+      // triangulation.Add(new Triangle(middleOfEdgeC, a, center));
+      // triangulation.Add(new Triangle(center, a, middleOfEdgeB));
     }
 
     public int getStartPoint(int index){ //returns position of first triangle out of triangulation-list that has to be added to the strip dependend on the path of dualpath (index of triangle added before)

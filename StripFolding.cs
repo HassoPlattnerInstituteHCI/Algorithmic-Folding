@@ -96,6 +96,7 @@ namespace inClassHacking
         public void addTriangle(Triangle triangle)
         {
             addPlain (Math.Tan(0.5*Math.PI-triangle.beta)*2*stripWidth);
+            if(DEBUG) MainClass.debug.drawRect(Math.Tan(0.5*Math.PI-triangle.beta)*2*stripWidth, d);
             addCornerGadget(MountainValley.Valley);
             double posY =2*stripWidth;
             while (posY<triangle.getHeight()){
@@ -107,13 +108,22 @@ namespace inClassHacking
                 double flat = (triangle.b.getDistance(triangle.c)*posY)/triangle.getHeight();
                 flat += cornerExtension(triangle);
                 addPlain(flat);
+                if(DEBUG) MainClass.debug.drawRect(flat,  d);
                 addCornerGadget(MountainValley.Valley);
                 posY +=stripWidth;
             }
             // turn (); 
             addPlain (triangle.b.getDistance(triangle.c)+cornerExtension(triangle)+stripWidth);
+            if(DEBUG) MainClass.debug.drawRect(triangle.b.getDistance(triangle.c)+cornerExtension(triangle)+stripWidth, d);
+            if(d == Direction.Right){
+              addFold(MountainValley.Valley, 90);
+              turn();
+              addPlain(triangle.b.getDistance(triangle.c)+cornerExtension(triangle)+stripWidth);
+              if(DEBUG) MainClass.debug.drawRect(triangle.b.getDistance(triangle.c)+cornerExtension(triangle)+stripWidth, d);
+            }
             if (DEBUG) Console.WriteLine("added triangle to strip");
         }
+
     }
 
     public class Plain

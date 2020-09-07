@@ -5,7 +5,7 @@ namespace inClassHacking{
 
   class HamiltonianRefinement{
     public List<Tuple<DualgraphTriangle, bool>> input = new List<Tuple<DualgraphTriangle, bool>>(); //tuples of Triangle and if its already part of the dualgraph 
-    public List<Tuple<int, int>> dualGraph = new List<Tuple<int, int>>(); 
+    public List<Tuple<int, int>> dualGraph = new List<Tuple<int, int>>();
 
     public void addTriangle(Triangle triangle){
       DualgraphTriangle dualgraphTriangle = new DualgraphTriangle(triangle, input.Count);
@@ -162,7 +162,6 @@ namespace inClassHacking{
 
     void walkAround(Strip strip, DualgraphTriangle triangle, int indexFrom){ 
       int startingIndex = triangle.getStartPoint(indexFrom);
-      Console.WriteLine(triangle.index + "  " + startingIndex);
       for(int i = 0; i<6; i++){
         if((startingIndex+i)%6 == 1){
           if(triangle.neighbor.bSide != -1){
@@ -180,12 +179,10 @@ namespace inClassHacking{
           }
         }
         strip.addTriangle(triangle.triangulation[(startingIndex+i)%6]);
-        Console.WriteLine("added no. " + (startingIndex+i)%6 + " : " + triangle.triangulation[(startingIndex+i)%6].ToString());
+        
       }
     }
-
     
-
     public void walkAround(Strip strip){
       walkAround(strip, input[0].Item1, -1);
     }
