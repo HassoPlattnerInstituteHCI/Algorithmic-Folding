@@ -158,13 +158,10 @@ namespace inClassHacking
       if(index == -1){
         return 0;
       }else if(index == neighbor.aSide){
-        neighbor.aSide = -1;
         return 3;
       }else if(index == neighbor.bSide){
-        neighbor.bSide = -1;
         return 1;
       }else if(index == neighbor.cSide){
-        neighbor.cSide = -1;
         return 5;
       }else{
         Console.WriteLine("Access to triangle does not match dualgraph. Trying to access " + this.index + " from " + index);
