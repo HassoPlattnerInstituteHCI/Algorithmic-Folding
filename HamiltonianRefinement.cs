@@ -4,18 +4,11 @@ using System;
 namespace inClassHacking{
 
   class HamiltonianRefinement{
-    List<Tuple<DualgraphTriangle, bool>> input = new List<Tuple<DualgraphTriangle, bool>>(); //tuples of DualgraphTriangle and if its already part of the dualgraph 
-    List<bool> done = new List<bool>();
-    int count = 0; //debugging
+    List<Tuple<DualgraphTriangle, bool>> input = new List<Tuple<DualgraphTriangle, bool>>(); //tuples of DualgraphTriangle and if its processed by toStrip()
 
     public void addTriangle(Triangle triangle){
       DualgraphTriangle dualgraphTriangle = new DualgraphTriangle(triangle, input.Count);
       input.Add(new Tuple<DualgraphTriangle, bool>(dualgraphTriangle, false));
-      done.Add(false);
-    }
-
-    public int getNumberOfImportedTriangles(){
-      return count;
     }
 
     public void createDualGraph(){
@@ -24,14 +17,14 @@ namespace inClassHacking{
       }
     }
 
-    public void findNeighbor(int thisIndex){ //returns index of Triangles in input-list that share an edge and add neighbor with correct edge in this Triangles neighbor attribute
+    public void findNeighbor(int thisIndex){ //add triangle with correct edge in this Triangles neighbor attribute, if they share an edge
       List<int> returnList = new List<int>();
       DualgraphTriangle thisTriangle = input[thisIndex].Item1;
      
       for(int i = 1; i<input.Count; i++){ 
         if(i==thisIndex) continue;
         DualgraphTriangle other = input[i].Item1;
-        if(other.neighbor.aSide == thisIndex || other.neighbor.bSide == thisIndex || other.neighbor.cSide == thisIndex) continue;
+        
         if(thisTriangle.centerOfEdgeA == other.centerOfEdgeA){
           thisTriangle.neighbor.aSide = i;
           other.neighbor.aSide = thisIndex; 
@@ -76,13 +69,13 @@ namespace inClassHacking{
       }
     }
 
-    public void toStrip(Strip strip){
+    public void toStrip(Strip strip){ //starting point, called in main()
       toStrip(strip, input[0].Item1, -1);
     }
     
     void toStrip(Strip strip, DualgraphTriangle triangle, int indexFrom){ 
-      if (done[triangle.index]) return;
-      done[triangle.index] = true;
+      if (input[triangle.index].Item2) return;
+      input[triangle.index] = new Tuple<DualgraphTriangle, bool>(input[triangle.index].Item1, true);
 
       int startingIndex = triangle.getStartPoint(indexFrom);
       if(startingIndex == -1) return;
@@ -104,7 +97,6 @@ namespace inClassHacking{
           }
         }
         strip.addTriangle(triangle.triangulation[(startingIndex+i)%6]);
-        count++;
       }
     }
   }

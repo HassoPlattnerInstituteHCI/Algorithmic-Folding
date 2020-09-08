@@ -106,11 +106,12 @@ namespace inClassHacking
     public Point3D center, centerOfEdgeA, centerOfEdgeB, centerOfEdgeC;
     public int index;
     public Neighbors neighbor;
-    public List<Triangle> triangulation = new List<Triangle>(); 
+    public List<Triangle> triangulation = new List<Triangle>(); //stores 6 smaller triangles in exact order to "walk around the dualgraph"
+    int undef = -1;
 
     public DualgraphTriangle(Point3D a, Point3D b, Point3D c): base(a, b, c){
-      index = -1;
-      neighbor = new Neighbors(-1, -1, -1);
+      index = undef; 
+      neighbor = new Neighbors(undef, undef, undef);
       calculateCenter();
       calculateCenterOfEdges();
       triangulate();
@@ -118,7 +119,7 @@ namespace inClassHacking
 
     public DualgraphTriangle(Point3D a, Point3D b, Point3D c, int index): base(a, b, c){
       this.index = index;
-      neighbor = new Neighbors(-1, -1, -1);
+      neighbor = new Neighbors(undef, undef, undef);
       calculateCenter();
       calculateCenterOfEdges();
       triangulate();
@@ -126,7 +127,7 @@ namespace inClassHacking
 
     public DualgraphTriangle(Triangle triangle, int index): base(triangle.a, triangle.b, triangle.c){
       this.index = index;
-      neighbor = new Neighbors(-1, -1, -1);
+      neighbor = new Neighbors(undef, undef, undef);
       calculateCenter();
       calculateCenterOfEdges();
       triangulate();
@@ -155,7 +156,7 @@ namespace inClassHacking
     }
 
     public int getStartPoint(int index){ //returns position of first triangle out of triangulation-list that has to be added to the strip dependend on dualpath (index of triangle added before)
-      if(index == -1){
+      if(index == undef){ //when calling toStrip() for the 1st time
         return 0;
       }else if(index == neighbor.aSide){
         return 3;
@@ -164,8 +165,7 @@ namespace inClassHacking
       }else if(index == neighbor.cSide){
         return 5;
       }else{
-        Console.WriteLine("Access to triangle does not match dualgraph. Trying to access " + this.index + " from " + index);
-        return -1;
+        return undef;
       }
     }
 

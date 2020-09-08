@@ -7,7 +7,7 @@ namespace inClassHacking
 {
     class MainClass
     {
-        public static double stripWidth = 1; 
+        public static double stripWidth = 1; //5 is best for origami simulation, 0.2 - 1 for debugging output
         public const bool DEBUG = true;
         public const bool withHamiltonianRefinement = true;
         public static Debug debug = new Debug(stripWidth);
@@ -17,11 +17,13 @@ namespace inClassHacking
             Strip s = new Strip(stripWidth, DEBUG);
             FileHandler f = new FileHandler(stripWidth,DEBUG); 
 
-            // List<Triangle> stl = f.importSTL("input.stl"); //cube
-            // List<Triangle> stl = f.importSTL("test.stl");  //one simple triangle
-            List<Triangle> stl = f.importSTL("Part2.stl");    //some 3d printable part
-            // List<Triangle> stl = f.importSTL("zip.stl");   
-            // List<Triangle> stl = f.importSTL("turm.stl");  //castle's tower
+            // string importFile = "test.stl";  //simple triangle
+            // string importFile = "input.stl"; //cube
+            // string importFile = "zip.stl";   
+            // string importFile = "turm.stl";  //castle's tower
+            string importFile = "Part2.stl";    
+
+            List<Triangle> stl = f.importSTL(importFile);     
             
             if(withHamiltonianRefinement){
               HamiltonianRefinement hamiltonian = new HamiltonianRefinement();
@@ -32,7 +34,7 @@ namespace inClassHacking
               
               hamiltonian.toStrip(s); //adds triangles to strip with hamiltonian refinement
               if(DEBUG) Console.WriteLine("number of triangles imported: " + stl.Count);
-              if(DEBUG) Console.WriteLine("number of triangles exported: " + hamiltonian.getNumberOfImportedTriangles());
+              if(DEBUG) Console.WriteLine("number of triangles exported: " + s.getNumberOfTriangles());
               
             }else{
               foreach (var triangle in stl)
@@ -40,8 +42,9 @@ namespace inClassHacking
                   s.addTriangle(triangle);
               }
             }
-          f.exportSVG(s);
-          if(DEBUG) debug.createDebuggingOutput();
+
+            f.exportSVG(s);
+            if(DEBUG) debug.createDebuggingOutput();
         }
     }
 }

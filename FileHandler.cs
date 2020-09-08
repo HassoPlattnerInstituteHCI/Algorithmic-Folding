@@ -123,9 +123,9 @@ namespace inClassHacking
             string sub= s.Trim();
             string[] coords = sub.Split(' ');
             return new Point3D(
-                Math.Round(double.Parse(coords[1]), 2), 
-                Math.Round(double.Parse(coords[2]), 2), 
-                Math.Round(double.Parse(coords[3]), 2)
+                double.Parse(coords[1]), 
+                double.Parse(coords[2]), 
+                double.Parse(coords[3])
             );
         }
     }

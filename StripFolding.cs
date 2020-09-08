@@ -16,6 +16,8 @@ namespace inClassHacking
         private bool DEBUG;
         private Direction d = Direction.Right;
 
+        int counter = 0;
+
         private List<Segment> segments = new List<Segment>();
         public Strip(double w, bool DEBUG)
         {
@@ -29,6 +31,7 @@ namespace inClassHacking
                 len
             );
             segments.Add(s);
+            if(DEBUG) MainClass.debug.drawStrip(len, d);
         }
 
         public void addFold(MountainValley mv, int angle)
@@ -51,7 +54,6 @@ namespace inClassHacking
                 addFold(mv,-45);
                 addFold(mv,45);
             }
-            // turn(); //turn() is called in addTriangle(), would be doubled here
         }
         public void turn(){
                 if (d == Direction.Right)
@@ -96,7 +98,6 @@ namespace inClassHacking
         public void addTriangle(Triangle triangle)
         {
             addPlain (Math.Tan(0.5*Math.PI-triangle.beta)*2*stripWidth);
-            if(DEBUG) MainClass.debug.draw(Math.Tan(0.5*Math.PI-triangle.beta)*2*stripWidth, d);
             addCornerGadget(MountainValley.Valley);
             double posY =2*stripWidth;
             while (posY<triangle.getHeight()){
@@ -106,21 +107,23 @@ namespace inClassHacking
                 double flat = (triangle.b.getDistance(triangle.c)*posY)/triangle.getHeight();
                 flat += cornerExtension(triangle);
                 addPlain(flat);
-                if(DEBUG) MainClass.debug.draw(flat,  d);
                 addCornerGadget(MountainValley.Valley);
                 posY +=stripWidth;
             }
             turn (); 
             addPlain (triangle.b.getDistance(triangle.c)+cornerExtension(triangle)+stripWidth);
-            if(DEBUG) MainClass.debug.draw(triangle.b.getDistance(triangle.c)+cornerExtension(triangle)+stripWidth, d);
-
+            
             if(d == Direction.Right){
               addFold(MountainValley.Valley, 90);
               turn();
               addPlain(triangle.b.getDistance(triangle.c)+cornerExtension(triangle)+stripWidth);
-              if(DEBUG) MainClass.debug.draw(triangle.b.getDistance(triangle.c)+cornerExtension(triangle)+stripWidth, d);
             }
+            counter++;
             if (DEBUG) Console.WriteLine("added triangle to strip");
+        }
+
+        public int getNumberOfTriangles(){
+          return counter;
         }
     }
 
