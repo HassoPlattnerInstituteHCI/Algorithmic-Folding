@@ -1,0 +1,117 @@
+using System;
+using System.IO;
+using System.Linq;
+using System.Collections.Generic;
+
+namespace inClassHacking
+{
+  public enum Type {Circle, River};
+  // public class Shape{ //base class for circles and rivers
+  //   Point2D fixPoint;
+  //   double width;
+  //   Type type;
+
+  //   public Shape(Point2D fixPoint, double width, Type type){
+  //     this.fixPoint = fixPoint;
+  //     this.width = width;
+  //     this.type = type;
+  //   }
+
+  //   public Type getType(){
+  //     return type;
+  //   }
+
+
+
+  // }
+
+  public class Vector{
+    public double x, y;
+
+    public Vector(double x, double y){
+      this.x = x;
+      this.y = y;
+    }
+
+    public double getLength(){
+      return Math.Sqrt(x*x + y*y);
+    }
+
+    public Vector normalized(){
+      return this/this.getLength();
+    }
+
+    public static Vector operator/(Vector v, double d){
+      return new Vector(v.x/d, v.y/d);
+    }
+    public static Vector operator*(Vector v, double d){
+      return new Vector(v.x*d, v.y*d);
+    }
+    public override string ToString(){
+      return ("(" + this.x + " ," + this.y + ")");
+    }
+
+  }
+  public class Circle {
+    Point2D center;
+    double radius;
+
+    public Circle(Point2D center, double radius){
+      this.radius = radius;
+      this.center = center;
+    }
+    
+    public Point2D getCenter(){
+      return center;
+    }
+    public double getRadius(){
+      return radius;
+    }
+  }
+
+  public class River{
+    
+  }
+
+  public class Point2D
+    {
+        public double x, y; 
+        public Point2D(double x,double y)
+        {
+            this.x = x;
+            this.y = y;
+        }
+        public double getDistance(Point2D target)
+        {
+            double dist;
+            dist = Math.Sqrt(
+                Math.Pow(Math.Abs(x - target.x), 2) +
+                Math.Pow(Math.Abs(y - target.y), 2)
+            );
+            return dist;
+        }
+
+        public static bool operator==(Point2D p1, Point2D p2){
+          return (p1.x == p2.x & p1.y == p2.y);
+        }
+        public static bool operator!=(Point2D p1, Point2D p2){
+          return !(p1==p2);
+        }
+
+        public static Point2D operator+(Point2D p1, Point2D p2){
+          return new Point2D(p1.x+p2.x, p1.y+p2.y);
+        }
+
+        public static Point2D operator+(Point2D p, Vector v){
+          return new Point2D(p.x+v.x, p.y+v.y);
+        }
+
+        public static Point2D operator/(Point2D p, int i){
+          return new Point2D(p.x/i, p.y/i);
+        }
+
+        public override string ToString(){
+          return "(" + x + ", " + y + ")";
+        }
+    }
+}
