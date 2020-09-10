@@ -4,96 +4,89 @@ using System;
 namespace inClassHacking{
 
   class HamiltonianRefinement{
-    List<Tuple<DualgraphTriangle, bool>> input = new List<Tuple<DualgraphTriangle, bool>>(); //tuples of DualgraphTriangle and if its processed by toStrip()
+
+    List<DualgraphTriangle> triangles = new List<DualgraphTriangle>(); //all imported triangles 
+    Dictionary<DualgraphTriangle, bool> processed = new
+      Dictionary<DualgraphTriangle, bool>(); 
 
     public void addTriangle(Triangle triangle){
-      DualgraphTriangle dualgraphTriangle = new DualgraphTriangle(triangle, input.Count);
-      input.Add(new Tuple<DualgraphTriangle, bool>(dualgraphTriangle, false));
+      DualgraphTriangle dualgraphTriangle = new DualgraphTriangle(triangle);
+      triangles.Add(dualgraphTriangle);
+      processed.Add(dualgraphTriangle, false);
     }
 
-    public void createDualGraph(){
-      for(int i = 0; i<input.Count; i++){
-        findNeighbor(i);
+    public void createDualGraph(){ //finding triangles next to each other in right order so we can "walk around" them in toStrip()
+      for(int i = 0; i<triangles.Count; i++){
+        findNeighbor(triangles[i]);
       }
     }
 
-    public void findNeighbor(int thisIndex){ //add triangle with correct edge in this Triangles neighbor attribute, if they share an edge
-      List<int> returnList = new List<int>();
-      DualgraphTriangle thisTriangle = input[thisIndex].Item1;
+    public void findNeighbor(DualgraphTriangle thisTriangle){ //add triangle with correct edge in this Triangles neighbor attribute, if they share an edge
      
-      for(int i = 1; i<input.Count; i++){ 
-        if(i==thisIndex) continue;
-        DualgraphTriangle other = input[i].Item1;
-        
+      for(int i = 1; i<triangles.Count; i++){ 
+        DualgraphTriangle other = triangles[i];
+        if(thisTriangle == other) continue; //don't check against itself
+
         if(thisTriangle.centerOfEdgeA == other.centerOfEdgeA){
-          thisTriangle.neighbor.aSide = i;
-          other.neighbor.aSide = thisIndex; 
-          returnList.Add(i);
+          thisTriangle.neighbor.aSide = other;
+          other.neighbor.aSide = thisTriangle; 
         } else if(thisTriangle.centerOfEdgeA == other.centerOfEdgeB){
-          thisTriangle.neighbor.aSide = i;
-          other.neighbor.bSide = thisIndex; 
-          returnList.Add(i);
+          thisTriangle.neighbor.aSide = other;
+          other.neighbor.bSide = thisTriangle; 
         } else if(thisTriangle.centerOfEdgeA == other.centerOfEdgeC){
-          thisTriangle.neighbor.aSide = i;
-          other.neighbor.cSide = thisIndex; 
-          returnList.Add(i);
+          thisTriangle.neighbor.aSide =other;
+          other.neighbor.cSide = thisTriangle; 
         }
 
         else if(thisTriangle.centerOfEdgeB == other.centerOfEdgeA){
-          thisTriangle.neighbor.bSide = i;
-          other.neighbor.aSide = thisIndex; 
-          returnList.Add(i);
+          thisTriangle.neighbor.bSide = other;
+          other.neighbor.aSide = thisTriangle; 
         } else if(thisTriangle.centerOfEdgeB == other.centerOfEdgeB){
-          thisTriangle.neighbor.bSide = i;
-          other.neighbor.bSide = thisIndex; 
-          returnList.Add(i);
+          thisTriangle.neighbor.bSide = other;
+          other.neighbor.bSide = thisTriangle; 
         } else if(thisTriangle.centerOfEdgeB == other.centerOfEdgeC){
-          thisTriangle.neighbor.bSide = i;
-          other.neighbor.cSide = thisIndex; 
-          returnList.Add(i);
+          thisTriangle.neighbor.bSide = other;
+          other.neighbor.cSide = thisTriangle; 
         }
 
         else if(thisTriangle.centerOfEdgeC == other.centerOfEdgeA){
-          thisTriangle.neighbor.cSide = i;
-          other.neighbor.aSide = thisIndex; 
-          returnList.Add(i);
+          thisTriangle.neighbor.cSide =other;
+          other.neighbor.aSide = thisTriangle; 
         } else if(thisTriangle.centerOfEdgeC == other.centerOfEdgeB){
-          thisTriangle.neighbor.cSide = i;
-          other.neighbor.bSide = thisIndex; 
-          returnList.Add(i);
+          thisTriangle.neighbor.cSide =other;
+          other.neighbor.bSide = thisTriangle; 
         }else if(thisTriangle.centerOfEdgeC == other.centerOfEdgeC){
-          thisTriangle.neighbor.cSide = i;
-          other.neighbor.cSide = thisIndex; 
-          returnList.Add(i);
+          thisTriangle.neighbor.cSide =other;
+          other.neighbor.cSide = thisTriangle; 
         } 
       }
     }
 
-    public void toStrip(Strip strip){ //starting point, called in main()
-      toStrip(strip, input[0].Item1, -1);
+    public void toStrip(Strip strip){ //starts recursion, called in main()
+      toStrip(strip, triangles[0], null);
     }
     
-    void toStrip(Strip strip, DualgraphTriangle triangle, int indexFrom){ 
-      if (input[triangle.index].Item2) return;
-      input[triangle.index] = new Tuple<DualgraphTriangle, bool>(input[triangle.index].Item1, true);
+    void toStrip(Strip strip, DualgraphTriangle triangle, DualgraphTriangle triangleFrom){ 
+      if (processed[triangle]) return;
+      processed[triangle] = true;//set processed to true
 
-      int startingIndex = triangle.getStartPoint(indexFrom);
-      if(startingIndex == -1) return;
+      int startingIndex = triangle.getStartPoint(triangleFrom);
+      if(startingIndex == DualgraphTriangle.UNDEF) return;
 
       for(int i = 0; i<6; i++){
         if((startingIndex+i)%6 == 1){
-          if(triangle.neighbor.bSide != -1){
-            toStrip(strip, input[triangle.neighbor.bSide].Item1, triangle.index);
+          if(triangle.neighbor.bSide != null){
+            toStrip(strip, triangle.neighbor.bSide, triangle);
           }
         }
         if((startingIndex+i)%6 == 3){
-          if(triangle.neighbor.aSide != -1){
-            toStrip(strip, input[triangle.neighbor.aSide].Item1, triangle.index);
+          if(triangle.neighbor.aSide != null){
+            toStrip(strip, triangle.neighbor.aSide, triangle);
           }
         }
         if((startingIndex+i)%6 == 5){
-          if(triangle.neighbor.cSide != -1){
-            toStrip(strip, input[triangle.neighbor.cSide].Item1, triangle.index);
+          if(triangle.neighbor.cSide != null){
+            toStrip(strip, triangle.neighbor.cSide, triangle);
           }
         }
         strip.addTriangle(triangle.triangulation[(startingIndex+i)%6]);

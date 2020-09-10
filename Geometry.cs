@@ -5,6 +5,47 @@ using System.Collections.Generic;
 
 namespace inClassHacking
 {
+
+    class Point3D
+    {
+        public double x, y, z;
+        public Point3D(double x,double y,double z)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+        public double getDistance(Point3D target)
+        {
+            double dist;
+            dist = Math.Sqrt(
+                Math.Pow(Math.Abs(x - target.x), 2) +
+                Math.Pow(Math.Abs(y - target.y), 2) +
+                Math.Pow(Math.Abs(z - target.z), 2)
+            );
+            return dist;
+        }
+
+        public static bool operator==(Point3D p1, Point3D p2){
+          return (p1.x == p2.x & p1.y == p2.y & p1.z == p2.z);
+        }
+        public static bool operator!=(Point3D p1, Point3D p2){
+          return !(p1==p2);
+        }
+
+        public static Point3D operator+(Point3D p1, Point3D p2){
+          return new Point3D(p1.x+p2.x, p1.y+p2.y, p1.z+p2.z);
+        }
+
+        public static Point3D operator/(Point3D p, int i){
+          return new Point3D(p.x/i, p.y/i, p.z/i);
+        }
+
+        public override string ToString(){
+          return "(" + x + ", " + y + ", " + z + ")";
+        }
+    }
+
     class Triangle 
     {
         public Point3D a, b, c;
@@ -47,55 +88,11 @@ namespace inClassHacking
           return a.ToString() + ", " + b.ToString() + ", " + c.ToString();
         }
     }
-    class Point3D
-    {
-        public double x, y, z;
-        public Point3D(double x,double y,double z)
-        {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-        }
-        public double getDistance(Point3D target)
-        {
-            double dist;
-            dist = Math.Sqrt(
-                Math.Pow(Math.Abs(x - target.x), 2) +
-                Math.Pow(Math.Abs(y - target.y), 2) +
-                Math.Pow(Math.Abs(z - target.z), 2)
-            );
-            return dist;
-        }
-
-        public static bool operator==(Point3D p1, Point3D p2){
-          return (p1.x == p2.x & p1.y == p2.y & p1.z == p2.z);
-        }
-        public static bool operator!=(Point3D p1, Point3D p2){
-          return !(p1==p2);
-        }
-
-        public static Point3D operator+(Point3D p1, Point3D p2){
-          return new Point3D(p1.x+p2.x, p1.y+p2.y, p1.z+p2.z);
-        }
-
-        public static Point3D operator/(Point3D p, int i){
-          return new Point3D(p.x/i, p.y/i, p.z/i);
-        }
-
-        public override string ToString(){
-          return "(" + x + ", " + y + ", " + z + ")";
-        }
-    }
-    public class Line
-    {
-        public double x1, x2, y1, y2;
-        public Color c;
-    }
 
     struct Neighbors{
-      public int aSide, bSide, cSide; //index of DualgraphTriangles that share an edge 
+      public DualgraphTriangle aSide, bSide, cSide; //DualgraphTriangles that share an edge
 
-      public Neighbors(int aSide, int bSide, int cSide){
+      public Neighbors(DualgraphTriangle aSide, DualgraphTriangle bSide, DualgraphTriangle cSide){
         this.aSide = aSide;
         this.bSide = bSide;
         this.cSide = cSide;
@@ -104,30 +101,19 @@ namespace inClassHacking
 
   class DualgraphTriangle: Triangle{ //special class for calculation of dualgraph and hamiltonian refinement
     public Point3D center, centerOfEdgeA, centerOfEdgeB, centerOfEdgeC;
-    public int index;
     public Neighbors neighbor;
     public List<Triangle> triangulation = new List<Triangle>(); //stores 6 smaller triangles in exact order to "walk around the dualgraph"
-    int undef = -1;
+    public static int UNDEF = -1;
 
     public DualgraphTriangle(Point3D a, Point3D b, Point3D c): base(a, b, c){
-      index = undef; 
-      neighbor = new Neighbors(undef, undef, undef);
+      neighbor = new Neighbors(null, null, null);
       calculateCenter();
       calculateCenterOfEdges();
       triangulate();
     }
 
-    public DualgraphTriangle(Point3D a, Point3D b, Point3D c, int index): base(a, b, c){
-      this.index = index;
-      neighbor = new Neighbors(undef, undef, undef);
-      calculateCenter();
-      calculateCenterOfEdges();
-      triangulate();
-    }
-
-    public DualgraphTriangle(Triangle triangle, int index): base(triangle.a, triangle.b, triangle.c){
-      this.index = index;
-      neighbor = new Neighbors(undef, undef, undef);
+    public DualgraphTriangle(Triangle triangle): base(triangle.a, triangle.b, triangle.c){
+      neighbor = new Neighbors(null, null, null);
       calculateCenter();
       calculateCenterOfEdges();
       triangulate();
@@ -146,7 +132,8 @@ namespace inClassHacking
       centerOfEdgeC = (a+b)/2;
     }
 
-    public void triangulate(){
+    public void triangulate(){ //split the triangle in 6 smaller ones
+      // 6 (instead of 3) because we need to split the edges to get to the next triangle while "walking around the dualgraph"
       triangulation.Add(new Triangle(a, center, centerOfEdgeB));
       triangulation.Add(new Triangle(centerOfEdgeB, center, c));
       triangulation.Add(new Triangle(c, center, centerOfEdgeA));
@@ -155,22 +142,22 @@ namespace inClassHacking
       triangulation.Add(new Triangle(centerOfEdgeC, center, a));
     }
 
-    public int getStartPoint(int index){ //returns position of first triangle out of triangulation-list that has to be added to the strip dependend on dualpath (index of triangle added before)
-      if(index == undef){ //when calling toStrip() for the 1st time
+    public int getStartPoint(Triangle triangle){ //returns position of first triangle out of triangulation-list that has to be added to the strip dependend on dualpath (index of triangle added before)
+      if(triangle == null){ //when calling toStrip() for the 1st time
         return 0;
-      }else if(index == neighbor.aSide){
+      }else if(triangle == neighbor.aSide){
         return 3;
-      }else if(index == neighbor.bSide){
+      }else if(triangle == neighbor.bSide){
         return 1;
-      }else if(index == neighbor.cSide){
+      }else if(triangle == neighbor.cSide){
         return 5;
       }else{
-        return undef;
+        return UNDEF;
       }
     }
 
     public override string ToString(){
-      return index.ToString() + ": " + base.ToString() + " center: " + center.ToString();
+      return base.ToString() + " center: " + center.ToString();
     }
 
   }

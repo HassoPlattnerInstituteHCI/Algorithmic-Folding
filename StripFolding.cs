@@ -122,17 +122,15 @@ namespace inClassHacking
             if (DEBUG) Console.WriteLine("added triangle to strip");
         }
 
-        public int getNumberOfTriangles(){
-          return counter;
-        }
+      public int getNumberOfTriangles(){
+        return counter;
+      }
     }
 
-    public class Plain
+    public class Line
     {
-        private double length;
-        public Plain(double len){
-            this.length = len;
-        }
+        public double x1, x2, y1, y2;
+        public Color c;
     }
 
     public class Fold
@@ -174,12 +172,12 @@ namespace inClassHacking
             this.length = l;
             this.t = t;
             this.width = w;
-            Plain p = new Plain(l);
         }
         public Fold getFold()
         {
             return f;
         }
+
         public Line draw()
         {
             Line l = new Line();
