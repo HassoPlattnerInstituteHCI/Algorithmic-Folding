@@ -71,13 +71,14 @@ namespace inClassHacking
                     "width=\""+s*zoomFactor+ "px\" height=\"" + s*zoomFactor + "px\" " +
                     "viewBox=\"0 0 "+zoomFactor*s+" "+zoomFactor*s+"\" " +
                     "enable-background=\"new 0 0 3456 6912\" " +
+                    "style=\"background: blanchedalmond\" " +
                     "xml:space = \"preserve\">"
                    );
             return svg;
         }
         public void drawRiver(List<string> svg, River river){}
         public void drawCircle(List<string> svg, Circle circle){
-          svg.Add("<circle cx=\"" + circle.getCenter().x*zoomFactor + "\" cy=\"" + circle.getCenter().y*zoomFactor + "\" r=\""+ zoomFactor*circle.getRadius()+ "\" stroke=\"black\" stroke-width=\"3\" fill=\"red\" />");
+          svg.Add("<circle cx=\"" + circle.getCenter().x*zoomFactor + "\" cy=\"" + circle.getCenter().y*zoomFactor + "\" r=\""+ zoomFactor*circle.getRadius()+ "\" stroke=\"black\" stroke-width=\"3\" fill=\"burlywood\" />");
           // svg.Add("<circle cx=\"300\" cy=\"100\" r=\"\75\" />");
 
           // if(DEBUG) Console.WriteLine("draw circle at " + circle.getCenter().x*zoomFactor + ", " + circle.getCenter().y*zoomFactor + " with radius " + circle.getRadius()*zoomFactor);

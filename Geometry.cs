@@ -33,6 +33,11 @@ namespace inClassHacking
       this.y = y;
     }
 
+    public Vector(Point2D p1, Point2D p2){
+      this.x = p1.x-p2.x;
+      this.y = p1.y-p2.y;
+    }
+
     public double getLength(){
       return Math.Sqrt(x*x + y*y);
     }
@@ -69,7 +74,22 @@ namespace inClassHacking
     }
   }
 
-  public class River{
+  public class River{ //rectangle in the .svg-file
+    Point2D p1; //upper left corner
+    Point2D p2; //lower right corner
+
+    public River(Point2D p1, Point2D p2){
+      this.p1 = p1;
+      this.p2 = p2;
+    }
+
+    public Point2D getP1(){
+      return p1;
+    }
+
+    public Point2D getP2(){
+      return p2;
+    }
     
   }
 
