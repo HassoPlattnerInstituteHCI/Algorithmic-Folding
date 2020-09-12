@@ -35,8 +35,6 @@ namespace inClassHacking{
       double distanceAbove = input[10]+input[11];
       circles.Add(addLastCircleRigid(circles, distanceAbove, s)); 
 
-      Console.WriteLine(s-Math.Sqrt((circles[4].getRadius()+6.2)*(circles[4].getRadius()+6.2)-circles[4].getRadius()*circles[4].getRadius()));
-
       return circles;
     }
 
@@ -52,11 +50,11 @@ namespace inClassHacking{
 
       double radius = input[12];
 
-      Circle c = new Circle(new Point2D(s/2, circles[10].getCenter().y+circles[10].getRadius()+distanceAbove+radius), radius);
+      Circle helper = new Circle(new Point2D(s/2, circles[10].getCenter().y+circles[10].getRadius()+distanceAbove+radius), radius);
 
       double r = circles[4].getRadius();
-      double a = Math.Sqrt((r+c.getRadius())*(r+c.getRadius()) - r*r);
-      double b = Math.Sqrt(Math.Pow(circles[4].getCenter().getDistance(c.getCenter()), 2) - r*r);
+      double a = Math.Sqrt((r+helper.getRadius())*(r+helper.getRadius()) - r*r);
+      double b = Math.Sqrt(Math.Pow(circles[4].getCenter().getDistance(helper.getCenter()), 2) - r*r);
       double scaleFactor = Math.Round(b/a, 2);
       radius = radius*scaleFactor;
       
@@ -65,19 +63,6 @@ namespace inClassHacking{
       Console.WriteLine("Changed radius from " + input[12] + " to " + radius + " to get a rigid packing.");
 
       return circle;
-      
-      // Circle CircleA = circles[10];
-      // Circle CircleB = circles[4];
-      // Circle CircleC = circles[5];
-
-      // Point2D pointA = CircleA.getCenter() + (new Point2D(0, CircleA.getRadius() + distanceAbove));
-
-      // Point2D center = new Point2D(x, y);
-      // Vector radiusVector = new Vector(center, pointC);
-      // double radius = (radiusVector.getLength()>input[12])? radiusVector.getLength() : input[12];
-
-      // Circle c = new Circle(center, radius);
-      // return c;
     }
 
     public List<River> calculateRiverPositioning(List<Circle> circles){

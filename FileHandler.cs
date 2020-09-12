@@ -27,7 +27,7 @@ namespace inClassHacking
             this.s = s;
             this.zoomFactor = zoomFactor;
         }
-        public void exportSVG(List<Circle> circles, List<River> rivers)
+        public void exportSVG(List<Circle> circles, List<River> rivers, List<Crease> creases)
         {
             List<string> svg = new List<string>();
             SVG_init(svg, s);
@@ -37,6 +37,9 @@ namespace inClassHacking
             }
             foreach(var river in rivers){
               drawRiver(svg, river);
+            }
+            foreach(var crease in creases){
+              drawCrease(svg, crease);
             }
 
             SVG_ending(svg);
@@ -79,10 +82,14 @@ namespace inClassHacking
         public void drawRiver(List<string> svg, River river){}
         public void drawCircle(List<string> svg, Circle circle){
           svg.Add("<circle cx=\"" + circle.getCenter().x*zoomFactor + "\" cy=\"" + circle.getCenter().y*zoomFactor + "\" r=\""+ zoomFactor*circle.getRadius()+ "\" stroke=\"black\" stroke-width=\"3\" fill=\"burlywood\" />");
-          // svg.Add("<circle cx=\"300\" cy=\"100\" r=\"\75\" />");
 
-          // if(DEBUG) Console.WriteLine("draw circle at " + circle.getCenter().x*zoomFactor + ", " + circle.getCenter().y*zoomFactor + " with radius " + circle.getRadius()*zoomFactor);
           if(DEBUG) Console.WriteLine("draw circle at " + circle.getCenter().x + ", " + circle.getCenter().y + " with radius " + circle.getRadius());
+        }
+
+        public void drawCrease(List<string> svg, Crease crease){
+          svg.Add("<line x1=\""+ crease.p1.x*zoomFactor + "\" y1=\"" + crease.p1.y*zoomFactor + "\" x2=\"" + crease.p2.x*zoomFactor + "\" y2=\"" + crease.p2.y*zoomFactor + "\" stroke=\"" + colToHex(crease.color) +  "\" style=\"stroke-width:8\" />");
+
+          if(DEBUG) Console.WriteLine("draw crease");
         }
         
         private string colToHex(Color c)
