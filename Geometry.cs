@@ -40,6 +40,10 @@ namespace inClassHacking
           return new Point2D(p.x+v.x, p.y+v.y);
         }
 
+        public static Point2D operator-(Point2D p, Vector v){
+          return new Point2D(p.x-v.x, p.y-v.y);
+        }
+
         public static Point2D operator/(Point2D p, int i){
           return new Point2D(p.x/i, p.y/i);
         }
@@ -59,8 +63,8 @@ namespace inClassHacking
     }
 
     public Vector(Point2D p1, Point2D p2){
-      this.x = p1.x-p2.x;
-      this.y = p1.y-p2.y;
+      this.x = p2.x-p1.x;
+      this.y = p2.y-p1.y;
     }
 
     public double getLength(){
@@ -71,12 +75,24 @@ namespace inClassHacking
       return this/this.getLength();
     }
 
+    public Vector getNormalRight(){
+      return new Vector(-this.y, this.x);
+    }
+
+    public Vector getNormalLeft(){
+      return new Vector(this.y, -this.x);
+    }
+
+    public Vector getReverse(){
+      return new Vector(-this.x, -this.y);
+    }
     public static Vector operator/(Vector v, double d){
       return new Vector(v.x/d, v.y/d);
     }
     public static Vector operator*(Vector v, double d){
       return new Vector(v.x*d, v.y*d);
     }
+    
     public override string ToString(){
       return ("(" + this.x + " ," + this.y + ")");
     }
@@ -117,7 +133,7 @@ namespace inClassHacking
     }
   }
 
-  public enum Color{Red,Green,Blue, Yellow};
+  public enum Color{Red, Green, Blue, Yellow, Grey};
 
   public class Crease{
     public Point2D p1;

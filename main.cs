@@ -19,12 +19,11 @@ namespace inClassHacking{
       Positioning positioning = new Positioning(distances, input);
 
       List<Circle> circles = positioning.calculateCirclePositioning();
-      List<River> rivers = positioning.calculateRiverPositioning(circles);
 
-      Folding folding = new Folding(circles, rivers, distances);
+      Folding folding = new Folding(circles, input, distances);
       List<Crease> creases = folding.calculateCreases();
 
-      f.exportSVG(circles, rivers, creases);
+      f.exportSVG(circles, creases);
 
     }
 

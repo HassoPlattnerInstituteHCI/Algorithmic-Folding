@@ -27,16 +27,13 @@ namespace inClassHacking
             this.s = s;
             this.zoomFactor = zoomFactor;
         }
-        public void exportSVG(List<Circle> circles, List<River> rivers, List<Crease> creases)
+        public void exportSVG(List<Circle> circles, List<Crease> creases)
         {
             List<string> svg = new List<string>();
             SVG_init(svg, s);
 
             foreach(var circle in circles){
               drawCircle(svg, circle);
-            }
-            foreach(var river in rivers){
-              drawRiver(svg, river);
             }
             foreach(var crease in creases){
               drawCrease(svg, crease);
@@ -79,15 +76,17 @@ namespace inClassHacking
                    );
             return svg;
         }
-        public void drawRiver(List<string> svg, River river){}
         public void drawCircle(List<string> svg, Circle circle){
           svg.Add("<circle cx=\"" + circle.getCenter().x*zoomFactor + "\" cy=\"" + circle.getCenter().y*zoomFactor + "\" r=\""+ zoomFactor*circle.getRadius()+ "\" stroke=\"black\" stroke-width=\"3\" fill=\"burlywood\" />");
+          svg.Add("<circle cx=\"" + ((s-circle.getCenter().x)*zoomFactor) + "\" cy=\"" + circle.getCenter().y*zoomFactor + "\" r=\""+ zoomFactor*circle.getRadius()+ "\" stroke=\"black\" stroke-width=\"3\" fill=\"burlywood\" />");
 
           if(DEBUG) Console.WriteLine("draw circle at " + circle.getCenter().x + ", " + circle.getCenter().y + " with radius " + circle.getRadius());
         }
 
         public void drawCrease(List<string> svg, Crease crease){
           svg.Add("<line x1=\""+ crease.p1.x*zoomFactor + "\" y1=\"" + crease.p1.y*zoomFactor + "\" x2=\"" + crease.p2.x*zoomFactor + "\" y2=\"" + crease.p2.y*zoomFactor + "\" stroke=\"" + colToHex(crease.color) +  "\" style=\"stroke-width:8\" />");
+
+          svg.Add("<line x1=\""+ ((s-crease.p1.x)*zoomFactor) + "\" y1=\"" + crease.p1.y*zoomFactor + "\" x2=\"" + ((s-crease.p2.x)*zoomFactor) + "\" y2=\"" + crease.p2.y*zoomFactor + "\" stroke=\"" + colToHex(crease.color) +  "\" style=\"stroke-width:8\" />");
 
           if(DEBUG) Console.WriteLine("draw crease");
         }
@@ -102,7 +101,9 @@ namespace inClassHacking
             if (c == Color.Green)
                 hex = "#00FF00";
             if (c == Color.Yellow)
-                hex = "FFFF00";
+                hex = "#FFFF00";
+            if (c== Color.Grey)
+                hex = "#808080";
             return hex;
         } 
     }

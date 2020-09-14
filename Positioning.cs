@@ -26,19 +26,16 @@ namespace inClassHacking{
       circles.Add(new Circle(new Point2D(0, x), input[1]));
       circles.Add(new Circle(new Point2D(0, s-y), input[2]));
       circles.Add(new Circle(new Point2D(z, s), input[3]));
-      circles.Add(new Circle(new Point2D(s-z, s), input[3]));
-      circles.Add(new Circle(new Point2D(s, s-y), input[2]));
-      circles.Add(new Circle(new Point2D(s, x), input[1]));
-      circles.Add(new Circle(new Point2D(s-w, 0), input[0]));
-      circles.Add(new Circle(new Point2D(s/2, calculate10thCirclesY(circles)), input[6]));
-      circles.Add(new Circle(new Point2D(s/2, circles[9].getCenter().y+circles[9].getRadius()+input[7]+input[8]+input[9]), input[9]));
+
+      circles.Add(new Circle(new Point2D(s/2, calculate6thCirclesY(circles)), input[6]));
+      circles.Add(new Circle(new Point2D(s/2, circles[5].getCenter().y+circles[5].getRadius()+input[7]+input[8]+input[9]), input[9]));
       double distanceAbove = input[10]+input[11];
       circles.Add(addLastCircleRigid(circles, distanceAbove, s)); 
 
       return circles;
     }
 
-    double calculate10thCirclesY(List<Circle> circles){ //distance to cirlce 2 and 9 (top middle left and top middle right) important -> Pythagorean
+    double calculate6thCirclesY(List<Circle> circles){ //distance to cirlce 2 and 9 (top middle left and top middle right) important -> Pythagorean
       double c = circles[1].getRadius()+input[4]+input[5];
       double b = circles[1].getRadius()+circles[0].getRadius();
       double a = Math.Sqrt(c*c - b*b);
@@ -50,52 +47,19 @@ namespace inClassHacking{
 
       double radius = input[12];
 
-      Circle helper = new Circle(new Point2D(s/2, circles[10].getCenter().y+circles[10].getRadius()+distanceAbove+radius), radius);
+      Circle helper = new Circle(new Point2D(s/2, circles[6].getCenter().y+circles[6].getRadius()+distanceAbove+radius), radius);
 
       double r = circles[4].getRadius();
       double a = Math.Sqrt((r+helper.getRadius())*(r+helper.getRadius()) - r*r);
       double b = Math.Sqrt(Math.Pow(circles[4].getCenter().getDistance(helper.getCenter()), 2) - r*r);
-      double scaleFactor = Math.Round(b/a, 2);
+      double scaleFactor = b/a;
       radius = radius*scaleFactor;
       
-      Circle circle = new Circle(new Point2D(s/2, circles[10].getCenter().y+circles[10].getRadius()+distanceAbove+radius), radius);
+      Circle circle = new Circle(new Point2D(s/2, circles[6].getCenter().y+circles[6].getRadius()+distanceAbove+radius), radius);
 
       Console.WriteLine("Changed radius from " + input[12] + " to " + radius + " to get a rigid packing.");
 
       return circle;
     }
-
-    public List<River> calculateRiverPositioning(List<Circle> circles){
-      List<River> rivers = new List<River>();
-//upper left
-/*
-      rivers.Add(new River(new Point2D(), new Point2D()));
-      rivers.Add(new River(new Point2D(), new Point2D()));
-//middle left
-      rivers.Add(new River(new Point2D(), new Point2D()));
-      rivers.Add(new River(new Point2D(), new Point2D()));
-//lower left
-      rivers.Add(new River(new Point2D(), new Point2D()));
-//lower right
-      rivers.Add(new River(new Point2D(), new Point2D()));
-//middle right
-      rivers.Add(new River(new Point2D(), new Point2D()));
-      rivers.Add(new River(new Point2D(), new Point2D()));
-//upper right
-      rivers.Add(new River(new Point2D(), new Point2D()));
-      rivers.Add(new River(new Point2D(), new Point2D()));
-//upper middle
-      rivers.Add(new River(new Point2D(), new Point2D()));
-      rivers.Add(new River(new Point2D(), new Point2D()));
-      rivers.Add(new River(new Point2D(), new Point2D()));
-//lower middle
-      rivers.Add(new River(new Point2D(), new Point2D()));
-      rivers.Add(new River(new Point2D(), new Point2D()));
-
-      */
-      return rivers;
-    }
-
-
   }
 }
