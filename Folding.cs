@@ -49,8 +49,8 @@ namespace inClassHacking{
 
       Vector up = new Vector(0, -1);
       Vector down = new Vector(0, 1);
-      Vector left = new Vector(1, 0);
-      Vector right = new Vector(-1, 0);
+      Vector left = new Vector(-1, 0);
+      Vector right = new Vector(1, 0);
 
       Point2D lowerMiddle = new Point2D(s/2, s);
 
@@ -79,7 +79,7 @@ namespace inClassHacking{
 
       creases.Add(new Crease(helper2, edgeCircle3low, Color.Blue));
 
-      //gussets
+      //gusset
       creases.Add(new Crease(circles[3].getCenter(), circles[7].getCenter(), Color.Grey));
 
 
@@ -129,21 +129,41 @@ namespace inClassHacking{
       Vector circle1ToHelper6 = new Vector(circles[1].getCenter(), helper6);
 
       Point2D helper9 = findIntersection(circle1To5.getNormalRight(), helper4, circle1ToHelper6, helper6);
-
-      creases.Add(new Crease(helper9, helper4, Color.Blue));
+      Point2D edgeCircle6left = new Point2D(circles[6].getCenter().x-circles[6].getRadius(), circles[6].getCenter().y);      
       
-      Point2D edgeCircle6left = new Point2D(circles[6].getCenter().x-circles[6].getRadius(), circles[6].getCenter().y);
 
       Vector edge6ToHelper6 = new Vector(edgeCircle6left, helper6);
       Point2D middleInput7 = new Point2D(s/2, circles[5].getCenter().y+circles[5].getRadius()+input[7]);
       Point2D helper7 = findIntersection(edge6ToHelper6, edgeCircle6left, left, middleInput7);
-      Point2D middleInput8 = new Point2D(s/2, circles[5].getCenter().y+circles[5].getRadius()+input[7]+input[8]);
-      Point2D helper8 = findIntersection(edge6ToHelper6, edgeCircle6left, left, middleInput8);
+      Point2D edgeCircle6Above = new Point2D(s/2, circles[5].getCenter().y+circles[5].getRadius()+input[7]+input[8]);
+      Point2D helper8 = findIntersection(edge6ToHelper6, edgeCircle6left, left, edgeCircle6Above);
 
       creases.Add(new Crease(helper6, edgeCircle6left, Color.Red));
       creases.Add(new Crease(edgeCircle6left, circles[6].getCenter(), Color.Red));
       creases.Add(new Crease(middleInput7, helper7, Color.Blue));
-      creases.Add(new Crease(middleInput8, helper8, Color.Blue));
+      creases.Add(new Crease(edgeCircle6Above, helper8, Color.Blue));
+
+      // shifted vertex near center of circle 1 to center, try if it wokrs
+      // Point2D nearCenter1 = circles[1].getCenter() + down*1 + left*1;
+      creases.Add(new Crease(helper9, helper4, Color.Blue));
+      creases.Add(new Crease(helper6, circles[1].getCenter(), Color.Red));
+      creases.Add(new Crease(edgeCircle6left, circles[1].getCenter(), Color.Grey));
+
+      Point2D edegCircle6Below = circles[6].getCenter() + down*circles[6].getRadius();
+      Vector circle6LeftTo1 = new Vector(edgeCircle6left, circles[1].getCenter());
+      Point2D helper10 = findIntersection(left, edegCircle6Below, circle6LeftTo1.getNormalLeft(), helper8);
+
+      creases.Add(new Crease(helper10, edegCircle6Below, Color.Blue));
+      creases.Add(new Crease(helper10, helper8, Color.Blue));
+      creases.Add(new Crease(helper10, edgeCircle6left, Color.Red));
+
+      Vector blueHelper10 = new Vector(helper8, helper10);
+      Point2D helper20 = helper7+blueHelper10;
+      Point2D helper21 = helper6+blueHelper10;
+      Point2D helper22 = helper9+blueHelper10;
+      creases.Add(new Crease(helper7, helper20, Color.Blue));
+      creases.Add(new Crease(helper6, helper21, Color.Blue));
+      creases.Add(new Crease(helper9, helper22, Color.Blue));
 
     }
 
