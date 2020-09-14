@@ -115,8 +115,9 @@ namespace inClassHacking
     public Point2D getP2(){
       return p2;
     }
-    
   }
+
+  public enum Color{Red,Green,Blue, Yellow};
 
   public class Crease{
     public Point2D p1;
@@ -126,7 +127,7 @@ namespace inClassHacking
     public Crease(Point2D p1, Point2D p2, Color c){
       this.p1 = p1;
       this.p2 = p2;
-      this.color = color;
+      this.color = c;
     }
   }
 }

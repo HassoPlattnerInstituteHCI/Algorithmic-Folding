@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace inClassHacking
 {
-    public enum Color{Red,Green,Blue, Yellow};
+    
 
     class FileHandler{
       double s, w, x, y, z;
