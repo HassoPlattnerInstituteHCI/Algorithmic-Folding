@@ -100,7 +100,6 @@ function findPoints(plate: Plate, copyPoints: THREE.Vector2[]) {
 
 
   // now try to find the respective points
-  const margin = 0.001;  // allowed margin of error
   const points: THREE.Vector2[] = [];
 
   for (const target of copyPoints) {
@@ -115,7 +114,7 @@ function findPoints(plate: Plate, copyPoints: THREE.Vector2[]) {
       }
     }
 
-    if (bestDist > margin) throw new Error("Failed to import joint - could not find actual polygon point that is close enough (found best margin of " + bestDist + ")");
+    if (!GeometryUtil.eq(bestDist, 0)) throw new Error("Failed to import joint - could not find actual polygon point that is close enough (found best margin of " + bestDist + ")");
 
     points.push(closest);
   }

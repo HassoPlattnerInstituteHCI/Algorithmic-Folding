@@ -5,17 +5,13 @@ import * as THREE from 'three';
 
 export default class CornerFinder {
 
-  // an endpoint of a joint can be as far away as epsilon from an existing corner to still be attributed to that corner
-  private static readonly epsilon: number = 0.001;
-
-  // finds corners from the joint-graph datastructure, can also be used to get a set of all allowed (uncut) joints
+  // finds corners from the joint-graph data structure, can also be used to get a set of all allowed (uncut) joints
   public static getCorners(plates: Plate[], uncutJoints: Set<Joint> = new Set()): Map<THREE.Vector3, Joint[]> {
 
     const corners = new Map<THREE.Vector3, Joint[]>();
 
     for (const plate of plates) {
       for (const joint of plate.getJoints()) {
-        const otherPlate = joint.getOtherPlate(plate);
         // only include each joint once
         if (uncutJoints.has(joint)) continue;
         uncutJoints.add(joint);
@@ -31,14 +27,14 @@ export default class CornerFinder {
             for (const corner of corners.keys()) {
               const distance = GeometryUtil.distanceOf3d(corner, point);
 
-              if (closest == undefined || closestDistance > distance) {
+              if (closestDistance === undefined || closestDistance > distance) {
                 closest = corner;
                 closestDistance = distance;
               }
             }
 
             // add joint to closest corner or create a new one (if not close enough)
-            if (closestDistance < CornerFinder.epsilon) corners.get(closest).push(joint);
+            if (GeometryUtil.eq(closestDistance, 0)) corners.get(closest).push(joint);
             else corners.set(point, [joint]);
           }
         }

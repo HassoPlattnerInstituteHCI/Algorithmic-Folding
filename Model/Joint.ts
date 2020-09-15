@@ -1,3 +1,4 @@
+import GU from "../Util/GeometryUtil";
 import * as THREE from 'three';
 import Plate from "./Plate";
 
@@ -58,16 +59,13 @@ export default class Joint {
   }
 
   public getOtherCorner3d(corner: THREE.Vector3): THREE.Vector3 {
-
-    const epsilon = 0.001;
-
-    if (corner.distanceTo(this.pointsOfPlate1_3d[0]) < epsilon) return this.pointsOfPlate1_3d[1];
+    if (GU.eq(corner.distanceTo(this.pointsOfPlate1_3d[0]), 0)) return this.pointsOfPlate1_3d[1];
     
-    if (corner.distanceTo(this.pointsOfPlate1_3d[1]) < epsilon) return this.pointsOfPlate1_3d[0];
+    if (GU.eq(corner.distanceTo(this.pointsOfPlate1_3d[1]), 0)) return this.pointsOfPlate1_3d[0];
 
-    if (corner.distanceTo(this.pointsOfPlate2_3d[0]) < epsilon) return this.pointsOfPlate2_3d[1];
+    if (GU.eq(corner.distanceTo(this.pointsOfPlate2_3d[0]), 0)) return this.pointsOfPlate2_3d[1];
 
-    if (corner.distanceTo(this.pointsOfPlate2_3d[1]) < epsilon) return this.pointsOfPlate2_3d[0];
+    if (GU.eq(corner.distanceTo(this.pointsOfPlate2_3d[1]), 0)) return this.pointsOfPlate2_3d[0];
 
     throw new Error("Point not part of this joint");
   }

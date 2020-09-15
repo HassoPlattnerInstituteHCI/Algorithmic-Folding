@@ -3,6 +3,8 @@ import * as THREE from 'three';
 
 export default class GeometryUtil {
 
+  private static readonly epsilon = 0.0001;
+
   /** Computation methods */
   public static distanceOf2d(vec1: THREE.Vector2, vec2: THREE.Vector2): number {
     var a = vec1.x - vec2.x;
@@ -21,7 +23,12 @@ export default class GeometryUtil {
   public static angleBetween(vec1: THREE.Vector3, vec2: THREE.Vector3): number {
     const radians = vec1.angleTo(vec2);
     const degrees = radians * 180 / Math.PI;
-    return (360 + degrees) % 360;
+    return (720 + degrees) % 360;
+  }
+
+  public static vectorsParallel(vec1: THREE.Vector3, vec2: THREE.Vector3): boolean {
+    const angle = GeometryUtil.angleBetween(vec1, vec2);
+    return GeometryUtil.eq(angle % 180, 0);
   }
 
   /** 
@@ -50,7 +57,7 @@ export default class GeometryUtil {
     const source = new THREE.Vector3(source2d.x, source2d.y, 0);
     const target = new THREE.Vector3(target2d.x, target2d.y, 0);
 
-    if (source.manhattanLength() <= 0.00001 || target.manhattanLength() <= 0.00001) {
+    if (GeometryUtil.eq(source.manhattanLength(), 0) || GeometryUtil.eq(target.manhattanLength(), 0)) {
       return new THREE.Quaternion();
     }
 
@@ -101,8 +108,14 @@ export default class GeometryUtil {
     vec3[functionName](matrix);
     const newVec2 = new THREE.Vector2(vec3.x, vec3.y);
 
-    if (vec3.z > 0.01) throw new Error("Should have empty z component");
-
+    if (!GeometryUtil.eq(vec3.z, 0)) throw new Error("Should have empty z component");
     return newVec2;
+  }
+
+  /** 
+   * A very basic utility method
+   */
+  public static eq(num1: number, num2: number, epsilon: number = GeometryUtil.epsilon): boolean {
+    return (num1 - epsilon < num2 && num2 < num1 + epsilon);
   }
 }
