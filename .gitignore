@@ -1,3 +1,5 @@
-# ignore all .DS_STORE and __MACOSX/ folders
+# ignore
 *.DS_STORE
 __MACOSX/
+.idea/
+node_modules/
