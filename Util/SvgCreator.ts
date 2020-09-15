@@ -1,16 +1,7 @@
 import Polygon from "../Model/Polygon";
 import * as THREE from 'three';
-const express = require('express');
-const router = express.Router();
 
-export default class SvgCreator{
-
-  /* public static createDownload(content: string): void {
-    router.get('/', (req, res) => {
-      res.download('test.txt');
-    });
-  } */
-
+export default class SvgCreator {
   // takes an array of polygons, and creates an SVG file (returned as string)
   public static getSvg(polygons: Polygon[]): string{
     if(polygons.length == 0) return "";

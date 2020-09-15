@@ -1,4 +1,3 @@
-import GeometryUtil from "../Util/GeometryUtil";
 import CornerFinder from "../Util/CornerFinder";
 import Unfolding from "./Unfolding";
 import Joint from "../Model/Joint";
@@ -32,12 +31,12 @@ export class SteepestEdgeUnfolder extends Unfolder {
         
         const steepness = this.getSteepness(corner[0], joint, directionVector);
 
-        if (steepest == undefined || steepestVal < steepness){
+        if (steepestVal == undefined || steepestVal < steepness){
           steepest = joint;
           steepestVal = steepness;
         }
       }
-      if (steepest == undefined) continue;
+      if (steepest == undefined) {}
       else {
         if (allowedJoints.has(steepest)) cutCounter++;
         allowedJoints.delete(steepest);
@@ -189,17 +188,17 @@ export class BfsEdgeUnfolder extends Unfolder {
     for (const plate of plates) plateSet.add(plate);
 
     // nest:
-    return BfsEdgeUnfolder.nestBFS(plateSet);
+    return this.nestBFS(plateSet);
   }
 
-  private static nestBFS(plates: Set<Plate>): Unfolding {
+  private nestBFS(plates: Set<Plate>): Unfolding {
     // determine a start plate
     const startPlate = plates.values().next().value;
     const unfolding = new Unfolding(startPlate);
 
     // create a queue and initialize with the connections of the start plate
     const queue = new Queue<[Plate, Joint]>();
-    BfsEdgeUnfolder.addPlateJointsToQueue(queue, startPlate);
+    this.addPlateJointsToQueue(queue, startPlate);
 
     while (!(queue.isEmpty() || plates.size === 0)) {
       const [otherPlate, joint] = queue.dequeue();
@@ -209,13 +208,13 @@ export class BfsEdgeUnfolder extends Unfolder {
 
       if (executed) {
         plates.delete(otherPlate);
-        BfsEdgeUnfolder.addPlateJointsToQueue(queue, otherPlate);
+        this.addPlateJointsToQueue(queue, otherPlate);
       }
     }
     return unfolding;
   }
 
-  private static addPlateJointsToQueue(queue: Queue<[Plate, Joint]>, plate: Plate): void {
+  private addPlateJointsToQueue(queue: Queue<[Plate, Joint]>, plate: Plate): void {
     for (const joint of plate.getJoints()) {
       const otherPlate = joint.getOtherPlate(plate);
       queue.enqueue([otherPlate, joint]);

@@ -74,8 +74,7 @@ export default class GeometryUtil {
   }
 
   private static angleBetweenTwoVectors(a: THREE.Vector3, b: THREE.Vector3, direction: THREE.Vector3): number {
-    const angle = Math.atan2(a.clone().cross(b).dot(direction), a.dot(b));
-    return angle;
+    return Math.atan2(a.clone().cross(b).dot(direction), a.dot(b));
   }
 
 

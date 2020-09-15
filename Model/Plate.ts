@@ -13,10 +13,13 @@ export default class Plate {
   constructor(id: string, points: THREE.Vector3[], polygon: Polygon, joints: Joint[]) {
     this.id = id;
     this.points = points;
-    this.normal = this.points[0].clone().cross(this.points[1]);
     this.polygon = polygon;
     this.joints = new Map();
     this.setJoints(joints);
+
+    const side1 = this.points[2].clone().sub(this.points[1]);
+    const side2 = this.points[1].clone().sub(this.points[0]);
+    this.normal = side1.cross(side2).normalize();
   }
 
   public setJoints(joints: Joint[]): void {
@@ -37,10 +40,6 @@ export default class Plate {
 
   public get2DShape(): Polygon {
     return this.polygon;
-  }
-
-  public getId(): string {
-    return this.id;
   }
 
   public getNormal(): THREE.Vector3 {
