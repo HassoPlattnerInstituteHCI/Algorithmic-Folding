@@ -8,7 +8,7 @@ export default class Plate {
   private points: THREE.Vector3[];
   private normal: THREE.Vector3;
   private polygon: Polygon;
-  private joints: Map<Plate, Joint>;
+  private joints: Map<Plate, Joint[]>;
 
   constructor(id: string, points: THREE.Vector3[], polygon: Polygon, joints: Joint[]) {
     this.id = id;
@@ -26,16 +26,24 @@ export default class Plate {
     this.joints = new Map();
     for (const j of joints) {
       const other = j.getOtherPlate(this);
-      this.joints.set(other, j);
+
+      if (!(this.joints.has(other))) this.joints.set(other, []);
+      this.joints.get(other).push(j);
     }
   }
 
   public getJoints(): Joint[] {
-    return Array.from(this.joints.values());
+    // flatten the joint map
+    const joints: Joint[] = [];
+    for (const jointArr of this.joints.values()){
+      joints.push(...jointArr);
+    }
+    return joints;
   }
 
   public getJoint(other: Plate): Joint {
-    return this.joints.get(other);
+    // just return the first joint
+    return (!(this.joints.has(other)))? undefined : this.joints.get(other)[0];
   }
 
   public get2DShape(): Polygon {
