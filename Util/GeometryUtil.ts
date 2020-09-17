@@ -1,5 +1,6 @@
 import Polygon from "../Model/Polygon";
 import * as THREE from 'three';
+import Util from "./Util";
 
 export default class GeometryUtil {
 
@@ -28,10 +29,10 @@ export default class GeometryUtil {
 
   public static vectorsParallel(vec1: THREE.Vector3, vec2: THREE.Vector3): boolean {
     const angle = GeometryUtil.angleBetween(vec1, vec2);
-    return GeometryUtil.eq(angle % 180, 0);
+    return Util.eq(angle % 180, 0);
   }
 
-  /** 
+  /**
    * The following 2 methods help to create transformation matrices. Matrices
    * are combined in the order that we like to think about transformations.
    * I.e. calling makeRotationFromVectorsAroundNormal and then
@@ -57,7 +58,7 @@ export default class GeometryUtil {
     const source = new THREE.Vector3(source2d.x, source2d.y, 0);
     const target = new THREE.Vector3(target2d.x, target2d.y, 0);
 
-    if (GeometryUtil.eq(source.manhattanLength(), 0) || GeometryUtil.eq(target.manhattanLength(), 0)) {
+    if (Util.eq(source.manhattanLength(), 0) || Util.eq(target.manhattanLength(), 0)) {
       return new THREE.Quaternion();
     }
 
@@ -78,7 +79,7 @@ export default class GeometryUtil {
   }
 
 
-  /** 
+  /**
    * Returns a new Polygon object, the original one remains intact.
    */
   public static applyMatrix4ToPolygon(polygon: Polygon, matrix: THREE.Matrix4): Polygon {
@@ -89,9 +90,9 @@ export default class GeometryUtil {
   }
 
 
-  /** 
+  /**
    * The following methods are used to apply Vector3-Methods to Vector2 objects
-   * 
+   *
    * Returns a new Vector2 object, the original one remains intact.
    */
   public static applyMatrix4(vec2: THREE.Vector2, matrix: THREE.Matrix4): THREE.Vector2 {
@@ -107,14 +108,7 @@ export default class GeometryUtil {
     vec3[functionName](matrix);
     const newVec2 = new THREE.Vector2(vec3.x, vec3.y);
 
-    if (!GeometryUtil.eq(vec3.z, 0)) throw new Error("Should have empty z component");
+    if (!Util.eq(vec3.z, 0)) throw new Error("Should have empty z component");
     return newVec2;
-  }
-
-  /** 
-   * A very basic utility method
-   */
-  public static eq(num1: number, num2: number, epsilon: number = GeometryUtil.epsilon): boolean {
-    return (num1 - epsilon < num2 && num2 < num1 + epsilon);
   }
 }

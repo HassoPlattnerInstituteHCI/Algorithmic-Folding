@@ -3,6 +3,7 @@ import Polygon from "../Model/Polygon";
 import Plate from "../Model/Plate";
 import Joint from "../Model/Joint";
 import * as THREE from 'three';
+import Util from "./Util";
 const fs = require('fs');
 
 export function importPlates(fileName: string) {
@@ -114,7 +115,7 @@ function findPoints(plate: Plate, copyPoints: THREE.Vector2[]) {
       }
     }
 
-    if (!GeometryUtil.eq(bestDist, 0)) throw new Error("Failed to import joint - could not find actual polygon point that is close enough (found best margin of " + bestDist + ")");
+    if (!Util.eq(bestDist, 0)) throw new Error("Failed to import joint - could not find actual polygon point that is close enough (found best margin of " + bestDist + ")");
 
     points.push(closest);
   }

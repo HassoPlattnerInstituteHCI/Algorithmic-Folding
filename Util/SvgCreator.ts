@@ -1,5 +1,6 @@
 import Polygon from "../Model/Polygon";
 import * as THREE from 'three';
+import Util from "./Util";
 
 export default class SvgCreator {
   // takes an array of polygons, and creates an SVG file (returned as string)
@@ -37,8 +38,8 @@ export default class SvgCreator {
   }
   
   private static _pointText(point: THREE.Vector2): string {
-    const x = SvgCreator._round(point.x);
-    const y = SvgCreator._round(point.y);
+    const x = Util.round(point.x);
+    const y = Util.round(point.y);
     return x + "," + y;
   }
 
@@ -58,14 +59,9 @@ export default class SvgCreator {
       maxY = Math.max(maxY, p.y);
     }
 
-    const width = SvgCreator._round(maxX) - SvgCreator._round(minX);
-    const height = SvgCreator._round(maxY) - SvgCreator._round(minY);
+    const width = Util.round(maxX) - Util.round(minX);
+    const height = Util.round(maxY) - Util.round(minY);
 
     return "width=\"" + width + "\" height=\"" + height + "\"";
-  }
-
-  // round to 3 decimals
-  private static _round(num: number): number {
-    return (Math.round(num * 1000)) / 1000;
   }
 }

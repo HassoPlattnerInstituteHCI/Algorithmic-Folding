@@ -1,6 +1,7 @@
-import GeometryUtil from "../Util/GeometryUtil";
+import GeometryUtil from "./GeometryUtil";
 import Plate from "../Model/Plate";
 import Joint from "../Model/Joint";
+import Util from "../Util/Util";
 import * as THREE from 'three';
 
 export default class CornerFinder {
@@ -34,7 +35,7 @@ export default class CornerFinder {
             }
 
             // add joint to closest corner or create a new one (if not close enough)
-            if (GeometryUtil.eq(closestDistance, 0)) corners.get(closest).push(joint);
+            if (Util.eq(closestDistance, 0)) corners.get(closest).push(joint);
             else corners.set(point, [joint]);
           }
         }
