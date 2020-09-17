@@ -4,16 +4,16 @@ import Plate from "./Plate";
 
 // the THREE.Vector2-objects supplied in the constructor should be reference variables to the actual Vector2-Points of the polygons used by plates to represent their outlines in 2D space
 export default class Joint {
-  private plate1: Plate;
-  private plate2: Plate;
-  private pointsOfPlate1: THREE.Vector2[];
-  private pointsOfPlate2: THREE.Vector2[];
-  private pointsOfPlate1_3d: THREE.Vector3[];
-  private pointsOfPlate2_3d: THREE.Vector3[];
-  private normal1: THREE.Vector2;
-  private normal2: THREE.Vector2;
-  private center1: THREE.Vector2;
-  private center2: THREE.Vector2;
+  private readonly plate1: Plate;
+  private readonly plate2: Plate;
+  private readonly pointsOfPlate1: THREE.Vector2[];
+  private readonly pointsOfPlate2: THREE.Vector2[];
+  private readonly pointsOfPlate1_3d: THREE.Vector3[];
+  private readonly pointsOfPlate2_3d: THREE.Vector3[];
+  private readonly normal1: THREE.Vector2;
+  private readonly normal2: THREE.Vector2;
+  private readonly center1: THREE.Vector2;
+  private readonly center2: THREE.Vector2;
 
   constructor(plate1: Plate, plate2: Plate, pointsOfPlate1: THREE.Vector2[], pointsOfPlate2: THREE.Vector2[], pointsOfPlate1_3d: THREE.Vector3[], pointsOfPlate2_3d: THREE.Vector3[], normal1: THREE.Vector2, normal2: THREE.Vector2) {
     this.plate1 = plate1;

@@ -14,7 +14,7 @@ export default class SvgCreator {
       "  </style>\n";
     
     let paths = "";
-    for (const p of polygons.map(poly => SvgCreator._polygonToPath(poly))) {
+    for (const p of polygons.map(poly => SvgCreator.polygonToPath(poly))) {
       paths += p;
     }
 
@@ -23,9 +23,9 @@ export default class SvgCreator {
     return header + style + paths + closeTag;
   }
 
-  private static _polygonToPath(polygon: Polygon): string {
-    const outline: string = this._pointsToPath(polygon.getPoints());
-    const holePaths: string[] = polygon.getHoles().map(hole => this._pointsToPath(hole));
+  private static polygonToPath(polygon: Polygon): string {
+    const outline: string = this.pointsToPath(polygon.getPoints());
+    const holePaths: string[] = polygon.getHoles().map(hole => this.pointsToPath(hole));
 
     if (holePaths.length > 0) {
       return outline + holePaths.reduce((p, n) => p + n);
@@ -33,19 +33,19 @@ export default class SvgCreator {
     else return outline;
   }
 
-  private static _pointsToPath(points: THREE.Vector2[]): string {
+  private static pointsToPath(points: THREE.Vector2[]): string {
     let path = "  <path class=\"cut\" d=\"";
-    path += "M" + SvgCreator._pointText(points[0]) + " ";
+    path += "M" + SvgCreator.pointText(points[0]) + " ";
 
     for (let i = 1; i < points.length; i++){
-      path += "L" + SvgCreator._pointText(points[i]) + " ";
+      path += "L" + SvgCreator.pointText(points[i]) + " ";
     }
 
-    path += "L" + SvgCreator._pointText(points[0]) + " \"/>\n";
+    path += "L" + SvgCreator.pointText(points[0]) + " \"/>\n";
     return path;
   }
   
-  private static _pointText(point: THREE.Vector2): string {
+  private static pointText(point: THREE.Vector2): string {
     const x = Util.round(point.x);
     const y = Util.round(point.y);
     return x + "," + y;

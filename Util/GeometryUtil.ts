@@ -4,19 +4,17 @@ import Util from "./Util";
 
 export default class GeometryUtil {
 
-  private static readonly epsilon = 0.0001;
-
   /** Computation methods */
   public static distanceOf2d(vec1: THREE.Vector2, vec2: THREE.Vector2): number {
-    var a = vec1.x - vec2.x;
-    var b = vec1.y - vec2.y;
+    const a = vec1.x - vec2.x;
+    const b = vec1.y - vec2.y;
     return Math.sqrt(a * a + b * b);
   }
 
   public static distanceOf3d(vec1: THREE.Vector3, vec2: THREE.Vector3): number {
-    var a = vec1.x - vec2.x;
-    var b = vec1.y - vec2.y;
-    var c = vec1.z - vec2.z;
+    const a = vec1.x - vec2.x;
+    const b = vec1.y - vec2.y;
+    const c = vec1.z - vec2.z;
     return Math.sqrt(a * a + b * b + c * c);
   }
 

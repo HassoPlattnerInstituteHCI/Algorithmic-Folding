@@ -3,8 +3,8 @@ import jsts = require("jsts");
 
 export default class Polygon {
 
-  private points: THREE.Vector2[];
-  private holes: THREE.Vector2[][];
+  private readonly points: THREE.Vector2[];
+  private readonly holes: THREE.Vector2[][];
 
   // needs clockwise points!
   constructor(points: THREE.Vector2[] = [], holes: THREE.Vector2[][] = []) {

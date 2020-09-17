@@ -1,14 +1,14 @@
-import * as THREE from 'three';
 import Polygon from "./Polygon";
+import * as THREE from 'three';
 import Joint from "./Joint";
 import GeometryUtil from "../Util/GeometryUtil";
 
 // two plates can have any number of joints between them
 export default class Plate {
-  private id: string;
-  private points: THREE.Vector3[];
-  private normal: THREE.Vector3;
-  private polygon: Polygon;
+  private readonly id: string;
+  private readonly points: THREE.Vector3[];
+  private readonly normal: THREE.Vector3;
+  private readonly polygon: Polygon;
   private joints: Map<Plate, Joint[]>;
 
   constructor(id: string, points: THREE.Vector3[], polygon: Polygon, joints: Joint[]) {
@@ -42,6 +42,10 @@ export default class Plate {
   public getJoint(other: Plate): Joint {
     // just return the first joint
     return (!(this.joints.has(other)))? undefined : this.joints.get(other)[0];
+  }
+
+  public getId(): string {
+    return this.id;
   }
 
   public get2DShape(): Polygon {

@@ -44,8 +44,6 @@ export default class Unfolding {
     if (this.placements.has(plate)) return false;
 
     const otherMatrix = this.placements.get(otherPlate);
-    const otherPolygon = this.placementPolygons.get(otherPlate);
-
     const otherCenter = GeometryUtil.applyMatrix4(joint.getCenter(otherPlate).clone(), otherMatrix);
     const otherNormal = GeometryUtil.transformDirection(joint.getNormal(otherPlate).clone(), otherMatrix);
 
