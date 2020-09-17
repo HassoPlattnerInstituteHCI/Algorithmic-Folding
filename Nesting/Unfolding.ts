@@ -13,6 +13,13 @@ export default class Unfolding {
   private placementPolygons: Map<Plate, Polygon> = new Map();
   private joints: Map<Plate, Joint> = new Map();
 
+  // placement info
+  private center: THREE.Vector2;
+  private width: number = 1;
+  private height: number = 1;
+  private stillAccurate: boolean = false;
+
+
   // add the first plate
   constructor(startPlate: Plate) {
     this.placements.set(startPlate, new THREE.Matrix4());
@@ -26,6 +33,7 @@ export default class Unfolding {
   public deletePlate(plate: Plate): void {
     this.placements.delete(plate);
     this.placementPolygons.delete(plate);
+    this.stillAccurate = false;
   }
 
   // returns true if successful and false otherwise (if the new plate was already added before, if the other plate is not part of the unfolding yet or if there would be overlaps)
@@ -73,15 +81,63 @@ export default class Unfolding {
     // add plate to unfolding
     this.placements.set(plate, matrix);
     this.placementPolygons.set(plate, newPolygon);
+    this.stillAccurate = false;
 
     return true;
   }
 
+  // export to svg
   public saveSvg(fileName: string) {
 
     const polygons = Array.from(this.placementPolygons.values());
-    const svgText = SvgCreator.getSvg(polygons);
+    const svgText = SvgCreator.getSvg(polygons, this.getWidth(), this.getHeight());
 
     fs.writeFileSync(fileName, svgText);
+  }
+
+  /**
+   * Positional methods for the entire Unfolding
+   */
+  public getWidth(): number {
+    this.computeSize();
+    return this.width;
+  }
+
+  public getHeight(): number {
+    this.computeSize();
+    return this.height;
+  }
+
+  public getCenter(): THREE.Vector2 {
+    this.computeSize();
+    return this.center;
+  }
+
+  private computeSize(): void {
+
+    // only compute if information is not new
+    if (this.stillAccurate) return;
+    else this.stillAccurate = true;
+
+    let minX;
+    let maxX;
+    let minY;
+    let maxY;
+
+    for (const poly of this.placementPolygons.values()) {
+      for (const p of poly.getPoints()) {
+        minX = (minX != undefined)? Math.min(minX, p.x) : p.x;
+        maxX = (maxX != undefined)? Math.max(maxX, p.x) : p.x;
+        minY = (minY != undefined)? Math.min(minY, p.y) : p.y;
+        maxY = (maxY != undefined)? Math.max(maxY, p.y) : p.y;
+      }
+    }
+
+    this.width = maxX - minX;
+    this.height = maxY - minY;
+
+    const corner1 = new THREE.Vector2(minX, minY);
+    const corner2 = new THREE.Vector2(maxX, maxY);
+    this.center = corner1.clone().add(corner2.clone().sub(corner1).divideScalar(2));
   }
 }

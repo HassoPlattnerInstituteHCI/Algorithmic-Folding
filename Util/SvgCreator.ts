@@ -4,10 +4,10 @@ import Util from "./Util";
 
 export default class SvgCreator {
   // takes an array of polygons, and creates an SVG file (returned as string)
-  public static getSvg(polygons: Polygon[]): string{
+  public static getSvg(polygons: Polygon[], width: number, height: number): string{
     if(polygons.length == 0) return "";
 
-    const header = "<svg " + SvgCreator._getSize(polygons) + " xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n";
+    const header = "<svg width=\"" + Util.round(width) + "\" height=\"" + Util.round(height) + "\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n";
     const style =
       "  <style type=\"text/css\">\n" +
       "    .cut {stroke:red; stroke-width:0.01; fill:none}\n" +
@@ -49,27 +49,5 @@ export default class SvgCreator {
     const x = Util.round(point.x);
     const y = Util.round(point.y);
     return x + "," + y;
-  }
-
-  private static _getSize(polygons: Polygon[]): string{
-    const points = [];
-    polygons.forEach(poly => poly.getPoints().forEach(p => points.push(p)));
-
-    let minX = points[0].x;
-    let maxX = points[0].x;
-    let minY = points[0].y;
-    let maxY = points[1].y;
-
-    for (const p of points) {
-      minX = Math.min(minX, p.x);
-      maxX = Math.max(maxX, p.x);
-      minY = Math.min(minY, p.y);
-      maxY = Math.max(maxY, p.y);
-    }
-
-    const width = Util.round(maxX) - Util.round(minX);
-    const height = Util.round(maxY) - Util.round(minY);
-
-    return "width=\"" + width + "\" height=\"" + height + "\"";
   }
 }
