@@ -20,6 +20,15 @@ export default class GeometryUtil {
     return Math.sqrt(a * a + b * b + c * c);
   }
 
+  // returns x in "vec = x * base"
+  public static getNeededScalar(vec: THREE.Vector3, base: THREE.Vector3): number {
+    const [x, y, z] = [Math.abs(base.x), Math.abs(base.y), Math.abs(base.z)];
+    const max = Math.max(x, y, z);
+    if (max === x) return vec.x / base.x;
+    if (max === y) return vec.y / base.y;
+    return vec.z / base.z;
+  }
+
   // angle in degrees (0 - 359)
   public static angleBetween(vec1: THREE.Vector3, vec2: THREE.Vector3): number {
     const radians = vec1.angleTo(vec2);

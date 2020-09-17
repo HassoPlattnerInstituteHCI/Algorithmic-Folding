@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import Polygon from "./Polygon";
 import Joint from "./Joint";
+import GeometryUtil from "../Util/GeometryUtil";
 
 // two plates can have any number of joints between them
 export default class Plate {
@@ -16,10 +17,7 @@ export default class Plate {
     this.polygon = polygon;
     this.joints = new Map();
     this.setJoints(joints);
-
-    const side1 = this.points[2].clone().sub(this.points[1]);
-    const side2 = this.points[1].clone().sub(this.points[0]);
-    this.normal = side1.cross(side2).normalize();
+    this.normal = this.computeNormal();
   }
 
   public setJoints(joints: Joint[]): void {
@@ -52,5 +50,33 @@ export default class Plate {
 
   public getNormal(): THREE.Vector3 {
     return this.normal;
+  }
+
+  // tries to find the outward-pointing normal, based on the order of the points (CW / CCW)
+  private computeNormal(): THREE.Vector3 {
+    // Finds an outer edge by choosing any random vector on the plate-plane and then choosing the outermost corner point
+    // in that direction. The two adjacent joints of that point are then used to create the plate normals.
+    const base = this.points[1].clone().sub(this.points[0]).normalize();
+
+    let maxScalar: number;
+    let maxI: number;
+
+    const len = this.points.length;
+    for (let i = 0; i < len; i++) {
+      const projection = this.points[i].clone().projectOnVector(base);
+      const scalar = GeometryUtil.getNeededScalar(projection, base);
+
+      if (maxScalar === undefined || scalar > maxScalar) {
+        maxScalar = scalar;
+        maxI = i;
+      }
+    }
+    if (maxI === undefined) throw new Error("Failed to create plate normal");
+
+    // generate normal
+    const side1 = this.points[(maxI + 1) % len].clone().sub(this.points[maxI]);
+    const side2 = this.points[maxI].clone().sub(this.points[(maxI + len - 1) % len]);
+
+    return side1.clone().cross(side2).normalize();
   }
 }
