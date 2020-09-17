@@ -24,8 +24,16 @@ export default class SvgCreator {
   }
 
   private static _polygonToPath(polygon: Polygon): string {
-    const points = polygon.getPoints();
+    const outline: string = this._pointsToPath(polygon.getPoints());
+    const holePaths: string[] = polygon.getHoles().map(hole => this._pointsToPath(hole));
 
+    if (holePaths.length > 0) {
+      return outline + holePaths.reduce((p, n) => p + n);
+    }
+    else return outline;
+  }
+
+  private static _pointsToPath(points: THREE.Vector2[]): string {
     let path = "  <path class=\"cut\" d=\"";
     path += "M" + SvgCreator._pointText(points[0]) + " ";
 
