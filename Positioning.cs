@@ -57,8 +57,12 @@ namespace inClassHacking{
       
       Circle circle = new Circle(new Point2D(s/2, circles[6].getCenter().y+circles[6].getRadius()+distanceAbove+radius), radius);
 
-      Console.WriteLine("Changed radius from " + input[12] + " to " + radius + " to get a rigid packing.");
-
+      if(radius<input[12]){
+         radius = input[12];
+         Console.WriteLine("RigidPacking not possible");
+      }else{
+        Console.WriteLine("Changed radius from " + input[12] + " to " + radius + " to get a rigid packing.");
+      }
       return circle;
     }
   }
