@@ -1,5 +1,5 @@
-import { importPlates } from "./Util/PlateImporter";
-import { DfsEdgeUnfolder, BfsEdgeUnfolder, BruteForceEdgeUnfolder, SteepestEdgeUnfolder } from "./Nesting/EdgeUnfolder";
+import {importPlates} from "./Util/PlateImporter";
+import {BfsEdgeUnfolder, BruteForceEdgeUnfolder, DfsEdgeUnfolder, SteepestEdgeUnfolder} from "./Nesting/EdgeUnfolder";
 
 
 // import plates

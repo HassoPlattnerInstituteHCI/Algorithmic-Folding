@@ -8,7 +8,7 @@ import * as fs from 'fs';
 
 // this class encapsulates an unfolding, i.e. one single 2d layout consisting of adjacently placed plates
 export default class Unfolding {
-  
+
   private placements: Map<Plate, THREE.Matrix4> = new Map();
   private placementPolygons: Map<Plate, Polygon> = new Map();
   private joints: Map<Plate, Joint> = new Map();
@@ -38,7 +38,7 @@ export default class Unfolding {
 
   // returns true if successful and false otherwise (if the new plate was already added before, if the other plate is not part of the unfolding yet or if there would be overlaps)
   public addPlateOnJoint(plate: Plate, joint: Joint): boolean {
-    
+
     const otherPlate = joint.getOtherPlate(plate);
     if (!this.placements.has(otherPlate)) return false;
     if (this.placements.has(plate)) return false;
@@ -63,11 +63,10 @@ export default class Unfolding {
 
     // 3. translate to target (section center matches other section center)
     GeometryUtil.makeTranslation(otherCenter, matrix);
-    
-    
+
+
     // generate the new Polygon
     const newPolygon = GeometryUtil.applyMatrix4ToPolygon(plate.get2DShape(), matrix);
-    
 
 
     // check for overlap with all existing
@@ -124,10 +123,10 @@ export default class Unfolding {
 
     for (const poly of this.placementPolygons.values()) {
       for (const p of poly.getPoints()) {
-        minX = (minX != undefined)? Math.min(minX, p.x) : p.x;
-        maxX = (maxX != undefined)? Math.max(maxX, p.x) : p.x;
-        minY = (minY != undefined)? Math.min(minY, p.y) : p.y;
-        maxY = (maxY != undefined)? Math.max(maxY, p.y) : p.y;
+        minX = (minX != undefined) ? Math.min(minX, p.x) : p.x;
+        maxX = (maxX != undefined) ? Math.max(maxX, p.x) : p.x;
+        minY = (minY != undefined) ? Math.min(minY, p.y) : p.y;
+        maxY = (maxY != undefined) ? Math.max(maxY, p.y) : p.y;
       }
     }
 
