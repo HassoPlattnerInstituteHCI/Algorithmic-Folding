@@ -1,8 +1,8 @@
 /*
 
-Queue.js
+Queue.ts
 
-A function to represent a queue
+A reimplementation of Queue.js: A function to represent a queue
 
 Created by Kate Morley - http://code.iamkate.com/ - and released under the terms
 of the CC0 1.0 Universal legal code:
@@ -16,7 +16,7 @@ http://creativecommons.org/publicdomain/zero/1.0/legalcode
  */
 export default class Queue<T> {
 
-  // initialise the queue and offset  
+  // initialise the queue and offset
   private queue: T[] = [];
   private offset: number = 0;
 
@@ -49,8 +49,8 @@ export default class Queue<T> {
     var item = this.queue[this.offset];
 
     // increment the offset and remove the free space if necessary
-    if (++ this.offset * 2 >= this.queue.length){
-      this.queue  = this.queue.slice(this.offset);
+    if (++this.offset * 2 >= this.queue.length) {
+      this.queue = this.queue.slice(this.offset);
       this.offset = 0;
     }
 

@@ -33,7 +33,7 @@ export default class Plate {
   public getJoints(): Joint[] {
     // flatten the joint map
     const joints: Joint[] = [];
-    for (const jointArr of this.joints.values()){
+    for (const jointArr of this.joints.values()) {
       joints.push(...jointArr);
     }
     return joints;
@@ -41,7 +41,7 @@ export default class Plate {
 
   public getJoint(other: Plate): Joint {
     // just return the first joint
-    return (!(this.joints.has(other)))? undefined : this.joints.get(other)[0];
+    return (!(this.joints.has(other))) ? undefined : this.joints.get(other)[0];
   }
 
   public getId(): string {

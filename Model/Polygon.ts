@@ -8,29 +8,10 @@ export default class Polygon {
 
   // needs clockwise points!
   constructor(points: THREE.Vector2[] = [], holes: THREE.Vector2[][] = []) {
-    if(points.length == 0) throw new Error("Cannot create a polygon without points");
+    if (points.length == 0) throw new Error("Cannot create a polygon without points");
     this.points = points;
     this.holes = holes;
   }
-
-  // always clone the points before mutating them
-  public getPoints(): THREE.Vector2[] {
-    return this.points;
-  }
-  public getHoles(): THREE.Vector2[][] {
-    return this.holes;
-  }
-
-  public overlappingArea(otherPolygon: Polygon): number {
-    const geometryFactory = new jsts.geom.GeometryFactory();
-
-    const jstsPolygon0 = Polygon._createJstsPolygon(this, geometryFactory);
-    const jstsPolygon1 = Polygon._createJstsPolygon(otherPolygon, geometryFactory);
-
-    const intersection = jstsPolygon0.intersection(jstsPolygon1);
-    return intersection.getArea();
-  }
-
 
   private static _createJstsPolygon(polygon: Polygon, geomFactory: jsts.geom.GeometryFactory): jsts.geom.Polygon {
     const shellPoints = polygon.getPoints().concat([]);
@@ -53,5 +34,24 @@ export default class Polygon {
     });
 
     return geomFactory.createPolygon(shell, holes);
+  }
+
+  // always clone the points before mutating them
+  public getPoints(): THREE.Vector2[] {
+    return this.points;
+  }
+
+  public getHoles(): THREE.Vector2[][] {
+    return this.holes;
+  }
+
+  public overlappingArea(otherPolygon: Polygon): number {
+    const geometryFactory = new jsts.geom.GeometryFactory();
+
+    const jstsPolygon0 = Polygon._createJstsPolygon(this, geometryFactory);
+    const jstsPolygon1 = Polygon._createJstsPolygon(otherPolygon, geometryFactory);
+
+    const intersection = jstsPolygon0.intersection(jstsPolygon1);
+    return intersection.getArea();
   }
 }

@@ -26,13 +26,13 @@ export default class Joint {
     this.normal2 = normal2;
 
     // compute centers
-    if (this.pointsOfPlate1.length !== 2 || this.pointsOfPlate2.length !== 2) throw new Error("Joint not initialized with exactly 2 points (found " + this.pointsOfPlate1.length + " | " + this.pointsOfPlate2.length + ")");
+    if (this.pointsOfPlate1.length !== 2 || this.pointsOfPlate2.length !== 2) throw new Error("Joint not initialized with exactly 2 points (found " + this.pointsOfPlate1.length + " | " + this.pointsOfPlate2.length + ")");
 
     this.center1 = this.pointsOfPlate1[0].clone().add(this.pointsOfPlate1[1].clone()).divideScalar(2);
     this.center2 = this.pointsOfPlate2[0].clone().add(this.pointsOfPlate2[1].clone()).divideScalar(2);
   }
 
-  public getPlates(): [Plate, Plate] {
+  public getPlates(): [Plate, Plate] {
     return [this.plate1, this.plate2];
   }
 
@@ -60,7 +60,7 @@ export default class Joint {
 
   public getOtherCorner3d(corner: THREE.Vector3): THREE.Vector3 {
     if (Util.eq(corner.distanceTo(this.pointsOfPlate1_3d[0]), 0)) return this.pointsOfPlate1_3d[1];
-    
+
     if (Util.eq(corner.distanceTo(this.pointsOfPlate1_3d[1]), 0)) return this.pointsOfPlate1_3d[0];
 
     if (Util.eq(corner.distanceTo(this.pointsOfPlate2_3d[0]), 0)) return this.pointsOfPlate2_3d[1];

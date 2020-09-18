@@ -4,6 +4,7 @@ import Plate from "../Model/Plate";
 import Joint from "../Model/Joint";
 import * as THREE from 'three';
 import Util from "./Util";
+
 const fs = require('fs');
 
 export function importPlates(fileName: string) {
@@ -33,7 +34,7 @@ function recreateMockup(mockup: PlateMockup): PlateMockup {
   const poly1 = mockup.polygon[0].map(p => clone2(p));
   const poly2 = mockup.polygon[1].map(arr => arr.map(p => clone2(p)));
   const polygon = [poly1, poly2];
-  
+
   const joints = mockup.joints.map(joint => {
     const p1 = joint[1].map(p => clone2(p));
     const p2 = joint[2].map(p => clone2(p));
@@ -49,7 +50,7 @@ function clone2(origin: THREE.Vector2): THREE.Vector2 {
   return new THREE.Vector2(origin.x, origin.y);
 }
 
-function clone3(origin: THREE.Vector3): THREE.Vector3 { 
+function clone3(origin: THREE.Vector3): THREE.Vector3 {
   return new THREE.Vector3(origin.x, origin.y, origin.z);
 }
 
@@ -84,7 +85,7 @@ function setJoints(mockup: PlateMockup, plateMap: Map<string, Plate>): void {
 
     joints.push(new Joint(plate, otherPlate, points1, points2, points1_3d, points2_3d, normal1, normal2));
   }
-  
+
   plate.setJoints(joints);
 }
 

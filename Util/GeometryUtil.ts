@@ -52,7 +52,7 @@ export default class GeometryUtil {
     matrix.premultiply(helperMatrix);
   }
 
-  public static makeRotationFromVectorsAroundNormal(source: THREE.Vector2, target: THREE.Vector2, normal: THREE.Vector3, matrix: THREE.Matrix4): void{
+  public static makeRotationFromVectorsAroundNormal(source: THREE.Vector2, target: THREE.Vector2, normal: THREE.Vector3, matrix: THREE.Matrix4): void {
 
     const quaternion = GeometryUtil.fromVectorsAroundNormal(source, target, normal);
     const rotationMatrix = new THREE.Matrix4().makeRotationFromQuaternion(quaternion);
@@ -65,7 +65,7 @@ export default class GeometryUtil {
     const source = new THREE.Vector3(source2d.x, source2d.y, 0);
     const target = new THREE.Vector3(target2d.x, target2d.y, 0);
 
-    if (Util.eq(source.manhattanLength(), 0) || Util.eq(target.manhattanLength(), 0)) {
+    if (Util.eq(source.manhattanLength(), 0) || Util.eq(target.manhattanLength(), 0)) {
       return new THREE.Quaternion();
     }
 

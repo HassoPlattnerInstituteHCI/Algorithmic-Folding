@@ -28,16 +28,16 @@ export class SteepestEdgeUnfolder extends Unfolder {
 
         // don't cut the same joint twice
         // if (!allowedJoints.has(joint)) continue;
-        
+
         const steepness = this.getSteepness(corner[0], joint, directionVector);
 
-        if (steepestVal == undefined || steepestVal < steepness){
+        if (steepestVal == undefined || steepestVal < steepness) {
           steepest = joint;
           steepestVal = steepness;
         }
       }
-      if (steepest == undefined) {}
-      else {
+      if (steepest == undefined) {
+      } else {
         if (allowedJoints.has(steepest)) cutCounter++;
         allowedJoints.delete(steepest);
       }
@@ -116,9 +116,9 @@ export class SteepestEdgeUnfolder extends Unfolder {
 
   // does essentially DFS, using only joints that were not cut
   private finishNesting(unfolding: Unfolding, currentPlate: Plate, remainingPlates: Set<Plate>, allowedJoints: Set<Joint>): void {
-    
+
     for (const joint of currentPlate.getJoints()) {
-      
+
       const otherPlate = joint.getOtherPlate(currentPlate);
       if (!(allowedJoints.has(joint) && remainingPlates.has(otherPlate))) continue;
 
@@ -130,7 +130,7 @@ export class SteepestEdgeUnfolder extends Unfolder {
   }
 
   private getSteepness(corner: THREE.Vector3, joint: Joint, directionVector: THREE.Vector3): number {
-    
+
     // get "v-w", where v equals corner
     const jointVec = corner.clone().sub(joint.getOtherCorner3d(corner).clone());
 
@@ -200,7 +200,7 @@ export class BfsEdgeUnfolder extends Unfolder {
     const queue = new Queue<[Plate, Joint]>();
     this.addPlateJointsToQueue(queue, startPlate);
 
-    while (!(queue.isEmpty() || plates.size === 0)) {
+    while (!(queue.isEmpty() || plates.size === 0)) {
       const [otherPlate, joint] = queue.dequeue();
 
       let executed = false;
@@ -241,9 +241,9 @@ export class BruteForceEdgeUnfolder extends Unfolder {
 
     return unfolding;
   }
-  
+
   private nestBruteForce(unfolding: Unfolding, plates: Set<Plate>): boolean {
-    if(plates.size === 0) return true;
+    if (plates.size === 0) return true;
 
     for (const plate of plates) {
       for (const joint of plate.getJoints()) {
@@ -251,7 +251,7 @@ export class BruteForceEdgeUnfolder extends Unfolder {
         if (unfolding.addPlateOnJoint(plate, joint)) {
           plates.delete(plate);
           if (this.nestBruteForce(unfolding, plates)) return true;
-        
+
           // if the unfolding didn't work: backtrack
           unfolding.deletePlate(plate);
           plates.add(plate);
