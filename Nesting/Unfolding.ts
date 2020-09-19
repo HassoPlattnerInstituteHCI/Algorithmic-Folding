@@ -20,7 +20,7 @@ export default class Unfolding {
   private stillAccurate: boolean = false;
 
 
-  // add the first plate
+  // start Unfolding for a strip
   constructor(startPlate: Plate) {
     this.placements.set(startPlate, new THREE.Matrix4());
     this.placementPolygons.set(startPlate, GeometryUtil.applyMatrix4ToPolygon(startPlate.get2DShape(), this.placements.get(startPlate)));
@@ -90,6 +90,11 @@ export default class Unfolding {
     const svgText = SvgCreator.getSvg(polygons, this.getWidth(), this.getHeight());
 
     fs.writeFileSync(fileName, svgText);
+  }
+
+  // hands out the original polygons, don't change them
+  public getPolygons() {
+    return Array.from(this.placementPolygons.values());
   }
 
   /**

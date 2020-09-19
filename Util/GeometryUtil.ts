@@ -1,10 +1,46 @@
 import Polygon from "../Model/Polygon";
+import Plate from "../Model/Plate";
+import Joint from "../Model/Joint"
 import * as THREE from 'three';
 import Util from "./Util";
 
 export default class GeometryUtil {
 
   /** Computation methods */
+  // concave means, that the normals of the two plates point outwards
+  // works under the assumptions that
+  //  - cross product will always create vectors that point in the same direction
+  //  - plate normals are always pointing outwards
+  public static isJointConvex(joint: Joint, initPlate?: Plate): boolean {
+
+    const [plate1, plate2] = joint.getPlates();
+    let plate: Plate = initPlate;
+
+    if (initPlate === undefined) plate = plate1;
+    const otherPlate = (plate === plate1) ? plate2 : plate1;
+
+    const jointVec = joint.getDirectionVector(plate);
+    const constructedVec = plate.getNormal().clone().cross(jointVec);
+
+    const angle = GeometryUtil.angleBetween(constructedVec, otherPlate.getNormal().clone());
+
+    // determine the result and verify it by running the same computation with the other plate
+    if (angle < 90 || angle > 270) {
+      if (initPlate === undefined && !GeometryUtil.isJointConvex(joint, otherPlate)) {
+      } else return true;
+    } else if (90 <= angle && angle <= 270) {
+      if (initPlate === undefined && GeometryUtil.isJointConvex(joint, otherPlate)) {
+      } else return false;
+    } else {
+      console.log("Found angle of " + angle);
+      return false;
+    }
+
+    // if program arrives here, the results of using the different plates as base differed
+    throw new Error("Inconsistency in computation of joint type");
+  }
+
+
   public static distanceOf2d(vec1: THREE.Vector2, vec2: THREE.Vector2): number {
     const a = vec1.x - vec2.x;
     const b = vec1.y - vec2.y;
@@ -59,6 +95,29 @@ export default class GeometryUtil {
     matrix.premultiply(rotationMatrix);
   }
 
+  /**
+   * Returns a new Polygon object, the original one remains intact.
+   */
+  public static applyMatrix4ToPolygon(polygon: Polygon, matrix: THREE.Matrix4): Polygon {
+    const points = polygon.getPoints().map(p => this.applyMatrix4(p, matrix));
+    const holes = polygon.getHoles().map(hole => hole.map(p => GeometryUtil.applyMatrix4(p, matrix)));
+
+    return new Polygon(points, holes);
+  }
+
+  /**
+   * The following methods are used to apply Vector3-Methods to Vector2 objects
+   *
+   * Returns a new Vector2 object, the original one remains intact.
+   */
+  public static applyMatrix4(vec2: THREE.Vector2, matrix: THREE.Matrix4): THREE.Vector2 {
+    return GeometryUtil.applyOperation(vec2, matrix, "applyMatrix4");
+  }
+
+  public static transformDirection(vec2: THREE.Vector2, matrix: THREE.Matrix4): THREE.Vector2 {
+    return GeometryUtil.applyOperation(vec2, matrix, "transformDirection");
+  }
+
   private static fromVectorsAroundNormal(source2d: THREE.Vector2, target2d: THREE.Vector2, normal: THREE.Vector3): THREE.Quaternion {
 
     const quaternion = new THREE.Quaternion()
@@ -83,31 +142,6 @@ export default class GeometryUtil {
 
   private static angleBetweenTwoVectors(a: THREE.Vector3, b: THREE.Vector3, direction: THREE.Vector3): number {
     return Math.atan2(a.clone().cross(b).dot(direction), a.dot(b));
-  }
-
-
-  /**
-   * Returns a new Polygon object, the original one remains intact.
-   */
-  public static applyMatrix4ToPolygon(polygon: Polygon, matrix: THREE.Matrix4): Polygon {
-    const points = polygon.getPoints().map(p => this.applyMatrix4(p, matrix));
-    const holes = polygon.getHoles().map(hole => hole.map(p => GeometryUtil.applyMatrix4(p, matrix)));
-
-    return new Polygon(points, holes);
-  }
-
-
-  /**
-   * The following methods are used to apply Vector3-Methods to Vector2 objects
-   *
-   * Returns a new Vector2 object, the original one remains intact.
-   */
-  public static applyMatrix4(vec2: THREE.Vector2, matrix: THREE.Matrix4): THREE.Vector2 {
-    return GeometryUtil.applyOperation(vec2, matrix, "applyMatrix4");
-  }
-
-  public static transformDirection(vec2: THREE.Vector2, matrix: THREE.Matrix4): THREE.Vector2 {
-    return GeometryUtil.applyOperation(vec2, matrix, "transformDirection");
   }
 
   private static applyOperation(vec2: THREE.Vector2, matrix: THREE.Matrix4, functionName: string): THREE.Vector2 {
