@@ -96,8 +96,62 @@ namespace inClassHacking
     public override string ToString(){
       return ("(" + this.x + " ," + this.y + ")");
     }
-
   }
+
+  public class Edge{
+
+  public Point2D p1, p2;
+  public Vector vec;
+
+  public List<Point2D> markers; //represent inner nodes of the tree on the polygon's edge
+
+  public Edge(Point2D p1, Point2D p2){ //Edge from p1 to p2, which are positions of two leaf nodes (circle's center)
+    this.p1 = p1;
+    this.p2 = p2;
+    this.markers = new List<Point2D>();
+    this.vec = new Vector(p1, p2).normalized();
+  }
+
+  public Edge(Edge e){
+    this.p1 = e.p1;
+    this.p2 = e.p2;
+    this.vec = e.vec;
+    this.markers = new List<Point2D>(e.markers);
+  }
+
+  public double getLength(){
+    return Math.Sqrt((p1.x-p2.x)*(p1.x-p2.x) + (p1.y-p2.y)*(p1.y-p2.y));
+  }
+
+  public void addMarker(Point2D marker){
+    this.markers.Add(marker);
+  }
+    
+  public void parallelSweep(double length){
+    p1 += vec.getNormalLeft()*length;
+    p2 += vec.getNormalLeft()*length;
+
+    for(int i = 0; i<markers.Count; i++){
+      markers[i] += vec.getNormalLeft()*length; 
+    }
+  }
+
+  public void updateVertices(Edge left, Edge right){
+
+    if( (right.vec.x != this.vec.x) && (right.vec.x != this.vec.getReverse().x)){
+      this.p2 = Folding.findIntersection(right.vec.getReverse(), right.p2, this.vec, this.p1);
+    }
+
+    if( (left.vec.x != this.vec.x) && (left.vec.x != this.vec.getReverse().x)){
+      this.p1 = Folding.findIntersection(left.vec, left.p1, this.vec.getReverse(), this.p2);
+    }
+    // Edge newEdge = new Edge(p1, p2);
+    // return newEdge;
+  }
+}
+
+
+
   public class Circle {
     Point2D center;
     double radius;

@@ -20,8 +20,12 @@ namespace inClassHacking{
 
       List<Circle> circles = positioning.calculateCirclePositioning();
 
-      Folding folding = new Folding(circles, input, distances);
-      List<Crease> creases = folding.calculateCreases();
+      // Folding folding = new Folding(circles, input, distances);
+      // List<Crease> creases = folding.calculateCreases();
+      
+      LangsAlgorithm lang = new LangsAlgorithm(circles, input, distances);
+      List<Crease> creases = lang.sweepingProcess();
+      
 
       f.exportSVG(circles, creases);
 
