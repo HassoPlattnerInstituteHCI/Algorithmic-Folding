@@ -26,11 +26,6 @@ namespace inClassHacking{
 
       edges = new List<Edge>(); //list of edges filled based on circles[]
 
-      
-
-      // edges.Add(new Edge(circles[3].getCenter(), circles[4].getCenter()));
-      // edges.Add(new Edge(circles[4].getCenter(), circles[5].getCenter()));
-      // edges.Add(new Edge(circles[5].getCenter(), circles[3].getCenter()));
     }
 
     public List<Crease> sweepingProcess(){
@@ -40,6 +35,11 @@ namespace inClassHacking{
         edges.Add(new Edge(circles[i], circles[i+1]));
       }
       edges.Add(new Edge(circles.Last(), circles[1]));
+
+      // edges.Add(new Edge(circles[3].getCenter(), 0, circles[4].getCenter(), 1));
+      // edges.Add(new Edge(circles[4].getCenter(), 1, circles[5].getCenter(), 2));
+      // edges.Add(new Edge(circles[5].getCenter(), 2, circles[2].getCenter(), 3));
+      // edges.Add(new Edge(circles[2].getCenter(), 3, circles[3].getCenter(), 0));
 
 
       axialCreases(creases);
@@ -184,8 +184,8 @@ namespace inClassHacking{
 
     void sweep(List<Crease> creases, List<Edge> edges, List<Edge> initialEdges){
       num--;
-      if(num<0)return;
-
+      // if(num<0)return;
+      bool recurse = false;
       for(int i=0; i<edges.Count; i++){
         Edge edge = edges[i];
         if(edge.getLength() < 2*sweepingLength){ //recursion's end condition
@@ -226,7 +226,6 @@ namespace inClassHacking{
               
               creases.Add(new Crease(edge.p1, secondEdge.p1, Color.Grey));
               
-
               List<Edge> e2 = new List<Edge>();
 
               for(int n=0; n<i; n++){
@@ -244,23 +243,31 @@ namespace inClassHacking{
                 Console.WriteLine("Second recursion with: " + it.index1);
               }
               
-              if(e2.Count>2) sweep(creases, e2, initialEdges);
-              if(e.Count>2) sweep(creases, e, initialEdges);
+              if(e.Count>2){
+                 sweep(creases, e, initialEdges);
+                 recurse = true;
+              }
+              if(e2.Count>2){
+                 sweep(creases, e2, initialEdges);
+                 recurse = true;
+              }
+              
             }
           }
         }
-
-        edge.parallelSweep(sweepingLength);
+        if(!recurse) edge.parallelSweep(sweepingLength);
       }
 
-      edges = updateVertices(edges);
+      if(!recurse){
+        edges = updateVertices(edges);
 
-      foreach(var edge in edges){
-        creases.Add(new Crease(edge.p1, edge.p2, Color.Red));
+        foreach(var edge in edges){
+          creases.Add(new Crease(edge.p1, edge.p2, Color.Red));
+        }
+
+        sweep(creases, edges, initialEdges);
+        return;
       }
-
-      sweep(creases, edges, initialEdges);
-      return;
     }
 
     List<Edge> updateVertices(List<Edge> edges){
