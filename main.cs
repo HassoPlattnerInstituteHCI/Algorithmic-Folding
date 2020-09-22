@@ -23,7 +23,7 @@ namespace inClassHacking{
       // Folding folding = new Folding(circles, input, distances);
       // List<Crease> creases = folding.calculateCreases();
       
-      LangsAlgorithm lang = new LangsAlgorithm(circles, input, distances);
+      LangsAlgorithm lang = new LangsAlgorithm(circles, input);
       List<Crease> creases = lang.sweepingProcess();
       
 

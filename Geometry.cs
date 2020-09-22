@@ -101,13 +101,25 @@ namespace inClassHacking
   public class Edge{
 
   public Point2D p1, p2;
+  public int index1, index2;
   public Vector vec;
 
   public List<Point2D> markers; //represent inner nodes of the tree on the polygon's edge
 
-  public Edge(Point2D p1, Point2D p2){ //Edge from p1 to p2, which are positions of two leaf nodes (circle's center)
+  public Edge(Point2D p1, int index1, Point2D p2, int index2){ //Edge from p1 to p2, which are positions of two leaf nodes (circle's center)
     this.p1 = p1;
     this.p2 = p2;
+    this.index1 = index1;
+    this.index2 = index2;
+    this.markers = new List<Point2D>();
+    this.vec = new Vector(p1, p2).normalized();
+  }
+
+  public Edge(Circle circle1, Circle circle2){ //Edge from p1 to p2, which are positions of two leaf nodes (circle's center)
+    this.p1 = circle1.getCenter();
+    this.p2 = circle2.getCenter();
+    this.index1 = circle1.getIndex();
+    this.index2 = circle2.getIndex();
     this.markers = new List<Point2D>();
     this.vec = new Vector(p1, p2).normalized();
   }
@@ -115,6 +127,8 @@ namespace inClassHacking
   public Edge(Edge e){
     this.p1 = e.p1;
     this.p2 = e.p2;
+    this.index1 = e.index1;
+    this.index2 = e.index2;
     this.vec = e.vec;
     this.markers = new List<Point2D>(e.markers);
   }
@@ -155,17 +169,24 @@ namespace inClassHacking
   public class Circle {
     Point2D center;
     double radius;
+    int index;
 
     public Circle(Point2D center, double radius){
       this.radius = radius;
       this.center = center;
     }
+
+    public int getIndex(){return index;}
+    public void setIndex(int i){this.index=i;}
     
     public Point2D getCenter(){
       return center;
     }
     public double getRadius(){
       return radius;
+    }
+    public void parallelSweep(Vector vec){
+      this.center += vec;
     }
   }
 

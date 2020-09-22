@@ -88,7 +88,7 @@ namespace inClassHacking
 
           svg.Add("<line x1=\""+ ((s-crease.p1.x)*zoomFactor) + "\" y1=\"" + crease.p1.y*zoomFactor + "\" x2=\"" + ((s-crease.p2.x)*zoomFactor) + "\" y2=\"" + crease.p2.y*zoomFactor + "\" stroke=\"" + colToHex(crease.color) +  "\" style=\"stroke-width:8\" />");
 
-          if(DEBUG) Console.WriteLine("draw crease");
+          // if(DEBUG) Console.WriteLine("draw crease");
         }
         
         private string colToHex(Color c)

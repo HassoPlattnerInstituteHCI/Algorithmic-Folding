@@ -28,9 +28,13 @@ namespace inClassHacking{
       circles.Add(new Circle(new Point2D(z, s), input[3]));
 
       circles.Add(new Circle(new Point2D(s/2, calculate6thCirclesY(circles)), input[6]));
-      circles.Add(new Circle(new Point2D(s/2, circles[5].getCenter().y+circles[5].getRadius()+input[7]+input[8]+input[9]), input[9]));
+      circles.Insert(5, new Circle(new Point2D(s/2, circles[5].getCenter().y+circles[5].getRadius()+input[7]+input[8]+input[9]), input[9]));
       double distanceAbove = input[10]+input[11];
-      circles.Add(addLastCircleRigid(circles, distanceAbove, s)); 
+      circles.Insert(5, addLastCircleRigid(circles, distanceAbove, s)); 
+
+      for(int i=0; i<circles.Count;i++){
+        circles[i].setIndex(i);
+      }
 
       return circles;
     }
@@ -47,7 +51,7 @@ namespace inClassHacking{
 
       double radius = input[12];
 
-      Circle helper = new Circle(new Point2D(s/2, circles[6].getCenter().y+circles[6].getRadius()+distanceAbove+radius), radius);
+      Circle helper = new Circle(new Point2D(s/2, circles[5].getCenter().y+circles[5].getRadius()+distanceAbove+radius), radius);
 
       double r = circles[4].getRadius();
       double a = Math.Sqrt((r+helper.getRadius())*(r+helper.getRadius()) - r*r);
@@ -55,7 +59,7 @@ namespace inClassHacking{
       double scaleFactor = b/a;
       radius = radius*scaleFactor;
       
-      Circle circle = new Circle(new Point2D(s/2, circles[6].getCenter().y+circles[6].getRadius()+distanceAbove+radius), radius);
+      Circle circle = new Circle(new Point2D(s/2, circles[5].getCenter().y+circles[5].getRadius()+distanceAbove+radius), radius);
 
       if(radius<input[12]){
          radius = input[12];
