@@ -28,6 +28,7 @@ namespace inClassHacking
         public static bool operator==(Point2D p1, Point2D p2){
           return (p1.x == p2.x & p1.y == p2.y);
         }
+        
         public static bool operator!=(Point2D p1, Point2D p2){
           return !(p1==p2);
         }
@@ -161,6 +162,15 @@ namespace inClassHacking
     }
     // Edge newEdge = new Edge(p1, p2);
     // return newEdge;
+  }
+
+  public void updateMarkers(){
+    for(int i=0; i<this.markers.Count; i++){
+      Point2D marker = this.markers[i];
+      if(marker.x < this.p1.x && marker.x<this.p2.x){
+        marker = null;
+      }
+    }
   }
 }
 

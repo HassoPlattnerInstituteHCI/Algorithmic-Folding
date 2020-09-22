@@ -8,7 +8,7 @@ namespace inClassHacking{
 
   public class LangsAlgorithm{
 
-    public double sweepingLength = 0.05;
+    public double sweepingLength = 0.1;
 
     List<Edge> edges;
     List<Circle> circles;
@@ -59,14 +59,11 @@ namespace inClassHacking{
     }
 
     void axialCreases(List<Crease> creases){
-      creases.Add(new Crease(circles[2].getCenter(), circles[1].getCenter(), Color.Green));
+      for(int i=0; i<circles.Count-1; i++){
+        creases.Add(new Crease(circles[i].getCenter(), circles[i+1].getCenter(), Color.Green));
+      }
       creases.Add(new Crease(circles[1].getCenter(), circles[7].getCenter(), Color.Green));
-      creases.Add(new Crease(circles[7].getCenter(), circles[6].getCenter(), Color.Green));
-      creases.Add(new Crease(circles[3].getCenter(), circles[4].getCenter(), Color.Green));
-      creases.Add(new Crease(circles[3].getCenter(), circles[2].getCenter(), Color.Green));
-      creases.Add(new Crease(circles[4].getCenter(), circles[5].getCenter(), Color.Green));
-      creases.Add(new Crease(circles[5].getCenter(), circles[6].getCenter(), Color.Green));
-      creases.Add(new Crease(circles[0].getCenter(), circles[1].getCenter(), Color.Green));
+      
     }
 
     void addMarkers(List<Edge> edges){
@@ -94,29 +91,29 @@ namespace inClassHacking{
       marker += edges[2].vec * input[11];
       edges[2].addMarker(marker);
 
-      // marker = edges[7].p1 + edges[7].vec*input[6];
-      // edges[7].addMarker(marker);
+      marker = edges[6].p1 + edges[6].vec*input[6];
+      edges[6].addMarker(marker);
 
-      // marker += edges[7].vec*input[5];
-      // edges[7].addMarker(marker);
+      marker += edges[6].vec*input[5];
+      edges[6].addMarker(marker);
 
-      // marker = edges[6].p1 + edges[6].vec * input[9];
-      // edges[6].addMarker(marker);
+      marker = edges[5].p1 + edges[5].vec * input[9];
+      edges[5].addMarker(marker);
 
-      // marker += edges[6].vec * input[8];
-      // edges[6].addMarker(marker);
+      marker += edges[5].vec * input[8];
+      edges[5].addMarker(marker);
 
-      // marker += edges[6].vec * input[7];
-      // edges[6].addMarker(marker);
+      marker += edges[5].vec * input[7];
+      edges[5].addMarker(marker);
 
-      // marker = edges[5].p2 - edges[5].vec*input[9];
-      // edges[5].addMarker(marker);
+      marker = edges[4].p2 - edges[4].vec*input[9];
+      edges[4].addMarker(marker);
 
-      // marker -= edges[5].vec * input[10];
-      // edges[5].addMarker(marker);
+      marker -= edges[4].vec * input[10];
+      edges[4].addMarker(marker);
 
-      // marker -= edges[5].vec * input[11];
-      // edges[5].addMarker(marker);
+      marker -= edges[4].vec * input[11];
+      edges[4].addMarker(marker);
 
       // marker = edges[0].p1 + edges[0].vec*input[4];
       // edges[0].addMarker(marker);
@@ -172,7 +169,7 @@ namespace inClassHacking{
     }
 
     void fill2ndHalf(double[,] distances){
-      int tableSize = circles.Count;
+      int tableSize = (int)Math.Sqrt(distances.Length); //distances is square table - sqrt of size is int
       for(int i=0; i<tableSize; i++){
         for(int j=0; j<i; j++){
           distances[i, j] = distances[j, i];
@@ -180,106 +177,162 @@ namespace inClassHacking{
       }
     }
 
-    int num = 300;
-
     void sweep(List<Crease> creases, List<Edge> edges, List<Edge> initialEdges){
-      num--;
-      // if(num<0)return;
-      bool recurse = false;
+      drawRivers(creases, edges, initialEdges);
+
+      // Console.WriteLine("initial");
+      // foreach(var it in initialEdges){
+      //   Console.Write(it.p1);
+      // }
+      // Console.WriteLine("\nedges");
+      // foreach(var it in edges){
+      //   Console.Write(it.index1);
+      // }
+      Console.WriteLine();
+
       for(int i=0; i<edges.Count; i++){
         Edge edge = edges[i];
-        if(edge.getLength() < 2*sweepingLength){ //recursion's end condition
-          for(int l=0; l<edges.Count; l++){
-            Edge e = edges[l];
-            for(int k=0; k<e.markers.Count; k++){
-              creases.Add(new Crease(e.markers[k], initialEdges[e.index1-1].markers[k], Color.Blue));
-            }
-          }
-        return;
+
+        if(edge.getLength() < 5*sweepingLength){ //recursion's end condition 
+          return;
         }
 
         //splitting events
-
-        if(edges.Count > 3){
+        if(edges.Count > 3){ //do not split triangles
           for(int j=i; j<edges.Count; j++){
             if(i==0 && j==edges.Count-1) continue;
             Edge secondEdge = edges[j];
-            if(Math.Abs(edge.index1 - secondEdge.index1) <= 1) continue;
-            if(Math.Abs(edge.index1 - secondEdge.index1) == edges.Count) continue;
-            // Console.Write(edge.p1);
-            // Console.WriteLine(secondEdge.p1);
-            if(edge.p1.getDistance(secondEdge.p1) - sweepingLength < distances[edge.index1, secondEdge.index1]){
-              Console.WriteLine("split between " + edge.index1 + " and " + secondEdge.index1);
-              // Console.Write(edge.p1);
-              // Console.WriteLine(secondEdge.p1);
-              Console.WriteLine(edge.p1.getDistance(secondEdge.p1));
-              Console.WriteLine(distances[edge.index1, secondEdge.index1]);
-              // Console.WriteLine();
-              List<Edge> e = new List<Edge>();
-              for(int n=0; n<j-i; n++){
-                e.Add(new Edge(edges[i+n]));
-              } 
-              e.Add(new Edge(secondEdge.p1, secondEdge.index1, edge.p1, edge.index1));
+            if(Math.Abs(edge.index1 - secondEdge.index1) <= 1) continue; //do not split edges next to each other
+            if(Math.Abs(edge.index1 - secondEdge.index1) == edges.Count) continue; //do not split last and first edge (next to each other)
 
+            if(edge.p1.getDistance(secondEdge.p1) - sweepingLength <
+                  distances[edge.index1, secondEdge.index1]){
+
+              Console.WriteLine("split between " + edge.index1 + " and " + secondEdge.index1);
+
+              //avoid splitting same edges twice
               distances[edge.index1, secondEdge.index1] = -1;
               distances[secondEdge.index1, edge.index1] = -1;
               
               creases.Add(new Crease(edge.p1, secondEdge.p1, Color.Grey));
               
+              Edge splittingEdge = new Edge(secondEdge.p1, secondEdge.index1, edge.p1, edge.index1);
+              Vector splitVector = new Vector(edge.p1, secondEdge.p1);
+
+              //left poly
+              List<Edge> e = new List<Edge>();
+              List<Edge> initialEdges1 = new List<Edge>();
+              for(int k=i; k<j; k++){
+                initialEdges1.Add(new Edge(edges[k]));
+                e.Add(new Edge(edges[k]));
+
+                foreach(var marker in edges[k].markers){
+                  Vector toMarker = new Vector(edges[k].p1, marker);
+                  double d = toMarker.getLength();
+                  // splittingEdge.addMarker(edges[k].p1+splitVector.normalized()*d);
+                }
+              } 
+              
+              
+              initialEdges1.Add(new Edge(splittingEdge));
+              e.Add(splittingEdge);
+              
+              //right poly
               List<Edge> e2 = new List<Edge>();
-
-              for(int n=0; n<i; n++){
+              List<Edge> initialEdges2 = new List<Edge>();
+              Edge splittingEdge2 = new Edge(edge.p1, edge.index1, secondEdge.p1, secondEdge.index1);
+              int n;
+              for(n=0; n<i; n++){
                 e2.Add(new Edge(edges[n]));
-              }
-              e2.Add(new Edge(edge.p1, edge.index1, secondEdge.p1, secondEdge.index1));
-              for(int n=j; n<edges.Count; n++){
-                e2.Add(new Edge(edges[n]));              
-              }
-              foreach(var it in e){
-                Console.WriteLine("First recursion with: " + it.index1);
-              }
+                initialEdges2.Add(new Edge(edges[n]));
 
-              foreach(var it in e2){
-                Console.WriteLine("Second recursion with: " + it.index1);
+                foreach(var marker in edges[n].markers){
+                  Vector toMarker = new Vector(edges[n].p1, marker);
+                  double d = toMarker.getLength();
+                  // splittingEdge2.addMarker(edges[n].p1+splitVector.normalized()*d);
+                }
+              }
+              for(int m=j; m<edges.Count; m++){
+                e2.Add(new Edge(edges[m])); 
+                initialEdges2.Add(new Edge(edges[m]));
+
+                foreach(var marker in edges[m].markers){
+                  Vector toMarker = new Vector(edges[m].p2, marker);
+                  double d = toMarker.getLength();
+                  splittingEdge2.addMarker(splittingEdge2.p1+splitVector.normalized()*d);
+                }       
               }
               
-              if(e.Count>2){
-                 sweep(creases, e, initialEdges);
-                 recurse = true;
-              }
-              if(e2.Count>2){
-                 sweep(creases, e2, initialEdges);
-                 recurse = true;
-              }
               
+              e2.Insert(n, splittingEdge2);
+              initialEdges2.Insert(n, new Edge(splittingEdge2));
+
+              // Console.WriteLine("in e: ");
+              // foreach(var it in e){
+              //   Console.Write(it.index1);
+              // }
+              // Console.WriteLine("\nin e2:");
+              // foreach(var it in e2){
+              //   Console.Write(it.index1);
+              // }
+              // Console.WriteLine();
+              
+              
+              //   Console.WriteLine("start recursion with " + e.Count + " Edges and " + initialEdges1.Count + " initialEdges.");
+              sweep(creases, e, initialEdges1);
+              sweep(creases, e2, initialEdges2);
+              return;
             }
           }
         }
-        if(!recurse) edge.parallelSweep(sweepingLength);
+
+        edge.parallelSweep(sweepingLength); //sweep every edge
+      }
+      edges = updateVerticesandMarkers(edges); //update vertices of all edges
+
+      foreach(var edge in edges){
+        creases.Add(new Crease(edge.p1, edge.p2, Color.Red));
       }
 
-      if(!recurse){
-        edges = updateVertices(edges);
-
-        foreach(var edge in edges){
-          creases.Add(new Crease(edge.p1, edge.p2, Color.Red));
-        }
-
-        sweep(creases, edges, initialEdges);
-        return;
-      }
+      sweep(creases, edges, initialEdges);
+      return;
     }
 
-    List<Edge> updateVertices(List<Edge> edges){
+
+    List<Edge> updateVerticesandMarkers(List<Edge> edges){
       edges[0].updateVertices(edges.Last(), edges[1]);
+      edges[0].updateMarkers();
 
       for(int i = 1; i<edges.Count-1; i++){
         edges[i].updateVertices(edges[i-1], edges[i+1]);
+        edges[i].updateMarkers();
       }
       
-      edges[edges.Count-1].updateVertices(edges[edges.Count-2], edges[0]);
+      edges.Last().updateVertices(edges[edges.Count-2], edges[0]);
+      edges.Last().updateMarkers();
+
 
       return edges;
     }
+  
+
+  void drawRivers(List<Crease> creases, List<Edge> edges, List<Edge> initialEdges){
+    Console.WriteLine("in drawRiver");
+    Console.WriteLine("init: " + initialEdges.Count);
+    Console.WriteLine("edges: " + edges.Count);
+    for(int l=0; l<edges.Count; l++){
+        Edge edge = edges[l];
+        for(int k=0; k<edge.markers.Count; k++){
+          Console.WriteLine(edge.index1);
+          Console.WriteLine(initialEdges[l].index1);
+          // Console.WriteLine(k);
+          // if(edge.markers[k]!= null){
+            creases.Add(new Crease(initialEdges[l].markers[k], edge.markers[k], Color.Blue));
+          // }
+        }
+    }
+
+    Console.WriteLine("out drawRiver");
   }
+}
 }
