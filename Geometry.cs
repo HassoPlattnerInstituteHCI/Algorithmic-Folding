@@ -26,6 +26,9 @@ namespace inClassHacking
     
 
         public static bool operator==(Point2D p1, Point2D p2){
+          if(object.ReferenceEquals(p2, null) && object.ReferenceEquals(p1, null))return true;
+          if(object.ReferenceEquals(p1, null))return false;
+          if(object.ReferenceEquals(p2, null))return false;
           return (p1.x == p2.x & p1.y == p2.y);
         }
         
@@ -34,10 +37,14 @@ namespace inClassHacking
         }
 
         public static Point2D operator+(Point2D p1, Point2D p2){
+          if(object.ReferenceEquals(p1, null))return null;
+          if(object.ReferenceEquals(p2, null))return null;
           return new Point2D(p1.x+p2.x, p1.y+p2.y);
         }
 
         public static Point2D operator+(Point2D p, Vector v){
+          if(object.ReferenceEquals(p, null))return null;
+          if(object.ReferenceEquals(v, null))return null;
           return new Point2D(p.x+v.x, p.y+v.y);
         }
 
@@ -147,7 +154,9 @@ namespace inClassHacking
     p2 += vec.getNormalLeft()*length;
 
     for(int i = 0; i<markers.Count; i++){
-      markers[i] += vec.getNormalLeft()*length; 
+      if(!(markers[i] == null)){
+        markers[i] += vec.getNormalLeft()*length; 
+      }
     }
   }
 
@@ -165,10 +174,27 @@ namespace inClassHacking
   }
 
   public void updateMarkers(){
+    double epsilon = 0.2;
     for(int i=0; i<this.markers.Count; i++){
-      Point2D marker = this.markers[i];
-      if(marker.x < this.p1.x && marker.x<this.p2.x){
-        marker = null;
+      
+      if(!(this.markers[i] == null)){
+        Point2D marker = this.markers[i];
+        if(marker.x < this.p1.x-epsilon && marker.x < this.p2.x-epsilon){
+          this.markers[i] = null;
+          Console.WriteLine(this.index1 + ": " + marker.x + " wird null " + this.p1 + " - " + this.p2);
+        }
+        else if(marker.x > this.p1.x+epsilon && marker.x > this.p2.x+epsilon){
+          this.markers[i] = null;
+          Console.WriteLine(this.index1 + ": " +marker.x + "wird null " + this.p1 + " - " + this.p2);
+        }
+        else if(marker.y < this.p1.y-epsilon && marker.y < this.p2.y-epsilon){
+          this.markers[i] = null;
+          Console.WriteLine(this.index1 + ": " +marker.y + "wird null " + this.p1 + " - " + this.p2);
+        }
+        else if(marker.y > this.p1.y+epsilon && marker.y > this.p2.y+epsilon){
+          this.markers[i] = null;
+          Console.WriteLine(this.index1 + ": " +marker.y + "wird null " + this.p1 + " - " + this.p2);
+        }
       }
     }
   }

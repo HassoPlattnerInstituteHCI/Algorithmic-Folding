@@ -188,7 +188,6 @@ namespace inClassHacking{
       // foreach(var it in edges){
       //   Console.Write(it.index1);
       // }
-      Console.WriteLine();
 
       for(int i=0; i<edges.Count; i++){
         Edge edge = edges[i];
@@ -225,17 +224,21 @@ namespace inClassHacking{
               for(int k=i; k<j; k++){
                 initialEdges1.Add(new Edge(edges[k]));
                 e.Add(new Edge(edges[k]));
-
-                foreach(var marker in edges[k].markers){
-                  Vector toMarker = new Vector(edges[k].p1, marker);
-                  double d = toMarker.getLength();
-                  // splittingEdge.addMarker(edges[k].p1+splitVector.normalized()*d);
+                if(j-i<3){
+                  foreach(var marker in edges[k].markers){
+                    if(!(marker == null)){
+                      Console.WriteLine("ADD MARKER");
+                      if(edges[k].p2 == splittingEdge.p1){
+                        double d = edges[k].p2.getDistance(marker);
+                        splittingEdge.addMarker(splittingEdge.p1+splitVector.getReverse().normalized()*d);
+                      }else{
+                        double d = edges[k].p1.getDistance(marker);
+                        splittingEdge.addMarker(splittingEdge.p2-splitVector.getReverse().normalized()*d);
+                      }
+                    }
+                  }
                 }
               } 
-              
-              
-              initialEdges1.Add(new Edge(splittingEdge));
-              e.Add(splittingEdge);
               
               //right poly
               List<Edge> e2 = new List<Edge>();
@@ -246,39 +249,51 @@ namespace inClassHacking{
                 e2.Add(new Edge(edges[n]));
                 initialEdges2.Add(new Edge(edges[n]));
 
-                foreach(var marker in edges[n].markers){
-                  Vector toMarker = new Vector(edges[n].p1, marker);
-                  double d = toMarker.getLength();
-                  // splittingEdge2.addMarker(edges[n].p1+splitVector.normalized()*d);
+                if(i+edges.Count-j < 3){
+                  foreach(var marker in edges[n].markers){
+                    if(!(marker == null)){
+                      if(edges[n].p2 == splittingEdge2.p1){
+                        double d = edges[n].p2.getDistance(marker);
+                        splittingEdge2.addMarker(splittingEdge2.p1+splitVector.normalized()*d);
+                      }else{
+                        double d = edges[n].p1.getDistance(marker);
+                        splittingEdge2.addMarker(splittingEdge2.p2-splitVector.normalized()*d);
+                      }
+                    }
+                  }
                 }
               }
               for(int m=j; m<edges.Count; m++){
                 e2.Add(new Edge(edges[m])); 
                 initialEdges2.Add(new Edge(edges[m]));
-
-                foreach(var marker in edges[m].markers){
-                  Vector toMarker = new Vector(edges[m].p2, marker);
-                  double d = toMarker.getLength();
-                  splittingEdge2.addMarker(splittingEdge2.p1+splitVector.normalized()*d);
-                }       
+                if(i+edges.Count-j < 3){
+                  foreach(var marker in edges[m].markers){
+                    if(!(marker==null)){
+                      if(edges[m].p2 == splittingEdge2.p1){
+                        double d = edges[m].p2.getDistance(marker);
+                        splittingEdge2.addMarker(splittingEdge2.p1+splitVector.normalized()*d);
+                      }else{
+                        double d = edges[m].p1.getDistance(marker);;
+                        splittingEdge2.addMarker(splittingEdge2.p2-splitVector.normalized()*d);
+                      }
+                    }
+                  }   
+                }    
               }
-              
-              
-              e2.Insert(n, splittingEdge2);
-              initialEdges2.Insert(n, new Edge(splittingEdge2));
 
-              // Console.WriteLine("in e: ");
-              // foreach(var it in e){
-              //   Console.Write(it.index1);
-              // }
-              // Console.WriteLine("\nin e2:");
-              // foreach(var it in e2){
-              //   Console.Write(it.index1);
-              // }
-              // Console.WriteLine();
-              
-              
-              //   Console.WriteLine("start recursion with " + e.Count + " Edges and " + initialEdges1.Count + " initialEdges.");
+              foreach(var marker in splittingEdge2.markers){
+                splittingEdge.addMarker(marker);
+              }
+              foreach(var marker in splittingEdge.markers){
+                splittingEdge2.addMarker(marker);
+              }
+
+              initialEdges1.Add(new Edge(splittingEdge));
+              e.Add(splittingEdge);
+
+              initialEdges2.Insert(n, new Edge(splittingEdge2));
+              e2.Insert(n, splittingEdge2);
+
               sweep(creases, e, initialEdges1);
               sweep(creases, e2, initialEdges2);
               return;
@@ -311,28 +326,20 @@ namespace inClassHacking{
       edges.Last().updateVertices(edges[edges.Count-2], edges[0]);
       edges.Last().updateMarkers();
 
-
       return edges;
     }
   
 
   void drawRivers(List<Crease> creases, List<Edge> edges, List<Edge> initialEdges){
-    Console.WriteLine("in drawRiver");
-    Console.WriteLine("init: " + initialEdges.Count);
-    Console.WriteLine("edges: " + edges.Count);
     for(int l=0; l<edges.Count; l++){
         Edge edge = edges[l];
         for(int k=0; k<edge.markers.Count; k++){
-          Console.WriteLine(edge.index1);
-          Console.WriteLine(initialEdges[l].index1);
           // Console.WriteLine(k);
-          // if(edge.markers[k]!= null){
+          if(!(edge.markers[k] == null)){
             creases.Add(new Crease(initialEdges[l].markers[k], edge.markers[k], Color.Blue));
-          // }
+          }
         }
     }
-
-    Console.WriteLine("out drawRiver");
   }
 }
 }
