@@ -181,19 +181,15 @@ namespace inClassHacking
         Point2D marker = this.markers[i];
         if(marker.x < this.p1.x-epsilon && marker.x < this.p2.x-epsilon){
           this.markers[i] = null;
-          Console.WriteLine(this.index1 + ": " + marker.x + " wird null " + this.p1 + " - " + this.p2);
         }
         else if(marker.x > this.p1.x+epsilon && marker.x > this.p2.x+epsilon){
           this.markers[i] = null;
-          Console.WriteLine(this.index1 + ": " +marker.x + "wird null " + this.p1 + " - " + this.p2);
         }
         else if(marker.y < this.p1.y-epsilon && marker.y < this.p2.y-epsilon){
           this.markers[i] = null;
-          Console.WriteLine(this.index1 + ": " +marker.y + "wird null " + this.p1 + " - " + this.p2);
         }
         else if(marker.y > this.p1.y+epsilon && marker.y > this.p2.y+epsilon){
           this.markers[i] = null;
-          Console.WriteLine(this.index1 + ": " +marker.y + "wird null " + this.p1 + " - " + this.p2);
         }
       }
     }

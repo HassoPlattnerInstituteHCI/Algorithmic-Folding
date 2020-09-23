@@ -115,8 +115,8 @@ namespace inClassHacking{
       marker -= edges[4].vec * input[11];
       edges[4].addMarker(marker);
 
-      // marker = edges[0].p1 + edges[0].vec*input[4];
-      // edges[0].addMarker(marker);
+      marker = edges[0].p1 + edges[0].vec*input[4];
+      edges[0].addMarker(marker);
     }
 
     double[,] calculateTreeDistances(){
@@ -165,7 +165,6 @@ namespace inClassHacking{
 
         return distances;
 
-
     }
 
     void fill2ndHalf(double[,] distances){
@@ -178,16 +177,8 @@ namespace inClassHacking{
     }
 
     void sweep(List<Crease> creases, List<Edge> edges, List<Edge> initialEdges){
+      
       drawRivers(creases, edges, initialEdges);
-
-      // Console.WriteLine("initial");
-      // foreach(var it in initialEdges){
-      //   Console.Write(it.p1);
-      // }
-      // Console.WriteLine("\nedges");
-      // foreach(var it in edges){
-      //   Console.Write(it.index1);
-      // }
 
       for(int i=0; i<edges.Count; i++){
         Edge edge = edges[i];
@@ -215,28 +206,17 @@ namespace inClassHacking{
               
               creases.Add(new Crease(edge.p1, secondEdge.p1, Color.Grey));
               
-              Edge splittingEdge = new Edge(secondEdge.p1, secondEdge.index1, edge.p1, edge.index1);
-              Vector splitVector = new Vector(edge.p1, secondEdge.p1);
-
               //left poly
+              Edge splittingEdge = new Edge(secondEdge.p1, secondEdge.index1, edge.p1, edge.index1);
               List<Edge> e = new List<Edge>();
               List<Edge> initialEdges1 = new List<Edge>();
               for(int k=i; k<j; k++){
                 initialEdges1.Add(new Edge(edges[k]));
                 e.Add(new Edge(edges[k]));
-                if(j-i<3){
-                  foreach(var marker in edges[k].markers){
-                    if(!(marker == null)){
-                      Console.WriteLine("ADD MARKER");
-                      if(edges[k].p2 == splittingEdge.p1){
-                        double d = edges[k].p2.getDistance(marker);
-                        splittingEdge.addMarker(splittingEdge.p1+splitVector.getReverse().normalized()*d);
-                      }else{
-                        double d = edges[k].p1.getDistance(marker);
-                        splittingEdge.addMarker(splittingEdge.p2-splitVector.getReverse().normalized()*d);
-                      }
-                    }
-                  }
+                if(j-i<3){ 
+                  splittingEdge = addMarkersToSplittingEdge(splittingEdge, edges[k]);
+                }else{
+                  //TODO: add markers on splitting edge for other shapes that triangles
                 }
               } 
               
@@ -250,35 +230,19 @@ namespace inClassHacking{
                 initialEdges2.Add(new Edge(edges[n]));
 
                 if(i+edges.Count-j < 3){
-                  foreach(var marker in edges[n].markers){
-                    if(!(marker == null)){
-                      if(edges[n].p2 == splittingEdge2.p1){
-                        double d = edges[n].p2.getDistance(marker);
-                        splittingEdge2.addMarker(splittingEdge2.p1+splitVector.normalized()*d);
-                      }else{
-                        double d = edges[n].p1.getDistance(marker);
-                        splittingEdge2.addMarker(splittingEdge2.p2-splitVector.normalized()*d);
-                      }
-                    }
-                  }
+                  splittingEdge2 = addMarkersToSplittingEdge(splittingEdge2, edges[n]);
+                }else{
+                  //TODO: add markers on splitting edge for other shapes that triangles
                 }
               }
               for(int m=j; m<edges.Count; m++){
                 e2.Add(new Edge(edges[m])); 
                 initialEdges2.Add(new Edge(edges[m]));
                 if(i+edges.Count-j < 3){
-                  foreach(var marker in edges[m].markers){
-                    if(!(marker==null)){
-                      if(edges[m].p2 == splittingEdge2.p1){
-                        double d = edges[m].p2.getDistance(marker);
-                        splittingEdge2.addMarker(splittingEdge2.p1+splitVector.normalized()*d);
-                      }else{
-                        double d = edges[m].p1.getDistance(marker);;
-                        splittingEdge2.addMarker(splittingEdge2.p2-splitVector.normalized()*d);
-                      }
-                    }
-                  }   
-                }    
+                  splittingEdge2 = addMarkersToSplittingEdge(splittingEdge2, edges[m]);   
+                }else{
+                  //TODO: add markers on splitting edge for other shapes that triangles
+                } 
               }
 
               foreach(var marker in splittingEdge2.markers){
@@ -300,7 +264,6 @@ namespace inClassHacking{
             }
           }
         }
-
         edge.parallelSweep(sweepingLength); //sweep every edge
       }
       edges = updateVerticesandMarkers(edges); //update vertices of all edges
@@ -334,14 +297,28 @@ namespace inClassHacking{
     for(int l=0; l<edges.Count; l++){
         Edge edge = edges[l];
         for(int k=0; k<edge.markers.Count; k++){
-          // Console.WriteLine(k);
           if(!(edge.markers[k] == null)){
             creases.Add(new Crease(initialEdges[l].markers[k], edge.markers[k], Color.Blue));
           }
         }
-
         creases.Add(new Crease(edge.p1, initialEdges[l].p1, Color.Red));
     }
+  }
+
+  Edge addMarkersToSplittingEdge(Edge splittingEdge, Edge edge){
+    Vector splitVector = new Vector(splittingEdge.p2, splittingEdge.p1).normalized();
+    foreach(var marker in edge.markers){
+      if(!(marker == null)){
+        if(edge.p2 == splittingEdge.p1){
+          double d = edge.p2.getDistance(marker);
+          splittingEdge.addMarker(splittingEdge.p1+splitVector.getReverse()*d);
+        }else{
+          double d = edge.p1.getDistance(marker);
+          splittingEdge.addMarker(splittingEdge.p2-splitVector.getReverse()*d);
+        }
+      }
+    }
+    return splittingEdge;
   }
 }
 }
