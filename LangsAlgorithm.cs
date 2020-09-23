@@ -8,7 +8,7 @@ namespace inClassHacking{
 
   public class LangsAlgorithm{
 
-    public double sweepingLength = 0.1;
+    public double sweepingLength = 0.01;
 
     List<Edge> edges;
     List<Circle> circles;
@@ -305,9 +305,9 @@ namespace inClassHacking{
       }
       edges = updateVerticesandMarkers(edges); //update vertices of all edges
 
-      foreach(var edge in edges){
-        creases.Add(new Crease(edge.p1, edge.p2, Color.Red));
-      }
+      // foreach(var edge in edges){
+      //   creases.Add(new Crease(edge.p1, edge.p2, Color.Red));
+      // }
 
       sweep(creases, edges, initialEdges);
       return;
@@ -339,6 +339,8 @@ namespace inClassHacking{
             creases.Add(new Crease(initialEdges[l].markers[k], edge.markers[k], Color.Blue));
           }
         }
+
+        creases.Add(new Crease(edge.p1, initialEdges[l].p1, Color.Red));
     }
   }
 }
