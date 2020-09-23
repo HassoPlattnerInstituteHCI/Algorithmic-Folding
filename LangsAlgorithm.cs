@@ -115,8 +115,8 @@ namespace inClassHacking{
       marker -= edges[4].vec * input[11];
       edges[4].addMarker(marker);
 
-      marker = edges[0].p1 + edges[0].vec*input[4];
-      edges[0].addMarker(marker);
+      // marker = edges[0].p1 + edges[0].vec*input[4];
+      // edges[0].addMarker(marker);
     }
 
     double[,] calculateTreeDistances(){
@@ -130,34 +130,34 @@ namespace inClassHacking{
         distances[0, 2] = input[4] + input[5] + input[7] + input[1];
         distances[0, 3] = input[4] + input[5] + input[7] + input[8] + input[10] + input[2];
         distances[0, 4] = input[4] + input[5] + input[7] + input[8] + input[10] + input[11] + input[3];
-        distances[0, 5] = input[4] + input[5] + input[7] + input[8] + input[10] + input[11] + input[12];
+        distances[0, 5] = input[4] + input[5] + input[7] + input[8] + input[10] + input[11] + circles[5].getRadius();
         distances[0, 6] = input[4] + input[5] + input[7] + input[8] + input[9];        
         distances[0, 7] = input[4] + input[5] + input[6];
 
         distances[1, 2] = input[0] + input[5] + input[7] + input[1];
         distances[1, 3] = input[0] + input[5] + input[7] + input[8] + input[10] + input[2];
         distances[1, 4] = input[0] + input[5] + input[7] + input[8] + input[10] + input[11] + input[3];
-        distances[1, 5] = input[0] + input[5] + input[7] + input[8] + input[10] + input[11] + input[12];
+        distances[1, 5] = input[0] + input[5] + input[7] + input[8] + input[10] + input[11] + circles[5].getRadius();
         distances[1, 6] = input[0] + input[5] + input[7] + input[8] + input[9];
         distances[1, 7] = input[0] + input[5] + input[6];
 
         distances[2, 3] = input[1] + input[8] + input[10] + input[2];
         distances[2, 4] = input[1] + input[8] + input[10] + input[11] + input[3];
-        distances[2, 5] = input[1] + input[8] + input[10] + input[11] + input[12];
+        distances[2, 5] = input[1] + input[8] + input[10] + input[11] + circles[5].getRadius();
         distances[2, 6] = input[1] + input[8] + input[9];
         distances[2, 7] = input[1] + input[7] + input[6];
 
         distances[3, 4] = input[2] + input[11] + input[3];
-        distances[3, 5] = input[2] + input[11] + input[12];
+        distances[3, 5] = input[2] + input[11] + circles[5].getRadius();
         distances[3, 6] = input[2] + input[10] + input[9];
         distances[3, 7] = input[2] + input[10] + input[8] + input[7] + input[6];
 
-        distances[4, 5] = input[3] + input[12];
+        distances[4, 5] = input[3] + circles[5].getRadius();
         distances[4, 6] = input[3] + input[11] + input[10] + input[9];
         distances[4, 7] = input[3] + input[11] + input[10] +input[8] + input[7] + input[6];
 
-        distances[5, 6] = input[12] + input[11] + input[10] +input[9];
-        distances[5, 7] = input[12] + input[11] + input[10] +input[8] + input[7] + input[6];
+        distances[5, 6] = circles[5].getRadius() + input[11] + input[10] +input[9];
+        distances[5, 7] = circles[5].getRadius() + input[11] + input[10] +input[8] + input[7] + input[6];
 
         distances[6, 7] = input[9] + input[8] + input[7] + input[6];
 
@@ -182,6 +182,16 @@ namespace inClassHacking{
 
       for(int i=0; i<edges.Count; i++){
         Edge edge = edges[i];
+
+        for(int p=0; p<edge.markers.Count; p++){
+          Point2D marker = edge.markers[p];
+          if(marker==edge.p1){
+            marker=edge.p1;
+          }
+          if(marker==edge.p2){
+            marker=edge.p2;
+          }
+        }
 
         if(edge.getLength() < 5*sweepingLength){ //recursion's end condition 
           return;
@@ -313,6 +323,7 @@ namespace inClassHacking{
           double d = edge.p2.getDistance(marker);
           splittingEdge.addMarker(splittingEdge.p1+splitVector.getReverse()*d);
         }else{
+          Console.WriteLine(edge.p2 + " != " + splittingEdge.p1);
           double d = edge.p1.getDistance(marker);
           splittingEdge.addMarker(splittingEdge.p2-splitVector.getReverse()*d);
         }

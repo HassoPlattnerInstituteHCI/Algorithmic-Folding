@@ -29,7 +29,7 @@ namespace inClassHacking
           if(object.ReferenceEquals(p2, null) && object.ReferenceEquals(p1, null))return true;
           if(object.ReferenceEquals(p1, null))return false;
           if(object.ReferenceEquals(p2, null))return false;
-          return (p1.x == p2.x & p1.y == p2.y);
+          return (Math.Round(p1.x, 3) == Math.Round(p2.x,3) & Math.Round(p1.y, 3) == Math.Round(p2.y, 3));
         }
         
         public static bool operator!=(Point2D p1, Point2D p2){
@@ -146,6 +146,9 @@ namespace inClassHacking
   }
 
   public void addMarker(Point2D marker){
+    foreach(var m in this.markers){ //dont add twice
+      if(m == marker) return;
+    }
     this.markers.Add(marker);
   }
     
