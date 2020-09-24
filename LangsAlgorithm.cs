@@ -8,7 +8,7 @@ namespace inClassHacking{
 
   public class LangsAlgorithm{
 
-    public double sweepingLength = 0.01;
+    public double sweepingLength = 0.05;
 
     List<Edge> edges;
     List<Circle> circles;
@@ -126,6 +126,14 @@ namespace inClassHacking{
           distances[i, i] = 0;
         }
 
+        // for(int i=0; i<circles.Count; i++){
+        //   for(int j=0; j<circles.Count; j++){
+        //     distances[i, j] = circles[i].getCenter().getDistance(circles[j].getCenter());
+        //     Console.Write(Math.Round(distances[i, j], 2) + "\t\t|");
+        //   }
+        //   Console.WriteLine();
+        // }
+
         distances[0, 1] = input[0] + input[4];
         distances[0, 2] = input[4] + input[5] + input[7] + input[1];
         distances[0, 3] = input[4] + input[5] + input[7] + input[8] + input[10] + input[2];
@@ -175,115 +183,135 @@ namespace inClassHacking{
         }
       }
     }
-
+int rec = 1500;
     void sweep(List<Crease> creases, List<Edge> edges, List<Edge> initialEdges){
-      
-      drawRivers(creases, edges, initialEdges);
 
-      for(int i=0; i<edges.Count; i++){
-        Edge edge = edges[i];
+      foreach(var e in initialEdges) Console.WriteLine(e.p1);
+    
+      bool again = true;
 
-        for(int p=0; p<edge.markers.Count; p++){
-          Point2D marker = edge.markers[p];
-          if(marker==edge.p1){
-            marker=edge.p1;
-          }
-          if(marker==edge.p2){
-            marker=edge.p2;
-          }
-        }
-
-        if(edge.getLength() < 5*sweepingLength){ //recursion's end condition 
-          return;
-        }
-
-        //splitting events
-        if(edges.Count > 3){ //do not split triangles
-          for(int j=i; j<edges.Count; j++){
-            if(i==0 && j==edges.Count-1) continue;
-            Edge secondEdge = edges[j];
-            if(Math.Abs(edge.index1 - secondEdge.index1) <= 1) continue; //do not split edges next to each other
-            if(Math.Abs(edge.index1 - secondEdge.index1) == edges.Count) continue; //do not split last and first edge (next to each other)
-
-            if(edge.p1.getDistance(secondEdge.p1) - sweepingLength <
-                  distances[edge.index1, secondEdge.index1]){
-
-              Console.WriteLine("split between " + edge.index1 + " and " + secondEdge.index1);
-
-              //avoid splitting same edges twice
-              distances[edge.index1, secondEdge.index1] = -1;
-              distances[secondEdge.index1, edge.index1] = -1;
-              
-              creases.Add(new Crease(edge.p1, secondEdge.p1, Color.Grey));
-              
-              //left poly
-              Edge splittingEdge = new Edge(secondEdge.p1, secondEdge.index1, edge.p1, edge.index1);
-              List<Edge> e = new List<Edge>();
-              List<Edge> initialEdges1 = new List<Edge>();
-              for(int k=i; k<j; k++){
-                initialEdges1.Add(new Edge(edges[k]));
-                e.Add(new Edge(edges[k]));
-                if(j-i<3){ 
-                  splittingEdge = addMarkersToSplittingEdge(splittingEdge, edges[k]);
-                }else{
-                  //TODO: add markers on splitting edge for other shapes that triangles
-                }
-              } 
-              
-              //right poly
-              List<Edge> e2 = new List<Edge>();
-              List<Edge> initialEdges2 = new List<Edge>();
-              Edge splittingEdge2 = new Edge(edge.p1, edge.index1, secondEdge.p1, secondEdge.index1);
-              int n;
-              for(n=0; n<i; n++){
-                e2.Add(new Edge(edges[n]));
-                initialEdges2.Add(new Edge(edges[n]));
-
-                if(i+edges.Count-j < 3){
-                  splittingEdge2 = addMarkersToSplittingEdge(splittingEdge2, edges[n]);
-                }else{
-                  //TODO: add markers on splitting edge for other shapes that triangles
-                }
-              }
-              for(int m=j; m<edges.Count; m++){
-                e2.Add(new Edge(edges[m])); 
-                initialEdges2.Add(new Edge(edges[m]));
-                if(i+edges.Count-j < 3){
-                  splittingEdge2 = addMarkersToSplittingEdge(splittingEdge2, edges[m]);   
-                }else{
-                  //TODO: add markers on splitting edge for other shapes that triangles
-                } 
-              }
-
-              foreach(var marker in splittingEdge2.markers){
-                splittingEdge.addMarker(marker);
-              }
-              foreach(var marker in splittingEdge.markers){
-                splittingEdge2.addMarker(marker);
-              }
-
-              initialEdges1.Add(new Edge(splittingEdge));
-              e.Add(splittingEdge);
-
-              initialEdges2.Insert(n, new Edge(splittingEdge2));
-              e2.Insert(n, splittingEdge2);
-
-              sweep(creases, e, initialEdges1);
-              sweep(creases, e2, initialEdges2);
-              return;
-            }
-          }
-        }
-        edge.parallelSweep(sweepingLength); //sweep every edge
-      }
-      edges = updateVerticesandMarkers(edges); //update vertices of all edges
-
-      // foreach(var edge in edges){
-      //   creases.Add(new Crease(edge.p1, edge.p2, Color.Red));
+      // for(int q=0; q<9; q++){
+      //   foreach(var edge in edges){
+      //     edge.parallelSweep(sweepingLength); //sweep every edge
+      //   }
+      //   edges = updateVerticesandMarkers(edges);
       // }
 
-      sweep(creases, edges, initialEdges);
-      return;
+      while(again){
+        drawRivers(creases, edges, initialEdges);      
+
+        for(int i=0; i<edges.Count; i++){
+          Edge edge = edges[i];
+
+          if(edge.getLength() < 5*sweepingLength){ //contraction event
+            edges.Remove(edge);
+          }
+          if(edges.Count<3){
+            Console.WriteLine("return");
+            return;
+          }
+
+          //splitting events
+          if(edges.Count > 3){ //do not split triangles
+            for(int j=i; j<edges.Count; j++){
+              if(i==0 && j==edges.Count-1) continue;
+              Edge secondEdge = edges[j];
+              if(secondEdge==null) continue;
+              if(Math.Abs(edge.index1 - secondEdge.index1) <= 1) continue; //do not split edges next to each other
+              if(Math.Abs(edge.index1 - secondEdge.index1) == edges.Count) continue; //do not split last and first edge (next to each other)
+
+                Point2D C_ = Folding.findIntersection(initialEdges[j].vec, initialEdges[j].p1, secondEdge.vec.getNormalRight(), secondEdge.p1);
+                double CC_ = initialEdges[j].p1.getDistance(C_);
+                Point2D A_ = Folding.findIntersection(initialEdges[i].vec, initialEdges[i].p1, edge.vec.getNormalRight(), edge.p1);
+                double AA_ = initialEdges[i].p1.getDistance(A_);
+                double equationSolution = edge.p1.getDistance(secondEdge.p1) + AA_ + CC_;
+
+                // Console.WriteLine(edge.index1+":"+secondEdge.index1+" -> " + equationSolution +" vs " + distances[edge.index1, secondEdge.index1] +"-----" + CC_ + ", " + AA_ );
+
+                if(equationSolution < distances[edge.index1, secondEdge.index1]){
+
+                  creases.Add(new Crease(edge.p1, A_, Color.Green));
+                  creases.Add(new Crease(initialEdges[i].p1, A_, Color.Green));
+                  creases.Add(new Crease(secondEdge.p1, C_, Color.Green));
+                  creases.Add(new Crease(initialEdges[j].p1, C_, Color.Green));
+
+                // if(edge.p1.getDistance(secondEdge.p1)+AA_+CC_ <
+                //     distances[edge.index1, secondEdge.index1]){
+
+                      again = false;
+
+                Console.WriteLine("split between " + edge.index1 + " and " + secondEdge.index1);
+                Console.WriteLine(edge.p1.getDistance(secondEdge.p1));
+
+                //avoid splitting same edges twice
+                distances[edge.index1, secondEdge.index1] = -1;
+                distances[secondEdge.index1, edge.index1] = -1;
+                
+                creases.Add(new Crease(edge.p1, secondEdge.p1, Color.Grey));
+                
+                //left poly
+                Edge splittingEdge = new Edge(secondEdge.p1, secondEdge.index1, edge.p1, edge.index1);
+                List<Edge> e = new List<Edge>();
+                List<Edge> initialEdges1 = new List<Edge>();
+                for(int k=i; k<j; k++){
+                  initialEdges1.Add(new Edge(edges[k]));
+                  e.Add(new Edge(edges[k]));
+                  if(j-i<3){ 
+                    splittingEdge = addMarkersToSplittingEdge(splittingEdge, edges[k]);
+                  }else{
+                    //TODO: add markers on splitting edge for other shapes that triangles
+                  }
+                } 
+                
+                //right poly
+                List<Edge> e2 = new List<Edge>();
+                List<Edge> initialEdges2 = new List<Edge>();
+                Edge splittingEdge2 = new Edge(edge.p1, edge.index1, secondEdge.p1, secondEdge.index1);
+                int n;
+                for(n=0; n<i; n++){
+                  e2.Add(new Edge(edges[n]));
+                  initialEdges2.Add(new Edge(edges[n]));
+
+                  if(i+edges.Count-j < 3){
+                    splittingEdge2 = addMarkersToSplittingEdge(splittingEdge2, edges[n]);
+                  }else{
+                    //TODO: add markers on splitting edge for other shapes that triangles
+                  }
+                }
+                for(int m=j; m<edges.Count; m++){
+                  e2.Add(new Edge(edges[m])); 
+                  initialEdges2.Add(new Edge(edges[m]));
+                  if(i+edges.Count-j < 3){
+                    splittingEdge2 = addMarkersToSplittingEdge(splittingEdge2, edges[m]);   
+                  }else{
+                    //TODO: add markers on splitting edge for other shapes that triangles
+                  } 
+                }
+
+                foreach(var marker in splittingEdge2.markers){
+                  splittingEdge.addMarker(marker);
+                }
+                foreach(var marker in splittingEdge.markers){
+                  splittingEdge2.addMarker(marker);
+                }
+
+                initialEdges1.Add(new Edge(splittingEdge));
+                e.Add(splittingEdge);
+
+                initialEdges2.Insert(n, new Edge(splittingEdge2));
+                e2.Insert(n, splittingEdge2);
+
+                sweep(creases, e, initialEdges1);
+                sweep(creases, e2, initialEdges2);
+
+                return;
+              }
+            }
+          }
+          edge.parallelSweep(sweepingLength); //sweep every edge
+        }
+        edges = updateVerticesandMarkers(edges); //update vertices of polygon
+      }
     }
 
 
@@ -323,7 +351,6 @@ namespace inClassHacking{
           double d = edge.p2.getDistance(marker);
           splittingEdge.addMarker(splittingEdge.p1+splitVector.getReverse()*d);
         }else{
-          Console.WriteLine(edge.p2 + " != " + splittingEdge.p1);
           double d = edge.p1.getDistance(marker);
           splittingEdge.addMarker(splittingEdge.p2-splitVector.getReverse()*d);
         }
