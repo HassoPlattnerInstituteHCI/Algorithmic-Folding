@@ -8,7 +8,7 @@ namespace inClassHacking{
 
   public class LangsAlgorithm{
 
-    public double sweepingLength = 0.005;
+    public double sweepingLength = 0.05;
     double undef = -1;
 
     List<Edge> edges;

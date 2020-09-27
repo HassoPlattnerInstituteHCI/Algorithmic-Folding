@@ -14,6 +14,10 @@ namespace inClassHacking
             this.x = x;
             this.y = y;
         }
+        public Point2D(Point2D p){
+          this.x = p.x;
+          this.y = p.y;
+        }
         public double getDistance(Point2D target)
         {
             double dist;
@@ -210,12 +214,19 @@ namespace inClassHacking
       this.radius = radius;
       this.center = center;
     }
+    public Circle(Circle c){
+      this.radius = c.radius;
+      this.center = c.center;
+    }
 
     public int getIndex(){return index;}
     public void setIndex(int i){this.index=i;}
     
     public Point2D getCenter(){
       return center;
+    }
+    public void setCenter(Point2D c){
+      this.center = c;
     }
     public double getRadius(){
       return radius;

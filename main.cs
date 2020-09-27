@@ -29,6 +29,8 @@ namespace inClassHacking{
 
       f.exportSVG(circles, creases);
 
+      treeFunction();
+
     }
 
 
@@ -38,6 +40,49 @@ namespace inClassHacking{
       return ret;
     }
 
-    
+    static void treeFunction(){
+      FileHandler fh = new FileHandler(true, 20, 200);
+
+      InteriorNode inNode1 = new InteriorNode(0);
+      InteriorNode inNode2 = new InteriorNode(1);
+      InteriorNode inNode3 = new InteriorNode(2);
+      InteriorNode inNode4 = new InteriorNode(3);
+      InteriorNode inNode5 = new InteriorNode(4);
+      InteriorNode inNode6 = new InteriorNode(5);
+
+
+      LeafNode head = new LeafNode(10, 1, inNode1, true);
+      LeafNode antenna = new LeafNode(11, 4, inNode1);
+      inNode1.addInteriorNode(inNode2, 1);
+      LeafNode extra1 = new LeafNode(16, 1, inNode2, true);
+      inNode2.addInteriorNode(inNode3, 1);
+      LeafNode legs1 = new LeafNode(12, 4, inNode3);
+      inNode3.addInteriorNode(inNode4, 1);
+      inNode4.addInteriorNode(inNode5, 1);
+      LeafNode legs2 = new LeafNode(13, 6, inNode5);
+      inNode5.addInteriorNode(inNode6, 2);
+      LeafNode legs3 = new LeafNode(14, 8, inNode6);
+      LeafNode tail = new LeafNode(15, 2, inNode6, true);
+
+
+      Tree tree = new Tree();
+      tree.addNode(inNode1);
+      tree.addNode(inNode2);
+      tree.addNode(inNode3);
+      tree.addNode(inNode4);
+      tree.addNode(inNode5);
+      tree.addNode(inNode6);
+
+      tree.addNode(head);
+      tree.addNode(antenna);
+      tree.addNode(legs1);
+      tree.addNode(legs2);
+      tree.addNode(legs3);
+      tree.addNode(tail);
+
+      List<Circle> circles = tree.calculateCirclePositioning();
+
+      fh.exportSVG(tree, "tree.svg");
+    }
   }
 }
