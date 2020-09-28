@@ -14,16 +14,16 @@ namespace inClassHacking{
     static int zoomFactor = 50;
 
     public static void Main (string[] args) {
-      double[] distances = calculateDistances(input);
-      FileHandler f = new FileHandler(DEBUG, distances[4], zoomFactor); 
-      Positioning positioning = new Positioning(distances, input);
+      // double[] distances = calculateDistances(input);
+       
+      // Positioning positioning = new Positioning(distances, input);
 
-      List<Circle> circles = positioning.calculateCirclePositioning();
+      // List<Circle> circles = positioning.calculateCirclePositioning();
 
       // Folding folding = new Folding(circles, input, distances);
       // List<Crease> creases = folding.calculateCreases();
 
-      FileHandler treeFileHandler = new FileHandler(true, 20, 200);
+     
       
       Tree tree = new Tree();
 
@@ -37,14 +37,23 @@ namespace inClassHacking{
       LeafNode legs = new LeafNode(12, 1, inNode2, tree);
       LeafNode tail = new LeafNode(13, 1, inNode2, tree, true);
 
+      FileHandler treeFileHandler = new FileHandler(DEBUG, 20, 200);
       treeFileHandler.exportSVG("tree.svg", tree);
 
-      // List<Circle> circles = tree.calculateCirclePositioning();
+      List<Circle> circles = new List<Circle>();
+      List<LeafNode> nodes = tree.calculateCirclePositioning();
 
-      LangsAlgorithm lang = new LangsAlgorithm(circles, input);
+      foreach(var node in nodes){
+        circles.Add(node.circle);
+        Console.WriteLine(node.circle.getCenter());
+      }
+
+      LangsAlgorithm lang = new LangsAlgorithm(nodes, circles);
       List<Crease> creases = lang.sweepingProcess();
-      
 
+      double paperSize = tree.getPaperSize();
+      FileHandler f = new FileHandler(DEBUG, paperSize, zoomFactor); // change paper size
+      
       f.exportSVG("export.svg", circles, creases);
 
       // treeFunction();
@@ -59,21 +68,21 @@ namespace inClassHacking{
     }
 
     static void treeFunction(){
-      FileHandler treeFileHandler = new FileHandler(true, 20, 200);
+      // FileHandler treeFileHandler = new FileHandler(true, 20, 200);
       
-      Tree tree = new Tree();
+      // Tree tree = new Tree();
 
-      InteriorNode inNode1 = new InteriorNode(0, tree);
-      InteriorNode inNode2 = new InteriorNode(1, tree);
+      // InteriorNode inNode1 = new InteriorNode(0, tree);
+      // InteriorNode inNode2 = new InteriorNode(1, tree);
       // InteriorNode inNode3 = new InteriorNode(2);
       // InteriorNode inNode4 = new InteriorNode(3);
       // InteriorNode inNode5 = new InteriorNode(4);
       // InteriorNode inNode6 = new InteriorNode(5);
 
 
-      LeafNode head = new LeafNode(10, 1, inNode1, tree, true);
-      LeafNode antenna = new LeafNode(11, 1, inNode1, tree);
-      inNode1.addInteriorNode(inNode2, 1);
+      // LeafNode head = new LeafNode(10, 1, inNode1, tree, true);
+      // LeafNode antenna = new LeafNode(11, 1, inNode1, tree);
+      // inNode1.addInteriorNode(inNode2, 1);
       // LeafNode extra1 = new LeafNode(16, 1, inNode2, tree, true);
       // inNode2.addInteriorNode(inNode3, 1);
       // LeafNode legs1 = new LeafNode(12, 4, inNode3, tree);
@@ -84,16 +93,16 @@ namespace inClassHacking{
       // LeafNode legs3 = new LeafNode(14, 8, inNode6, tree);
       // LeafNode tail = new LeafNode(15, 2, inNode6, tree, true);
 
-      LeafNode legs = new LeafNode(12, 1, inNode2, tree);
-      LeafNode tail = new LeafNode(13, 1, inNode2, tree, true);
+      // LeafNode legs = new LeafNode(12, 1, inNode2, tree);
+      // LeafNode tail = new LeafNode(13, 1, inNode2, tree, true);
 
-      treeFileHandler.exportSVG("tree.svg", tree);
+      // treeFileHandler.exportSVG("tree.svg", tree);
 
-      List<Circle> circles = tree.calculateCirclePositioning();
+      // // List<Circle> circles = tree.calculateCirclePositioning();
 
-      FileHandler circlesFileHandler = new FileHandler(DEBUG, tree.drawingOffsetX*2, 200); //tree.drawingOffset*2 
+      // FileHandler circlesFileHandler = new FileHandler(DEBUG, tree.drawingOffsetX*2, 200); //tree.drawingOffset*2 
 
-      circlesFileHandler.exportSVG("circles.svg", circles);
+      // circlesFileHandler.exportSVG("circles.svg", circles);
 
 
 

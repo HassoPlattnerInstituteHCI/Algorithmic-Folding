@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace inClassHacking{
 
-  class Node{
+  public class Node{
     double undef = -1;
     public bool middle; //not "mirrored" for symmetrie
     public int index;
@@ -20,10 +20,9 @@ namespace inClassHacking{
 
   }
 
-  class LeafNode: Node{
+  public class LeafNode: Node{
     public InteriorNode relatedNode;
     public double size;
-    LeafNode centerNeighbor; //Node with middle=true with same InteriorNode 
 
     public LeafNode(int index, double size, InteriorNode relatedNode, Tree tree, bool middle = false) : base(index, tree, middle) {
       this.relatedNode = relatedNode;
@@ -51,11 +50,12 @@ namespace inClassHacking{
       return this.relatedNode.getTreeDistanceWithoutRadius(other);
     }
     public double getTreeDistanceTo(LeafNode other){
+      if(other.index == this.index) return 0;
       return this.size+this.relatedNode.getTreeDistanceTo(other);
     }
   }
 
-  class InteriorNode: Node{
+  public class InteriorNode: Node{
     public Dictionary<int, LeafNode> relatedLeafNodes = new Dictionary<int, LeafNode>();
     public Dictionary<InteriorNode, double> relatedInteriorNodes = new Dictionary< InteriorNode, double>();
 
@@ -105,7 +105,7 @@ namespace inClassHacking{
     
   }
 
-    class Tree{
+    public class Tree{
       public List<Node> treeNodes = new List<Node>();
 
       public double drawingOffsetX;
@@ -115,10 +115,10 @@ namespace inClassHacking{
         treeNodes.Add(node);
       }
 
-      public List<Circle> calculateCirclePositioning(){
+      public List<LeafNode> calculateCirclePositioning(){
         List<Circle> circles = new List<Circle>();
+        List<LeafNode> ret = new List<LeafNode>();
         Point2D startPosition = new Point2D(0, 0);
-        drawingOffsetX = 5;
 
         List<LeafNode> middleNodes = new List<LeafNode>();
         List<LeafNode> outerNodes = new List<LeafNode>();
@@ -145,6 +145,7 @@ namespace inClassHacking{
           startPosition.y += middleNodes[i].size;
           middleNodes[i].circle = new Circle(new Point2D(startPosition), middleNodes[i].size);
           circles.Add(middleNodes[i].circle);
+          ret.Add(middleNodes[i]);
           startPosition.y += middleNodes[i].size;
         }
 
@@ -155,22 +156,18 @@ namespace inClassHacking{
           Circle outerNodesCircle = new Circle(thisCircleCenter, outerNodes[0].size);
           circles.Add(outerNodesCircle);
           outerNodes[0].circle = outerNodesCircle;
+          ret.Add(outerNodes[0]);
 
           for(int i=outerNodes.Count-1; i>0; i--){
             thisCircleCenter = new Point2D(outerNodes[i-1].circle.getCenter());
-            Console.WriteLine("Test2");
             thisCircleCenter.y -= outerNodes[i].getTreeDistanceTo(outerNodes[i-1]);
             if(thisCircleCenter.y < drawingOffsetY) drawingOffsetY = thisCircleCenter.y;
             outerNodesCircle = new Circle(thisCircleCenter, outerNodes[i].size);
             circles.Add(outerNodesCircle);
             outerNodes[i].circle = outerNodesCircle;
+            ret.Add(outerNodes[i]);
           }
-
         }
-
-
-        Console.WriteLine("Test3");
-
 
         drawingOffsetX = -drawingOffsetX+2;
         drawingOffsetY = -drawingOffsetY+2;
@@ -180,10 +177,12 @@ namespace inClassHacking{
 
 
 
-        return circles;
+        return ret;
       }
 
-      // Node nextStep(Node node, Node )
+      public double getPaperSize(){
+        return 2*drawingOffsetX;
+      }
 
     }
 

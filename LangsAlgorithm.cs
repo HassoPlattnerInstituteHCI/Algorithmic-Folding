@@ -13,48 +13,55 @@ namespace inClassHacking{
 
     List<Edge> edges;
     List<Circle> circles;
-    double[] input;
-    double s, w, x, y, z;
+    // double[] input;
+    // double s, w, x, y, z;
+    Tree tree;
 
     double[,] distances;
 
     List<Crease> creases = new List<Crease>();
     List<Edge> inputEdges = new List<Edge>();
+    List<LeafNode> nodes = new List<LeafNode>();
 
-    public LangsAlgorithm(List<Circle> circles, double[] input){
+    public LangsAlgorithm(List<LeafNode> nodes, List<Circle> circles){
+      circles.Reverse();
+      nodes.Reverse();
 
-      this.input = input;
       this.circles = circles;
+      this.nodes = nodes;
+      // this.tree = tree;
 
       edges = new List<Edge>(); //list of edges filled based on circles[]
-
     }
 
     public List<Crease> sweepingProcess(){
-      // circles[0] is missing - special case, has to be added later
 
-      for(int i=1; i<circles.Count-1; i++){
+
+
+      for(int i=0; i<circles.Count-1; i++){
         edges.Add(new Edge(circles[i], circles[i+1]));
       }
-      edges.Add(new Edge(circles.Last(), circles[1]));
+      edges.Add(new Edge(circles.Last(), circles[0]));
 
       // edges.Add(new Edge(circles[3].getCenter(), 0, circles[4].getCenter(), 1));
       // edges.Add(new Edge(circles[4].getCenter(), 1, circles[5].getCenter(), 2));
       // edges.Add(new Edge(circles[5].getCenter(), 2, circles[2].getCenter(), 3));
       // edges.Add(new Edge(circles[2].getCenter(), 3, circles[3].getCenter(), 0));
 
-
+      Console.WriteLine("Add axial creases");
       axialCreases(creases);
 
-      addMarkers(edges);
+      // addMarkers(edges);
 
       foreach(var e in edges){
         inputEdges.Add(new Edge(e));
-        
       }
-
+      
+      Console.WriteLine("Calculate distances"); 
       distances = calculateTreeDistances();
 
+      Console.WriteLine("Sweep with following edges: ");
+      foreach(var edge in edges) Console.WriteLine(edge.p1 + ", " + edge.p2);
       sweep(creases, edges, inputEdges);
 
       return creases;
@@ -64,109 +71,114 @@ namespace inClassHacking{
       for(int i=0; i<circles.Count-1; i++){
         creases.Add(new Crease(circles[i].getCenter(), circles[i+1].getCenter(), Color.Green));
       }
-      creases.Add(new Crease(circles[1].getCenter(), circles[7].getCenter(), Color.Green));
+      creases.Add(new Crease(circles[0].getCenter(), circles.Last().getCenter(), Color.Green));
       
     }
 
     void addMarkers(List<Edge> edges){
-      Point2D marker = edges[0].p1 + edges[0].vec*input[1];
-      edges[0].addMarker(marker);
+      // Point2D marker = edges[0].p1 + edges[0].vec*input[1];
+      // edges[0].addMarker(marker);
 
-      marker += edges[0].vec*input[5];
-      edges[0].addMarker(marker);
+      // marker += edges[0].vec*input[5];
+      // edges[0].addMarker(marker);
 
-      marker += edges[0].vec*input[7];
-      edges[0].addMarker(marker);
+      // marker += edges[0].vec*input[7];
+      // edges[0].addMarker(marker);
 
-      marker = edges[1].p1 + edges[1].vec * input[1];
-      edges[1].addMarker(marker);
+      // marker = edges[1].p1 + edges[1].vec * input[1];
+      // edges[1].addMarker(marker);
 
-      marker += edges[1].vec*input[8];
-      edges[1].addMarker(marker);
+      // marker += edges[1].vec*input[8];
+      // edges[1].addMarker(marker);
 
-      marker += edges[1].vec * input[10];
-      edges[1].addMarker(marker);
+      // marker += edges[1].vec * input[10];
+      // edges[1].addMarker(marker);
 
-      marker = edges[2].p1 + edges[2].vec * input[2];
-      edges[2].addMarker(marker);
+      // marker = edges[2].p1 + edges[2].vec * input[2];
+      // edges[2].addMarker(marker);
 
-      marker += edges[2].vec * input[11];
-      edges[2].addMarker(marker);
+      // marker += edges[2].vec * input[11];
+      // edges[2].addMarker(marker);
 
-      marker = edges[6].p1 + edges[6].vec*input[6];
-      edges[6].addMarker(marker);
+      // marker = edges[6].p1 + edges[6].vec*input[6];
+      // edges[6].addMarker(marker);
 
-      marker += edges[6].vec*input[5];
-      edges[6].addMarker(marker);
+      // marker += edges[6].vec*input[5];
+      // edges[6].addMarker(marker);
 
-      marker = edges[5].p1 + edges[5].vec * input[9];
-      edges[5].addMarker(marker);
+      // marker = edges[5].p1 + edges[5].vec * input[9];
+      // edges[5].addMarker(marker);
 
-      marker += edges[5].vec * input[8];
-      edges[5].addMarker(marker);
+      // marker += edges[5].vec * input[8];
+      // edges[5].addMarker(marker);
 
-      marker += edges[5].vec * input[7];
-      edges[5].addMarker(marker);
+      // marker += edges[5].vec * input[7];
+      // edges[5].addMarker(marker);
 
-      marker = edges[4].p2 - edges[4].vec*input[9];
-      edges[4].addMarker(marker);
+      // marker = edges[4].p2 - edges[4].vec*input[9];
+      // edges[4].addMarker(marker);
 
-      marker -= edges[4].vec * input[10];
-      edges[4].addMarker(marker);
+      // marker -= edges[4].vec * input[10];
+      // edges[4].addMarker(marker);
 
-      marker -= edges[4].vec * input[11];
-      edges[4].addMarker(marker);
+      // marker -= edges[4].vec * input[11];
+      // edges[4].addMarker(marker);
 
       // marker = edges[0].p1 + edges[0].vec*input[4];
       // edges[0].addMarker(marker);
     }
 
     double[,] calculateTreeDistances(){
-        double[,] distances = new double[circles.Count, circles.Count];
+        double[,] distances = new double[nodes.Count, nodes.Count];
 
-        for(int i=0; i<circles.Count; i++){
-          distances[i, i] = 0;
+        // for(int i=0; i<nodes.Count; i++){
+        //   distances[i, i] = 0;
+        // }
+
+        // distances[0, 1] = input[0] + input[4];
+        // distances[0, 2] = input[4] + input[5] + input[7] + input[1];
+        // distances[0, 3] = input[4] + input[5] + input[7] + input[8] + input[10] + input[2];
+        // distances[0, 4] = input[4] + input[5] + input[7] + input[8] + input[10] + input[11] + input[3];
+        // distances[0, 5] = input[4] + input[5] + input[7] + input[8] + input[10] + input[11] + circles[5].getRadius();
+        // distances[0, 6] = input[4] + input[5] + input[7] + input[8] + input[9];        
+        // distances[0, 7] = input[4] + input[5] + input[6];
+
+        // distances[1, 2] = input[0] + input[5] + input[7] + input[1];
+        // distances[1, 3] = input[0] + input[5] + input[7] + input[8] + input[10] + input[2];
+        // distances[1, 4] = input[0] + input[5] + input[7] + input[8] + input[10] + input[11] + input[3];
+        // distances[1, 5] = input[0] + input[5] + input[7] + input[8] + input[10] + input[11] + circles[5].getRadius();
+        // distances[1, 6] = input[0] + input[5] + input[7] + input[8] + input[9];
+        // distances[1, 7] = input[0] + input[5] + input[6];
+
+        // distances[2, 3] = input[1] + input[8] + input[10] + input[2];
+        // distances[2, 4] = input[1] + input[8] + input[10] + input[11] + input[3];
+        // distances[2, 5] = input[1] + input[8] + input[10] + input[11] + circles[5].getRadius();
+        // distances[2, 6] = input[1] + input[8] + input[9];
+        // distances[2, 7] = input[1] + input[7] + input[6];
+
+        // distances[3, 4] = input[2] + input[11] + input[3];
+        // distances[3, 5] = input[2] + input[11] + circles[5].getRadius();
+        // distances[3, 6] = input[2] + input[10] + input[9];
+        // distances[3, 7] = input[2] + input[10] + input[8] + input[7] + input[6];
+
+        // distances[4, 5] = input[3] + circles[5].getRadius();
+        // distances[4, 6] = input[3] + input[11] + input[10] + input[9];
+        // distances[4, 7] = input[3] + input[11] + input[10] +input[8] + input[7] + input[6];
+
+        // distances[5, 6] = circles[5].getRadius() + input[11] + input[10] +input[9];
+        // distances[5, 7] = circles[5].getRadius() + input[11] + input[10] +input[8] + input[7] + input[6];
+
+        // distances[6, 7] = input[9] + input[8] + input[7] + input[6];
+
+        for(int i=0; i<nodes.Count; i++){
+          for(int j=0; j<nodes.Count; j++){
+            distances[i, j] = nodes[i].getTreeDistanceTo(nodes[j]);
+          }
         }
-
-        distances[0, 1] = input[0] + input[4];
-        distances[0, 2] = input[4] + input[5] + input[7] + input[1];
-        distances[0, 3] = input[4] + input[5] + input[7] + input[8] + input[10] + input[2];
-        distances[0, 4] = input[4] + input[5] + input[7] + input[8] + input[10] + input[11] + input[3];
-        distances[0, 5] = input[4] + input[5] + input[7] + input[8] + input[10] + input[11] + circles[5].getRadius();
-        distances[0, 6] = input[4] + input[5] + input[7] + input[8] + input[9];        
-        distances[0, 7] = input[4] + input[5] + input[6];
-
-        distances[1, 2] = input[0] + input[5] + input[7] + input[1];
-        distances[1, 3] = input[0] + input[5] + input[7] + input[8] + input[10] + input[2];
-        distances[1, 4] = input[0] + input[5] + input[7] + input[8] + input[10] + input[11] + input[3];
-        distances[1, 5] = input[0] + input[5] + input[7] + input[8] + input[10] + input[11] + circles[5].getRadius();
-        distances[1, 6] = input[0] + input[5] + input[7] + input[8] + input[9];
-        distances[1, 7] = input[0] + input[5] + input[6];
-
-        distances[2, 3] = input[1] + input[8] + input[10] + input[2];
-        distances[2, 4] = input[1] + input[8] + input[10] + input[11] + input[3];
-        distances[2, 5] = input[1] + input[8] + input[10] + input[11] + circles[5].getRadius();
-        distances[2, 6] = input[1] + input[8] + input[9];
-        distances[2, 7] = input[1] + input[7] + input[6];
-
-        distances[3, 4] = input[2] + input[11] + input[3];
-        distances[3, 5] = input[2] + input[11] + circles[5].getRadius();
-        distances[3, 6] = input[2] + input[10] + input[9];
-        distances[3, 7] = input[2] + input[10] + input[8] + input[7] + input[6];
-
-        distances[4, 5] = input[3] + circles[5].getRadius();
-        distances[4, 6] = input[3] + input[11] + input[10] + input[9];
-        distances[4, 7] = input[3] + input[11] + input[10] +input[8] + input[7] + input[6];
-
-        distances[5, 6] = circles[5].getRadius() + input[11] + input[10] +input[9];
-        distances[5, 7] = circles[5].getRadius() + input[11] + input[10] +input[8] + input[7] + input[6];
-
-        distances[6, 7] = input[9] + input[8] + input[7] + input[6];
 
         fill2ndHalf(distances);
 
         return distances;
-
     }
 
     void fill2ndHalf(double[,] distances){
@@ -181,12 +193,15 @@ namespace inClassHacking{
     void sweep(List<Crease> creases, List<Edge> edges, List<Edge> initialEdges){
     
       bool again = true;
+      Console.WriteLine("sweep");
 
       while(again){
+        Console.WriteLine("again=true\n");
         drawRivers(creases, edges, initialEdges);      
 
         for(int i=0; i<edges.Count; i++){
           Edge edge = edges[i];
+          Console.WriteLine("edge: " + edge.p1 + ", " + edge.p2);
 
           if(edge.getLength() < 5*sweepingLength){ //contraction event
             edges.Remove(edge);
@@ -197,6 +212,7 @@ namespace inClassHacking{
 
           //splitting events
           if(edges.Count > 3){ //do not split triangles
+          Console.WriteLine("test for splitting");
             for(int j=i; j<edges.Count; j++){
               if(i==0 && j==edges.Count-1) continue;
               Edge secondEdge = edges[j];
@@ -234,6 +250,7 @@ namespace inClassHacking{
                 if(equationSolution < distances[edge.index1, secondEdge.index1]){
 
                 again = false;
+                Console.WriteLine("splitting event");
 
                 Console.WriteLine("split between " + edge.index1 + " and " + secondEdge.index1);
                 Console.WriteLine(edge.p1.getDistance(secondEdge.p1));

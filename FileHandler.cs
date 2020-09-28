@@ -7,14 +7,14 @@ namespace inClassHacking
 {
 
     class FileHandler{
-      double s, w, x, y, z;
+      double paperSize;
       private bool DEBUG;
       int zoomFactor;
 
-        public FileHandler(bool debug, double s, int zoomFactor)
+        public FileHandler(bool debug, double paperSize, int zoomFactor)
         {
             DEBUG = debug;
-            this.s = s;
+            this.paperSize = paperSize;
             this.zoomFactor = zoomFactor;
         }
         public void exportSVG(string filename, List<Circle> circles, List<Crease> creases = null)
@@ -22,7 +22,7 @@ namespace inClassHacking
             creases = creases ?? new List<Crease>();
 
             List<string> svg = new List<string>();
-            SVG_init(svg, s);
+            SVG_init(svg, paperSize);
 
             foreach(var circle in circles){
               drawCircle(svg, circle);
@@ -49,8 +49,8 @@ namespace inClassHacking
                     "xmlns=\"http://www.w3.org/2000/svg\" " +
                     "xmlns:xlink=\"http://www.w3.org/1999/xlink\" " +
                     "x=\"0px\" y=\"0px\" " +
-                    "width=\""+s*zoomFactor+ "px\" height=\"" + s*zoomFactor + "px\" " +
-                    "viewBox=\"0 0 "+zoomFactor*s+" "+zoomFactor*s+"\" " +
+                    "width=\""+paperSize*zoomFactor+ "px\" height=\"" + paperSize*zoomFactor + "px\" " +
+                    "viewBox=\"0 0 "+zoomFactor*paperSize+" "+zoomFactor*paperSize+"\" " +
                     "enable-background=\"new 0 0 3456 6912\" " +
                     "style=\"background: blanchedalmond\" " +
                     "xml:space = \"preserve\">"
@@ -59,7 +59,7 @@ namespace inClassHacking
         }
         public void drawCircle(List<string> svg, Circle circle){
           svg.Add("<circle cx=\"" + circle.getCenter().x*zoomFactor + "\" cy=\"" + circle.getCenter().y*zoomFactor + "\" r=\""+ zoomFactor*circle.getRadius()+ "\" stroke=\"black\" stroke-width=\"3\" fill=\"burlywood\" />");
-          svg.Add("<circle cx=\"" + ((s-circle.getCenter().x)*zoomFactor) + "\" cy=\"" + circle.getCenter().y*zoomFactor + "\" r=\""+ zoomFactor*circle.getRadius()+ "\" stroke=\"black\" stroke-width=\"3\" fill=\"burlywood\" />");
+          svg.Add("<circle cx=\"" + ((paperSize-circle.getCenter().x)*zoomFactor) + "\" cy=\"" + circle.getCenter().y*zoomFactor + "\" r=\""+ zoomFactor*circle.getRadius()+ "\" stroke=\"black\" stroke-width=\"3\" fill=\"burlywood\" />");
 
           if(DEBUG) Console.WriteLine("draw circle at " + circle.getCenter().x + ", " + circle.getCenter().y + " with radius " + circle.getRadius());
         }
@@ -67,7 +67,7 @@ namespace inClassHacking
         public void drawCrease(List<string> svg, Crease crease){
           svg.Add("<line x1=\""+ crease.p1.x*zoomFactor + "\" y1=\"" + crease.p1.y*zoomFactor + "\" x2=\"" + crease.p2.x*zoomFactor + "\" y2=\"" + crease.p2.y*zoomFactor + "\" stroke=\"" + colToHex(crease.color) +  "\" style=\"stroke-width:4\" />");
 
-          svg.Add("<line x1=\""+ ((s-crease.p1.x)*zoomFactor) + "\" y1=\"" + crease.p1.y*zoomFactor + "\" x2=\"" + ((s-crease.p2.x)*zoomFactor) + "\" y2=\"" + crease.p2.y*zoomFactor + "\" stroke=\"" + colToHex(crease.color) +  "\" style=\"stroke-width:4\" />");
+          svg.Add("<line x1=\""+ ((paperSize-crease.p1.x)*zoomFactor) + "\" y1=\"" + crease.p1.y*zoomFactor + "\" x2=\"" + ((paperSize-crease.p2.x)*zoomFactor) + "\" y2=\"" + crease.p2.y*zoomFactor + "\" stroke=\"" + colToHex(crease.color) +  "\" style=\"stroke-width:4\" />");
         }
         
         private string colToHex(Color c)
@@ -100,7 +100,7 @@ namespace inClassHacking
           Point2D firstPosition = new Point2D(0, 2);
   
           List<string> svg = new List<string>();
-          SVG_init(svg, s);
+          SVG_init(svg, paperSize);
 
           Node startingNode = tree.treeNodes.First();
 
@@ -115,7 +115,7 @@ namespace inClassHacking
 
           treeDrawingOffsetX = -treeDrawingOffsetX+2; //offset is negative
           treeDrawingOffsetY = -treeDrawingOffsetY+2;
-          s = (treeDrawingOffsetX)*2;
+          paperSize = (treeDrawingOffsetX)*2;
           for(int i=0; i<drawing.Count; i++){
             drawing[i].setCenter(new Point2D(drawing[i].getCenter().x+treeDrawingOffsetX, drawing[i].getCenter().y+treeDrawingOffsetY));
             drawCircle(svg, drawing[i]);
