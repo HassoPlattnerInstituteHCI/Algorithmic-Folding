@@ -17,8 +17,10 @@ namespace inClassHacking
             this.s = s;
             this.zoomFactor = zoomFactor;
         }
-        public void exportSVG(List<Circle> circles, List<Crease> creases)
+        public void exportSVG(string filename, List<Circle> circles, List<Crease> creases = null)
         {
+            creases = creases ?? new List<Crease>();
+
             List<string> svg = new List<string>();
             SVG_init(svg, s);
 
@@ -30,8 +32,8 @@ namespace inClassHacking
             }
 
             SVG_ending(svg);
-            File.WriteAllLines("export.svg",svg.ToArray());
-            if (DEBUG) Console.WriteLine("exported SVG");
+            File.WriteAllLines(filename,svg.ToArray());
+            if (DEBUG) Console.WriteLine(filename);
         }
         
         public void SVG_ending (List<string> svg)
@@ -63,9 +65,9 @@ namespace inClassHacking
         }
 
         public void drawCrease(List<string> svg, Crease crease){
-          svg.Add("<line x1=\""+ crease.p1.x*zoomFactor + "\" y1=\"" + crease.p1.y*zoomFactor + "\" x2=\"" + crease.p2.x*zoomFactor + "\" y2=\"" + crease.p2.y*zoomFactor + "\" stroke=\"" + colToHex(crease.color) +  "\" style=\"stroke-width:8\" />");
+          svg.Add("<line x1=\""+ crease.p1.x*zoomFactor + "\" y1=\"" + crease.p1.y*zoomFactor + "\" x2=\"" + crease.p2.x*zoomFactor + "\" y2=\"" + crease.p2.y*zoomFactor + "\" stroke=\"" + colToHex(crease.color) +  "\" style=\"stroke-width:4\" />");
 
-          svg.Add("<line x1=\""+ ((s-crease.p1.x)*zoomFactor) + "\" y1=\"" + crease.p1.y*zoomFactor + "\" x2=\"" + ((s-crease.p2.x)*zoomFactor) + "\" y2=\"" + crease.p2.y*zoomFactor + "\" stroke=\"" + colToHex(crease.color) +  "\" style=\"stroke-width:8\" />");
+          svg.Add("<line x1=\""+ ((s-crease.p1.x)*zoomFactor) + "\" y1=\"" + crease.p1.y*zoomFactor + "\" x2=\"" + ((s-crease.p2.x)*zoomFactor) + "\" y2=\"" + crease.p2.y*zoomFactor + "\" stroke=\"" + colToHex(crease.color) +  "\" style=\"stroke-width:4\" />");
         }
         
         private string colToHex(Color c)
@@ -92,7 +94,7 @@ namespace inClassHacking
     double treeDrawingOffsetY = 0;
     List<int> drawnNodes = new List<int>();
 
-    public void exportSVG(Tree tree, string file){
+    public void exportSVG(string file, Tree tree){
           List<Circle> drawing = new List<Circle>();
           List<Crease> lines = new List<Crease>();
           Point2D firstPosition = new Point2D(0, 2);
@@ -101,8 +103,6 @@ namespace inClassHacking
           SVG_init(svg, s);
 
           Node startingNode = tree.treeNodes.First();
-
-          Console.WriteLine("exporting");
 
           foreach(var node in tree.treeNodes){
             if(node.middle) {
@@ -118,7 +118,6 @@ namespace inClassHacking
           s = (treeDrawingOffsetX)*2;
           for(int i=0; i<drawing.Count; i++){
             drawing[i].setCenter(new Point2D(drawing[i].getCenter().x+treeDrawingOffsetX, drawing[i].getCenter().y+treeDrawingOffsetY));
-            Console.WriteLine(treeDrawingOffsetX);
             drawCircle(svg, drawing[i]);
           }
 
@@ -143,16 +142,15 @@ namespace inClassHacking
           drawnNodes.Add(startingNode.index);
           
           if(startingNode.GetType() == typeof(LeafNode)){
-            Console.WriteLine("Leaf");
 
             LeafNode node = (LeafNode) startingNode;
             
             Point2D nextPosition = new Point2D(position);
             nextPosition.x += node.size; 
             addNodesToDrawing(drawing, lines, node.relatedNode, nextPosition);
-          }else{
 
-            Console.WriteLine("Interior");
+          }else{
+            
             InteriorNode node = (InteriorNode) startingNode;
 
             // foreach(var leafNode in node.relatedLeafNodes.Values){
