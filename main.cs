@@ -29,12 +29,15 @@ namespace inClassHacking{
 
       InteriorNode inNode1 = new InteriorNode(0, tree);
       InteriorNode inNode2 = new InteriorNode(1, tree);
+      InteriorNode inNode3 = new InteriorNode(2, tree);
 
       LeafNode head = new LeafNode(10, 1, inNode1, tree, true);
       LeafNode antenna = new LeafNode(11, 1, inNode1, tree);
       inNode1.addInteriorNode(inNode2, 1);
 
       LeafNode legs = new LeafNode(12, 1, inNode2, tree);
+      // inNode2.addInteriorNode(inNode3, 1);
+      // LeafNode legs2 = new LeafNode(13, 1, inNode3, tree);
       LeafNode tail = new LeafNode(13, 1, inNode2, tree, true);
 
       FileHandler treeFileHandler = new FileHandler(DEBUG, 20, 200);
@@ -52,7 +55,7 @@ namespace inClassHacking{
       List<Crease> creases = lang.sweepingProcess();
 
       double paperSize = tree.getPaperSize();
-      FileHandler f = new FileHandler(DEBUG, paperSize, zoomFactor); // change paper size
+      FileHandler f = new FileHandler(DEBUG, paperSize, zoomFactor); 
       
       f.exportSVG("export.svg", circles, creases);
 
@@ -61,11 +64,11 @@ namespace inClassHacking{
     }
 
 
-    static double[] calculateDistances(double[] input){
-      //TODO: calculate distan
-      double[] ret = {9.63, 2.7, 14.56, 6.63, 29.26};//{10.16, 4.48, 13.78, 8.13, 32.26}; //{10.16,   4.21, 10.12,   8.16,  28.33};
-      return ret;
-    }
+    // static double[] calculateDistances(double[] input){
+    //   //TODO: calculate distan
+    //   double[] ret = {9.63, 2.7, 14.56, 6.63, 29.26};//{10.16, 4.48, 13.78, 8.13, 32.26}; //{10.16,   4.21, 10.12,   8.16,  28.33};
+    //   return ret;
+    // }
 
     static void treeFunction(){
       // FileHandler treeFileHandler = new FileHandler(true, 20, 200);

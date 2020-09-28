@@ -116,7 +116,7 @@ namespace inClassHacking
   public int index1, index2;
   public Vector vec;
 
-  public List<Point2D> markers; //represent inner nodes of the tree on the polygon's edge
+  public List<Point2D> markers; //represent inner nodes of the tree on the polygon's edges
 
   public Edge(Point2D p1, int index1, Point2D p2, int index2){ //Edge from p1 to p2, which are positions of two leaf nodes (circle's center)
     this.p1 = p1;
@@ -176,8 +176,6 @@ namespace inClassHacking
     if( (left.vec.x != this.vec.x) && (left.vec.x != this.vec.getReverse().x)){
       this.p1 = Folding.findIntersection(left.vec, left.p1, this.vec.getReverse(), this.p2);
     }
-    // Edge newEdge = new Edge(p1, p2);
-    // return newEdge;
   }
 
   public void updateMarkers(){
@@ -202,8 +200,6 @@ namespace inClassHacking
     }
   }
 }
-
-
 
   public class Circle {
     Point2D center;
@@ -233,24 +229,6 @@ namespace inClassHacking
     }
     public void parallelSweep(Vector vec){
       this.center += vec;
-    }
-  }
-
-  public class River{ //rectangle in the .svg-file
-    Point2D p1; //upper left corner
-    Point2D p2; //lower right corner
-
-    public River(Point2D p1, Point2D p2){
-      this.p1 = p1;
-      this.p2 = p2;
-    }
-
-    public Point2D getP1(){
-      return p1;
-    }
-
-    public Point2D getP2(){
-      return p2;
     }
   }
 

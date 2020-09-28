@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 
-
 namespace inClassHacking{
 
   public class Node{
@@ -17,7 +16,6 @@ namespace inClassHacking{
     }
 
     public Node(){}
-
   }
 
   public class LeafNode: Node{
@@ -33,9 +31,8 @@ namespace inClassHacking{
       this.relatedNode = l.relatedNode;
       this.size = l.size;
     }
-    public double getSize(){
-      return size;
-    }
+
+    public double getSize(){ return size;}
 
     public LeafNode getCenterNeighbor(){
       foreach(var leafNodePair in relatedNode.relatedLeafNodes){
@@ -46,24 +43,22 @@ namespace inClassHacking{
       return null;
     }
 
-    public double getTreeDistanceWithoutRadius(LeafNode other){
-      return this.relatedNode.getTreeDistanceWithoutRadius(other);
-    }
     public double getTreeDistanceTo(LeafNode other){
-      if(other.index == this.index) return 0;
+      if(other == this) return 0;
       return this.size+this.relatedNode.getTreeDistanceTo(other);
     }
+
+    // public double getMarkerDistances(LeafNode other, List<double> distances){
+    //   if(other.index == this.index) return distances;
+    //   distances.Add(this.size);
+    //   distances.Add(this.relatedNode.getMarkerDistances(other, distances));
+    //   return distances;
+    // }
   }
 
   public class InteriorNode: Node{
     public Dictionary<int, LeafNode> relatedLeafNodes = new Dictionary<int, LeafNode>();
     public Dictionary<InteriorNode, double> relatedInteriorNodes = new Dictionary< InteriorNode, double>();
-
-    // public InteriorNode(int index, LeafNode[] relatedLeafNodes, Tree tree): base(index, tree, true){
-    //   foreach(var node in relatedLeafNodes){
-    //     this.relatedLeafNodes[node.index] = node;
-    //   }
-    // }
 
     public InteriorNode(int index, Tree tree) : base(index, tree, true){}
 
@@ -76,33 +71,26 @@ namespace inClassHacking{
       node.relatedInteriorNodes[this] = distance;
     }
 
-    public double getTreeDistanceWithoutRadius(LeafNode other){
-      foreach(var leafNode in this.relatedLeafNodes.Values){
-        if(other == leafNode) return 0;
-      }
-      foreach(var interiorNode in this.relatedInteriorNodes.Keys){
-        foreach(var leafNode in interiorNode.relatedLeafNodes.Values){
-          if(other == leafNode) return this.relatedInteriorNodes[interiorNode];
-        } 
-      }
-      Console.WriteLine("Distance to node can't be found.");
-      return -1;
-    }
-
     public double getTreeDistanceTo(LeafNode other){
       foreach(var leafNode in this.relatedLeafNodes.Values){
         if(other == leafNode) return leafNode.size;
       }
       foreach(var interiorNode in this.relatedInteriorNodes.Keys){
-        foreach(var leafNode in interiorNode.relatedLeafNodes.Values){
-          if(other == leafNode) return leafNode.size+this.relatedInteriorNodes[interiorNode];
-        } 
+        double d = interiorNode.getTreeDistanceTo(other);
+        if(d!=-1) return d+this.relatedInteriorNodes[interiorNode];
       }
       Console.WriteLine("Distance to node can't be found.");
       return -1;
-    }
+    } 
 
-    
+    // public double getMarkerDistances(LeafNode other, List<double> distances){
+    //   if(this == other.relatedNode){
+    //      return distances;
+    //   }
+    //   distances.Add(this.size);
+    //   distances.Add(this.relatedNode.getMarkerDistances(other, distances));
+    //   return distances;
+    // }
   }
 
     public class Tree{
@@ -132,10 +120,7 @@ namespace inClassHacking{
             }
           }
         }
-
-//center circles
         
-//"mirrored" circles
         if(outerNodes[0].getCenterNeighbor() != null){
 
           for(int i=middleNodes.Count-1; i>=0; i--){
@@ -174,9 +159,6 @@ namespace inClassHacking{
         for(int i=0; i<circles.Count; i++){
           circles[i].setCenter(new Point2D(circles[i].getCenter().x+drawingOffsetX, circles[i].getCenter().y+drawingOffsetY));
         }
-
-
-
         return ret;
       }
 
@@ -185,7 +167,4 @@ namespace inClassHacking{
       }
 
     }
-
-
-  
 }

@@ -11,11 +11,8 @@ namespace inClassHacking{
     public double sweepingLength = 0.05;
     double undef = -1;
 
-    List<Edge> edges;
+    List<Edge> edges = new List<Edge>();
     List<Circle> circles;
-    // double[] input;
-    // double s, w, x, y, z;
-    Tree tree;
 
     double[,] distances;
 
@@ -24,34 +21,24 @@ namespace inClassHacking{
     List<LeafNode> nodes = new List<LeafNode>();
 
     public LangsAlgorithm(List<LeafNode> nodes, List<Circle> circles){
-      circles.Reverse();
-      nodes.Reverse();
+      circles.Reverse(); 
+      nodes.Reverse();  //correct order is important for sweeping process (perpendiculars are calculated "to the right" - wrong order leads to infinite loop)
 
       this.circles = circles;
       this.nodes = nodes;
-      // this.tree = tree;
 
-      edges = new List<Edge>(); //list of edges filled based on circles[]
+      // edges = new List<Edge>(); //list of edges filled based on circles[]
+      
     }
 
     public List<Crease> sweepingProcess(){
 
-
-
-      for(int i=0; i<circles.Count-1; i++){
-        edges.Add(new Edge(circles[i], circles[i+1]));
-      }
-      edges.Add(new Edge(circles.Last(), circles[0]));
-
-      // edges.Add(new Edge(circles[3].getCenter(), 0, circles[4].getCenter(), 1));
-      // edges.Add(new Edge(circles[4].getCenter(), 1, circles[5].getCenter(), 2));
-      // edges.Add(new Edge(circles[5].getCenter(), 2, circles[2].getCenter(), 3));
-      // edges.Add(new Edge(circles[2].getCenter(), 3, circles[3].getCenter(), 0));
-
       Console.WriteLine("Add axial creases");
       axialCreases(creases);
 
-      // addMarkers(edges);
+      addEdgesWithMarkers(edges, nodes);
+      Console.WriteLine(edges.Count);
+      Console.WriteLine(circles.Count);
 
       foreach(var e in edges){
         inputEdges.Add(new Edge(e));
@@ -72,103 +59,49 @@ namespace inClassHacking{
         creases.Add(new Crease(circles[i].getCenter(), circles[i+1].getCenter(), Color.Green));
       }
       creases.Add(new Crease(circles[0].getCenter(), circles.Last().getCenter(), Color.Green));
-      
     }
 
-    void addMarkers(List<Edge> edges){
-      // Point2D marker = edges[0].p1 + edges[0].vec*input[1];
-      // edges[0].addMarker(marker);
+    void addEdgesWithMarkers(List<Edge> edges, List<LeafNode> nodes){
+      Edge newEdge;
+      for(int i=0; i<nodes.Count-1; i++){
+        newEdge = new Edge(nodes[i].circle.getCenter(), i, nodes[i+1].circle.getCenter(), i+1);
+        if(nodes[i].relatedNode != nodes[i+1].relatedNode){
+           addMarker(newEdge, nodes[i], nodes[i+1]);
+           
+        }
+        edges.Add(newEdge);
+      }
+      newEdge = new Edge(nodes.Last().circle.getCenter(), nodes.Count-1, nodes[0].circle.getCenter(), 0);
+      edges.Add(newEdge);
 
-      // marker += edges[0].vec*input[5];
-      // edges[0].addMarker(marker);
+      Console.WriteLine(edges.Count);
+    }
 
-      // marker += edges[0].vec*input[7];
-      // edges[0].addMarker(marker);
+    void addMarker(Edge edge, LeafNode node1, LeafNode node2){
+      InteriorNode between = node1.relatedNode;
 
-      // marker = edges[1].p1 + edges[1].vec * input[1];
-      // edges[1].addMarker(marker);
+      if(node1.relatedNode != node2.relatedNode){
+        addMarker(edge, node1.relatedNode, node2);
+      }
+    }
 
-      // marker += edges[1].vec*input[8];
-      // edges[1].addMarker(marker);
+    bool addMarker(Edge edge, InteriorNode inNode, LeafNode node2){
+      if(inNode == node2.relatedNode){
+        edge.addMarker(node2.circle.getCenter()-edge.vec*node2.size);
+        return true;
+      }
 
-      // marker += edges[1].vec * input[10];
-      // edges[1].addMarker(marker);
-
-      // marker = edges[2].p1 + edges[2].vec * input[2];
-      // edges[2].addMarker(marker);
-
-      // marker += edges[2].vec * input[11];
-      // edges[2].addMarker(marker);
-
-      // marker = edges[6].p1 + edges[6].vec*input[6];
-      // edges[6].addMarker(marker);
-
-      // marker += edges[6].vec*input[5];
-      // edges[6].addMarker(marker);
-
-      // marker = edges[5].p1 + edges[5].vec * input[9];
-      // edges[5].addMarker(marker);
-
-      // marker += edges[5].vec * input[8];
-      // edges[5].addMarker(marker);
-
-      // marker += edges[5].vec * input[7];
-      // edges[5].addMarker(marker);
-
-      // marker = edges[4].p2 - edges[4].vec*input[9];
-      // edges[4].addMarker(marker);
-
-      // marker -= edges[4].vec * input[10];
-      // edges[4].addMarker(marker);
-
-      // marker -= edges[4].vec * input[11];
-      // edges[4].addMarker(marker);
-
-      // marker = edges[0].p1 + edges[0].vec*input[4];
-      // edges[0].addMarker(marker);
+      foreach(var next in inNode.relatedInteriorNodes.Keys){
+        if(addMarker(edge, next, node2)){
+          edge.addMarker(edge.markers.Last()-edge.vec*inNode.relatedInteriorNodes[next]);
+          return true;
+        }
+      }
+      return false;
     }
 
     double[,] calculateTreeDistances(){
         double[,] distances = new double[nodes.Count, nodes.Count];
-
-        // for(int i=0; i<nodes.Count; i++){
-        //   distances[i, i] = 0;
-        // }
-
-        // distances[0, 1] = input[0] + input[4];
-        // distances[0, 2] = input[4] + input[5] + input[7] + input[1];
-        // distances[0, 3] = input[4] + input[5] + input[7] + input[8] + input[10] + input[2];
-        // distances[0, 4] = input[4] + input[5] + input[7] + input[8] + input[10] + input[11] + input[3];
-        // distances[0, 5] = input[4] + input[5] + input[7] + input[8] + input[10] + input[11] + circles[5].getRadius();
-        // distances[0, 6] = input[4] + input[5] + input[7] + input[8] + input[9];        
-        // distances[0, 7] = input[4] + input[5] + input[6];
-
-        // distances[1, 2] = input[0] + input[5] + input[7] + input[1];
-        // distances[1, 3] = input[0] + input[5] + input[7] + input[8] + input[10] + input[2];
-        // distances[1, 4] = input[0] + input[5] + input[7] + input[8] + input[10] + input[11] + input[3];
-        // distances[1, 5] = input[0] + input[5] + input[7] + input[8] + input[10] + input[11] + circles[5].getRadius();
-        // distances[1, 6] = input[0] + input[5] + input[7] + input[8] + input[9];
-        // distances[1, 7] = input[0] + input[5] + input[6];
-
-        // distances[2, 3] = input[1] + input[8] + input[10] + input[2];
-        // distances[2, 4] = input[1] + input[8] + input[10] + input[11] + input[3];
-        // distances[2, 5] = input[1] + input[8] + input[10] + input[11] + circles[5].getRadius();
-        // distances[2, 6] = input[1] + input[8] + input[9];
-        // distances[2, 7] = input[1] + input[7] + input[6];
-
-        // distances[3, 4] = input[2] + input[11] + input[3];
-        // distances[3, 5] = input[2] + input[11] + circles[5].getRadius();
-        // distances[3, 6] = input[2] + input[10] + input[9];
-        // distances[3, 7] = input[2] + input[10] + input[8] + input[7] + input[6];
-
-        // distances[4, 5] = input[3] + circles[5].getRadius();
-        // distances[4, 6] = input[3] + input[11] + input[10] + input[9];
-        // distances[4, 7] = input[3] + input[11] + input[10] +input[8] + input[7] + input[6];
-
-        // distances[5, 6] = circles[5].getRadius() + input[11] + input[10] +input[9];
-        // distances[5, 7] = circles[5].getRadius() + input[11] + input[10] +input[8] + input[7] + input[6];
-
-        // distances[6, 7] = input[9] + input[8] + input[7] + input[6];
 
         for(int i=0; i<nodes.Count; i++){
           for(int j=0; j<nodes.Count; j++){
@@ -194,25 +127,35 @@ namespace inClassHacking{
     
       bool again = true;
       Console.WriteLine("sweep");
+      Console.WriteLine(edges.Count);
 
       while(again){
-        Console.WriteLine("again=true\n");
+        // Console.WriteLine("again=true\n");
         drawRivers(creases, edges, initialEdges);      
 
         for(int i=0; i<edges.Count; i++){
           Edge edge = edges[i];
-          Console.WriteLine("edge: " + edge.p1 + ", " + edge.p2);
+          // Console.WriteLine("edge: " + edge.p1 + ", " + edge.p2);
 
-          if(edge.getLength() < 5*sweepingLength){ //contraction event
+          if(edge.getLength() < 3*sweepingLength){ //contraction event
             edges.Remove(edge);
+            Console.WriteLine("remove edge");
           }
           if(edges.Count<3){
+            for(int z=0; z<edges.Count-1; z++){
+              Console.WriteLine("pppp");
+              if(edges[z].p1.getDistance(edges[z+1].p1) > 3*sweepingLength){
+                creases.Add(new Crease(edges[z].p1, edges[z].p2, Color.Red));
+                Console.WriteLine("aaaaa");
+              }
+            }
+            
             return;
           }
 
           //splitting events
           if(edges.Count > 3){ //do not split triangles
-          Console.WriteLine("test for splitting");
+          // Console.WriteLine("test for splitting");
             for(int j=i; j<edges.Count; j++){
               if(i==0 && j==edges.Count-1) continue;
               Edge secondEdge = edges[j];
@@ -305,7 +248,6 @@ namespace inClassHacking{
                 foreach(var marker in splittingEdge2.markers){
                   splittingEdge.addMarker(marker);
                 }
-                
 
                 initialEdges1.Add(new Edge(splittingEdge));
                 e.Add(splittingEdge);
