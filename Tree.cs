@@ -72,17 +72,14 @@ namespace inClassHacking{
     }
 
     public double getTreeDistanceTo(LeafNode other, InteriorNode lastChecked=null){
-      Console.WriteLine(this.index + " to " + other.index);
       foreach(var leafNode in this.relatedLeafNodes.Values){
         if(other == leafNode) return leafNode.size;
       }
       foreach(var interiorNode in this.relatedInteriorNodes.Keys){
         if(interiorNode == lastChecked) continue;
         double d = interiorNode.getTreeDistanceTo(other, this);
-        Console.WriteLine(d);
         if(d!=-1) return d+this.relatedInteriorNodes[interiorNode];
       }
-      Console.WriteLine("Distance to node can't be found.");
       return -1;
     } 
 
@@ -109,7 +106,6 @@ namespace inClassHacking{
 
       public List<LeafNode> calculateCirclePositioning(){
 
-        Console.WriteLine("start");
         List<Circle> circles = new List<Circle>();
         List<LeafNode> ret = new List<LeafNode>();
         Point2D startPosition = new Point2D(0, 0);
@@ -126,7 +122,6 @@ namespace inClassHacking{
             }
           }
         }
-        Console.WriteLine("lists filled");
         
         if(outerNodes[0].getCenterNeighbor() != null){
 
@@ -141,7 +136,6 @@ namespace inClassHacking{
             startPosition.y += middleNodes[i].size;
           }
           LeafNode neighbor = outerNodes[0].getCenterNeighbor();
-          Console.WriteLine(neighbor.circle);
           Point2D thisCircleCenter = new Point2D(neighbor.circle.getCenter());
           thisCircleCenter.x -= (neighbor.size+outerNodes[0].size);
           if(thisCircleCenter.x < drawingOffsetX) drawingOffsetX = thisCircleCenter.x;
@@ -152,9 +146,7 @@ namespace inClassHacking{
           
           // for(int i=outerNodes.Count-1; i>0; i--){
             for(int i=1; i<outerNodes.Count; i++){
-          Console.WriteLine(i + ": " + outerNodes.Count);
             thisCircleCenter = new Point2D(outerNodes[i-1].circle.getCenter());
-          Console.WriteLine("skupupu");
             thisCircleCenter.y -= outerNodes[i].getTreeDistanceTo(outerNodes[i-1]);
             if(thisCircleCenter.y < drawingOffsetY) drawingOffsetY = thisCircleCenter.y;
             outerNodesCircle = new Circle(thisCircleCenter, outerNodes[i].size);
@@ -163,8 +155,6 @@ namespace inClassHacking{
             ret.Add(outerNodes[i]);
           }
         }
-
-        Console.WriteLine("drawing");
 
         drawingOffsetX = -drawingOffsetX+2;
         drawingOffsetY = -drawingOffsetY+2;

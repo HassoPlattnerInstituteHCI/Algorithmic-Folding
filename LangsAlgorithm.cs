@@ -32,19 +32,14 @@ namespace inClassHacking{
     }
 
     public List<Crease> sweepingProcess(){
-
-      Console.WriteLine("Add axial creases");
       axialCreases(creases);
 
       addEdgesWithMarkers(edges, nodes);
-      Console.WriteLine(edges.Count);
-      Console.WriteLine(circles.Count);
 
       foreach(var e in edges){
         inputEdges.Add(new Edge(e));
       }
       
-      Console.WriteLine("Calculate distances"); 
       distances = calculateTreeDistances();
 
       Console.WriteLine("Sweep with following edges: ");
@@ -73,8 +68,6 @@ namespace inClassHacking{
       }
       newEdge = new Edge(nodes.Last().circle.getCenter(), nodes.Count-1, nodes[0].circle.getCenter(), 0);
       edges.Add(newEdge);
-
-      Console.WriteLine(edges.Count);
     }
 
     void addMarker(Edge edge, LeafNode node1, LeafNode node2){
@@ -93,7 +86,6 @@ namespace inClassHacking{
 
       foreach(var next in inNode.relatedInteriorNodes.Keys){
         if(next == lastChecked) continue;
-        Console.WriteLine(inNode.index + " to " + node2.index);
         if(addMarker(edge, next, node2, inNode)){
           edge.addMarker(edge.markers.Last()-edge.vec*inNode.relatedInteriorNodes[next]);
           return true;
@@ -129,7 +121,6 @@ namespace inClassHacking{
     
       bool again = true;
       Console.WriteLine("sweep");
-      Console.WriteLine(edges.Count);
 
       while(again){
         // Console.WriteLine("again=true\n");
@@ -141,17 +132,13 @@ namespace inClassHacking{
 
           if(edge.getLength() < 3*sweepingLength){ //contraction event
             edges.Remove(edge);
-            Console.WriteLine("remove edge " + edges.Count);
-            foreach(var ed in edges) Console.WriteLine(ed.vec);
           }
           if(linedUp(edges)) return;
 
           if(edges.Count<3){
             for(int z=0; z<edges.Count-1; z++){
-              Console.WriteLine("pppp");
               if(edges[z].p1.getDistance(edges[z+1].p1) > 3*sweepingLength){
                 creases.Add(new Crease(edges[z].p1, edges[z].p2, Color.Red));
-                Console.WriteLine("aaaaa");
               }
             }
             
@@ -160,7 +147,6 @@ namespace inClassHacking{
 
           //splitting events
           if(edges.Count > 3){ //do not split triangles
-          // Console.WriteLine("test for splitting");
             for(int j=i; j<edges.Count; j++){
               if(i==0 && j==edges.Count-1) continue;
               Edge secondEdge = edges[j];
@@ -182,7 +168,7 @@ namespace inClassHacking{
                   equationSolution = edge.p1.getDistance(secondEdge.p1) + AA_ + CC_;
                 }else{ //the according edge was already splitted so we try the other edge of this vertex
                   
-                  Edge altSecondEdge = edges[j-1];//(j!=0) ? edges[j-1] : edges.Last();
+                  Edge altSecondEdge = (j!=0) ? edges[j-1] : edges.Last();
                   Edge altInputEdge = inputEdges[altSecondEdge.index1-1];
 
                   if(altSecondEdge.vec == altInputEdge.vec){
@@ -198,9 +184,8 @@ namespace inClassHacking{
                 if(equationSolution < distances[edge.index1, secondEdge.index1]){
 
                 again = false;
-                Console.WriteLine("splitting event");
 
-                Console.WriteLine("split between " + edge.index1 + " and " + secondEdge.index1);
+                Console.WriteLine("split between " + edge.index1 + " and " + secondEdge.index1 + " with length: ");
                 Console.WriteLine(edge.p1.getDistance(secondEdge.p1));
 
                 //avoid splitting same edges twice
@@ -272,10 +257,8 @@ namespace inClassHacking{
     }
 
     bool linedUp(List<Edge> edges){
-      foreach(var edge in edges) Console.WriteLine(edge.vec);
       for(int i=1; i<edges.Count; i++){
         if(edges[i].vec != edges[i-1].vec && edges[i].vec != edges[i-1].vec.getReverse()){
-          Console.WriteLine(edges[i].vec + " != " + edges[i-1].vec);
           return false;
         }
       }

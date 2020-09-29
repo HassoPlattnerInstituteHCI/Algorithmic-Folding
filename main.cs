@@ -48,7 +48,6 @@ namespace inClassHacking{
 
       foreach(var node in nodes){
         circles.Add(node.circle);
-        Console.WriteLine(node.circle.getCenter());
       }
 
       LangsAlgorithm lang = new LangsAlgorithm(nodes, circles);
