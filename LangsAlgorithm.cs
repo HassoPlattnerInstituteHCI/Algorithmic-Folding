@@ -85,14 +85,16 @@ namespace inClassHacking{
       }
     }
 
-    bool addMarker(Edge edge, InteriorNode inNode, LeafNode node2){
+    bool addMarker(Edge edge, InteriorNode inNode, LeafNode node2, InteriorNode lastChecked=null){
       if(inNode == node2.relatedNode){
         edge.addMarker(node2.circle.getCenter()-edge.vec*node2.size);
         return true;
       }
 
       foreach(var next in inNode.relatedInteriorNodes.Keys){
-        if(addMarker(edge, next, node2)){
+        if(next == lastChecked) continue;
+        Console.WriteLine(inNode.index + " to " + node2.index);
+        if(addMarker(edge, next, node2, inNode)){
           edge.addMarker(edge.markers.Last()-edge.vec*inNode.relatedInteriorNodes[next]);
           return true;
         }
@@ -139,8 +141,11 @@ namespace inClassHacking{
 
           if(edge.getLength() < 3*sweepingLength){ //contraction event
             edges.Remove(edge);
-            Console.WriteLine("remove edge");
+            Console.WriteLine("remove edge " + edges.Count);
+            foreach(var ed in edges) Console.WriteLine(ed.vec);
           }
+          if(linedUp(edges)) return;
+
           if(edges.Count<3){
             for(int z=0; z<edges.Count-1; z++){
               Console.WriteLine("pppp");
@@ -264,6 +269,17 @@ namespace inClassHacking{
         }
         edges = updateVerticesandMarkers(edges); //update vertices of polygon
       }
+    }
+
+    bool linedUp(List<Edge> edges){
+      foreach(var edge in edges) Console.WriteLine(edge.vec);
+      for(int i=1; i<edges.Count; i++){
+        if(edges[i].vec != edges[i-1].vec && edges[i].vec != edges[i-1].vec.getReverse()){
+          Console.WriteLine(edges[i].vec + " != " + edges[i-1].vec);
+          return false;
+        }
+      }
+      return true;
     }
 
 

@@ -104,6 +104,14 @@ namespace inClassHacking
     public static Vector operator*(Vector v, double d){
       return new Vector(v.x*d, v.y*d);
     }
+
+    public static bool operator==(Vector v1, Vector v2){
+      return (v1.x==v2.x && v1.y==v2.y);
+    }
+
+    public static bool operator!=(Vector v1, Vector v2){
+      return !(v1==v2);
+    }
     
     public override string ToString(){
       return ("(" + this.x + " ," + this.y + ")");

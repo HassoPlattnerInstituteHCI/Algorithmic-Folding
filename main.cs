@@ -36,11 +36,11 @@ namespace inClassHacking{
       inNode1.addInteriorNode(inNode2, 1);
 
       LeafNode legs = new LeafNode(12, 1, inNode2, tree);
-      // inNode2.addInteriorNode(inNode3, 1);
-      // LeafNode legs2 = new LeafNode(13, 1, inNode3, tree);
-      LeafNode tail = new LeafNode(13, 1, inNode2, tree, true);
+      inNode2.addInteriorNode(inNode3, 1);
+      LeafNode legs2 = new LeafNode(13, 1, inNode3, tree);
+      LeafNode tail = new LeafNode(14, 1, inNode3, tree, true);
 
-      FileHandler treeFileHandler = new FileHandler(DEBUG, 20, 200);
+      FileHandler treeFileHandler = new FileHandler(DEBUG, 20, 20, 200);
       treeFileHandler.exportSVG("tree.svg", tree);
 
       List<Circle> circles = new List<Circle>();
@@ -54,8 +54,9 @@ namespace inClassHacking{
       LangsAlgorithm lang = new LangsAlgorithm(nodes, circles);
       List<Crease> creases = lang.sweepingProcess();
 
-      double paperSize = tree.getPaperSize();
-      FileHandler f = new FileHandler(DEBUG, paperSize, zoomFactor); 
+      double paperSizeX = tree.getPaperSizeX();
+      double paperSizeY = tree.getPaperSizeY();
+      FileHandler f = new FileHandler(DEBUG, paperSizeX, paperSizeY, zoomFactor); 
       
       f.exportSVG("export.svg", circles, creases);
 
