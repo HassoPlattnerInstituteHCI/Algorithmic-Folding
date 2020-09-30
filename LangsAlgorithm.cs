@@ -15,14 +15,15 @@ namespace inClassHacking{
     List<Circle> circles;
 
     double[,] distances;
+    int removedEdgesCounter = 0;
 
     List<Crease> creases = new List<Crease>();
     List<Edge> inputEdges = new List<Edge>();
     List<LeafNode> nodes = new List<LeafNode>();
 
     public LangsAlgorithm(List<LeafNode> nodes, List<Circle> circles){
-      circles.Reverse(); 
-      nodes.Reverse();  //correct order is important for sweeping process (perpendiculars are calculated "to the right" - wrong order leads to infinite loop)
+      // circles.Reverse(); 
+      // nodes.Reverse();  //correct order is important for sweeping process (perpendiculars are calculated "to the right" - wrong order leads to infinite loop)
 
       this.circles = circles;
       this.nodes = nodes;
@@ -34,16 +35,49 @@ namespace inClassHacking{
     public List<Crease> sweepingProcess(){
       axialCreases(creases);
 
+      Console.WriteLine("Circles: ");
+      foreach(var c in circles){
+        Console.WriteLine(c.getCenter());
+      }
+      Console.WriteLine("\nNodes: ");
+      foreach(var n in nodes){
+        Console.WriteLine(n.circle.getCenter());
+      }
+      
+
       addEdgesWithMarkers(edges, nodes);
+
+      
 
       foreach(var e in edges){
         inputEdges.Add(new Edge(e));
       }
-      
+
+
       distances = calculateTreeDistances();
+
+      Console.WriteLine();
+      for(int i=0; i<Math.Sqrt(distances.Length); i++){
+        for(int j=0; j<Math.Sqrt(distances.Length); j++){
+          Console.Write(distances[i, j] + "\t");
+        }
+        Console.WriteLine();
+      }
+
+      Console.WriteLine();
+
+      for(int i=0; i<Math.Sqrt(distances.Length); i++){
+        for(int j=0; j<Math.Sqrt(distances.Length); j++){
+          Console.Write(circles[i].getCenter().getDistance(circles[j].getCenter()) + "\t");
+        }
+        Console.WriteLine();
+      }
 
       Console.WriteLine("Sweep with following edges: ");
       foreach(var edge in edges) Console.WriteLine(edge.p1 + ", " + edge.p2);
+
+      // Console.WriteLine("\nedge4: " + edges[4].p1 + edges[4].p2 + edges[4].vec);
+      // Console.WriteLine("\nedge4: " + inputEdges[4].p1 + inputEdges[4].p2 + inputEdges[4].vec);
       sweep(creases, edges, inputEdges);
 
       return creases;
@@ -67,12 +101,13 @@ namespace inClassHacking{
         edges.Add(newEdge);
       }
       newEdge = new Edge(nodes.Last().circle.getCenter(), nodes.Count-1, nodes[0].circle.getCenter(), 0);
+      if(nodes[0].relatedNode != nodes.Last().relatedNode){
+        addMarker(newEdge, nodes.Last(), nodes[0]);
+      }
       edges.Add(newEdge);
     }
 
     void addMarker(Edge edge, LeafNode node1, LeafNode node2){
-      InteriorNode between = node1.relatedNode;
-
       if(node1.relatedNode != node2.relatedNode){
         addMarker(edge, node1.relatedNode, node2);
       }
@@ -116,34 +151,69 @@ namespace inClassHacking{
         }
       }
     }
+
+    // int rec = 20;
+
+
+
+
+
+
+
+
     
-    void sweep(List<Crease> creases, List<Edge> edges, List<Edge> initialEdges){
+    public void sweep(List<Crease> creases, List<Edge> edges, List<Edge> initialEdges){
     
       bool again = true;
       Console.WriteLine("sweep");
 
+
+      Console.WriteLine("Edges: ");
+      foreach(var e in edges){
+        Console.WriteLine(e.index1 + ": " + e.p1 + "\t " + e.p2 +"\tVector: " + e.vec);
+        foreach(var marker in e.markers){
+          Console.WriteLine("Marker: " + marker);
+        }
+      }
+      
+      Console.WriteLine("\nInputEdges: ");
+      foreach(var e in inputEdges){
+        Console.WriteLine(e.index1 + ": " + e.p1 + "\t " + e.p2 +"\tVector: " + e.vec);
+      }
+
       while(again){
+
+
+        parallelSweep(edges, sweepingLength); //sweep every edge
+        edges = updateVerticesandMarkers(edges); //update vertices of polygon
+
         // Console.WriteLine("again=true\n");
-        drawRivers(creases, edges, initialEdges);      
+        drawRivers(creases, edges, initialEdges);  
+        
+      // rec--;
+      // if(rec<0) return;    
 
         for(int i=0; i<edges.Count; i++){
           Edge edge = edges[i];
           // Console.WriteLine("edge: " + edge.p1 + ", " + edge.p2);
 
-          if(edge.getLength() < 3*sweepingLength){ //contraction event
+          if(edge.getLength() < 2*sweepingLength){ //contraction event
             edges.Remove(edge);
+            // inputEdges.Remove(edge);
+            removedEdgesCounter++;
+            Console.WriteLine("remove " + edge.p1 + edge.p2);
           }
-          if(linedUp(edges)) return;
 
           if(edges.Count<3){
             for(int z=0; z<edges.Count-1; z++){
-              if(edges[z].p1.getDistance(edges[z+1].p1) > 3*sweepingLength){
+              if(edges[z].getLength() > 2*sweepingLength){
                 creases.Add(new Crease(edges[z].p1, edges[z].p2, Color.Red));
               }
             }
-            
             return;
           }
+
+          if(linedUp(edges)) return; 
 
           //splitting events
           if(edges.Count > 3){ //do not split triangles
@@ -153,6 +223,7 @@ namespace inClassHacking{
               if(secondEdge==null) continue;
               if(Math.Abs(edge.index1 - secondEdge.index1) <= 1) continue; //do not split edges next to each other
               if(Math.Abs(edge.index1 - secondEdge.index1) == edges.Count) continue; //do not split last and first edge (next to each other)
+              if(edge.vec == secondEdge.vec) continue;
 
                 double equationSolution = Int64.MaxValue;
                 double AA_ = undef;
@@ -160,26 +231,53 @@ namespace inClassHacking{
                 Point2D A_ = null;
                 Point2D C_ = null;
 
-                if(secondEdge.vec == inputEdges[secondEdge.index1-1].vec && edge.vec == inputEdges[i].vec){
-                  C_ = Folding.findIntersection(inputEdges[secondEdge.index1-1].vec, inputEdges[secondEdge.index1-1].p1, secondEdge.vec.getNormalRight(), secondEdge.p1);
-                  CC_ = inputEdges[secondEdge.index1-1].p1.getDistance(C_);
+                if(secondEdge.vec == inputEdges[secondEdge.index1].vec && edge.vec == inputEdges[i].vec){
+                  // if(true){
+                  C_ = Folding.findIntersection(inputEdges[secondEdge.index1].vec, inputEdges[secondEdge.index1].p1, secondEdge.vec.getNormalRight(), secondEdge.p1);
+                  CC_ = inputEdges[secondEdge.index1].p1.getDistance(C_);
                   A_ = Folding.findIntersection(inputEdges[i].vec, inputEdges[i].p1, edge.vec.getNormalRight(), edge.p1);
                   AA_ = inputEdges[i].p1.getDistance(A_);
                   equationSolution = edge.p1.getDistance(secondEdge.p1) + AA_ + CC_;
+                  // Console.WriteLine("first");
+
+                  equationSolution = Math.Round(equationSolution, 2);
+                  // creases.Add(new Crease(C_, secondEdge.p1, Color.Grey));
+                  // creases.Add(new Crease(C_, inputEdges[j].p1, Color.Grey));
+                  // creases.Add(new Crease(A_, edge.p1, Color.Grey));
+                  // creases.Add(new Crease(A_, inputEdges[i].p1, Color.Grey));
+                  // creases.Add(new Crease(edge.p1, secondEdge.p1, Color.Blue));
+
+                  
                 }else{ //the according edge was already splitted so we try the other edge of this vertex
                   
+                  //i or j??
+                  //
                   Edge altSecondEdge = (j!=0) ? edges[j-1] : edges.Last();
-                  Edge altInputEdge = inputEdges[altSecondEdge.index1-1];
+                  Edge altInputEdge = (j!=0) ? inputEdges[j-1] : inputEdges.Last();
 
                   if(altSecondEdge.vec == altInputEdge.vec){
                     C_ = Folding.findIntersection(altInputEdge.vec, altInputEdge.p2, altSecondEdge.vec.getNormalRight(), altSecondEdge.p2);
                     CC_ = altInputEdge.p2.getDistance(C_);
-                    A_ = Folding.findIntersection(inputEdges[i].vec, inputEdges[i].p1, edge.vec.getNormalRight(), edge.p1);
-                    AA_ = inputEdges[i].p1.getDistance(A_);
+                    A_ = Folding.findIntersection(inputEdges[edge.index1].vec, inputEdges[edge.index1].p1, edge.vec.getNormalRight(), edge.p1);
+                    AA_ = inputEdges[edge.index1].p1.getDistance(A_);
                     equationSolution = edge.p1.getDistance(secondEdge.p1) + AA_ + CC_;
-
+                    // Console.WriteLine("second");
+                    // creases.Add(new Crease(C_, secondEdge.p1, Color.Grey));
+                  // creases.Add(new Crease(C_, inputEdges[secondEdge.index1-1].p1, Color.Grey));
+                  // creases.Add(new Crease(A_, edge.p1, Color.Grey));
+                  // creases.Add(new Crease(A_, inputEdges[i].p1, Color.Grey));
+                  // creases.Add(new Crease(edge.p1, secondEdge.p1, Color.Blue));
                   }
                 }
+
+                // Console.WriteLine(edge.index1 + " & " + secondEdge.index1+": ");
+                // Console.WriteLine(equationSolution);
+                // Console.WriteLine(distances[edge.index1, secondEdge.index1]);
+                // Console.WriteLine(edge.p1.getDistance(secondEdge.p1));
+                // Console.WriteLine("AA_: " + AA_ + "| CC_: " + CC_);
+                // Console.WriteLine("1st Edge: " + edge.index1 + " == " + inputEdges[edge.index1].index1);
+                // Console.WriteLine("Second: " + secondEdge.index1 + " == " + inputEdges[secondEdge.index1].index1);
+                // Console.WriteLine();
 
                 if(equationSolution < distances[edge.index1, secondEdge.index1]){
 
@@ -250,9 +348,7 @@ namespace inClassHacking{
               }
             }
           }
-          edge.parallelSweep(sweepingLength); //sweep every edge
         }
-        edges = updateVerticesandMarkers(edges); //update vertices of polygon
       }
     }
 
@@ -263,6 +359,12 @@ namespace inClassHacking{
         }
       }
       return true;
+    }
+
+    void parallelSweep(List<Edge> edges, double sweepingLength){
+      foreach(var edge in edges){
+        edge.parallelSweep(sweepingLength);
+      }
     }
 
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace inClassHacking{
 
@@ -106,7 +107,6 @@ namespace inClassHacking{
 
       public List<LeafNode> calculateCirclePositioning(){
 
-        List<Circle> circles = new List<Circle>();
         List<LeafNode> ret = new List<LeafNode>();
         Point2D startPosition = new Point2D(0, 0);
 
@@ -122,53 +122,86 @@ namespace inClassHacking{
             }
           }
         }
+
+        Point2D thisCircleCenter;
+        Circle outerNodesCircle;
+
         
         if(outerNodes[0].getCenterNeighbor() != null){
 
-          for(int i=middleNodes.Count-1; i>=0; i--){
-              if (i!=middleNodes.Count-1){
-                startPosition.y += middleNodes[i].getTreeDistanceTo(middleNodes[i+1])-middleNodes[i].size-middleNodes[i+1].size;
-              }
-            startPosition.y += middleNodes[i].size;
-            middleNodes[i].circle = new Circle(new Point2D(startPosition), middleNodes[i].size);
-            circles.Add(middleNodes[i].circle);
-            ret.Add(middleNodes[i]);
-            startPosition.y += middleNodes[i].size;
-          }
+          // for(int i=middleNodes.Count-1; i>=0; i--){
+          //     if (i!=middleNodes.Count-1){
+          //       startPosition.y += middleNodes[i].getTreeDistanceTo(middleNodes[i+1])-middleNodes[i].size-middleNodes[i+1].size;
+          //     }
+            startPosition.y += middleNodes[0].size;
+            middleNodes[0].circle = new Circle(new Point2D(startPosition), middleNodes[0].size);
+            ret.Add(middleNodes[0]);
+            startPosition.y += middleNodes[0].size;
+          // }
           LeafNode neighbor = outerNodes[0].getCenterNeighbor();
-          Point2D thisCircleCenter = new Point2D(neighbor.circle.getCenter());
+          thisCircleCenter = new Point2D(neighbor.circle.getCenter());
           thisCircleCenter.x -= (neighbor.size+outerNodes[0].size);
           if(thisCircleCenter.x < drawingOffsetX) drawingOffsetX = thisCircleCenter.x;
-          Circle outerNodesCircle = new Circle(thisCircleCenter, outerNodes[0].size);
-          circles.Add(outerNodesCircle);
+          outerNodesCircle = new Circle(thisCircleCenter, outerNodes[0].size);
           outerNodes[0].circle = outerNodesCircle;
           ret.Add(outerNodes[0]);
-          
+        }
+        else{ //NEEDS TO BE TESTED
+          thisCircleCenter = new Point2D(startPosition);
+          thisCircleCenter.x -= (outerNodes[0].size);
+          if(thisCircleCenter.x < drawingOffsetX) drawingOffsetX = thisCircleCenter.x;
+          outerNodesCircle = new Circle(thisCircleCenter, outerNodes[0].size);
+          outerNodes[0].circle = outerNodesCircle;
+          ret.Add(outerNodes[0]);
+        }
           // for(int i=outerNodes.Count-1; i>0; i--){
             for(int i=1; i<outerNodes.Count; i++){
-            thisCircleCenter = new Point2D(outerNodes[i-1].circle.getCenter());
-            thisCircleCenter.y -= outerNodes[i].getTreeDistanceTo(outerNodes[i-1]);
-            if(thisCircleCenter.y < drawingOffsetY) drawingOffsetY = thisCircleCenter.y;
-            outerNodesCircle = new Circle(thisCircleCenter, outerNodes[i].size);
-            circles.Add(outerNodesCircle);
-            outerNodes[i].circle = outerNodesCircle;
-            ret.Add(outerNodes[i]);
+              thisCircleCenter = new Point2D(outerNodes[i-1].circle.getCenter());
+              thisCircleCenter.y += outerNodes[i].getTreeDistanceTo(outerNodes[i-1]);
+              if(thisCircleCenter.y < drawingOffsetY) drawingOffsetY = thisCircleCenter.y;
+
+              if(outerNodes[i].getCenterNeighbor() == null){
+                thisCircleCenter.x = -outerNodes[i].size;
+              }else{
+                thisCircleCenter.x = -outerNodes[i].size - outerNodes[i].getCenterNeighbor().size;
+              }
+              if(thisCircleCenter.x < drawingOffsetX) drawingOffsetX = thisCircleCenter.x;
+
+              outerNodesCircle = new Circle(thisCircleCenter, outerNodes[i].size);
+              outerNodes[i].circle = outerNodesCircle;
+              ret.Add(outerNodes[i]);
+            }
+
+          if(outerNodes.Last().getCenterNeighbor() != null){
+            Circle middleCircle;
+            Point2D lowerPosition = new Point2D(outerNodes.Last().circle.getCenter());
+            lowerPosition.x = 0;
+            for(int i=middleNodes.Count-1; i>0; i--){
+              middleCircle = new Circle(new Point2D(lowerPosition), middleNodes[i].size);
+              middleNodes[i].circle = middleCircle;
+              ret.Add(middleNodes[i]);
+
+              if(i!=1){
+                Console.WriteLine("change lower y");
+                Console.WriteLine(lowerPosition);
+                lowerPosition.y -= middleNodes[i].getTreeDistanceTo(middleNodes[i-1]);
+                Console.WriteLine(lowerPosition);
+              }
+
+            }
           }
-        }
+        // }
 
         drawingOffsetX = -drawingOffsetX+2;
         drawingOffsetY = -drawingOffsetY+2;
-        for(int i=0; i<circles.Count; i++){
-          circles[i].setCenter(new Point2D(circles[i].getCenter().x+drawingOffsetX, circles[i].getCenter().y+drawingOffsetY));
-          if(circles[i].getCenter().y > maxY) maxY = circles[i].getCenter().y;
+        for(int i=0; i<ret.Count; i++){
+          ret[i].circle.setCenter(new Point2D(ret[i].circle.getCenter().x+drawingOffsetX, ret[i].circle.getCenter().y+drawingOffsetY));
+          if(ret[i].circle.getCenter().y > maxY) maxY = ret[i].circle.getCenter().y;
         }
         return ret;
       }
 
       public double getPaperSizeX(){
-        // if(drawingOffsetX>drawingOffsetY && drawingOffsetX>maxY) return 2*drawingOffsetX;
-        // if(drawingOffsetY>maxY) return 2*drawingOffsetY;
-        // return maxY;
         return 2*drawingOffsetX;
       }
 

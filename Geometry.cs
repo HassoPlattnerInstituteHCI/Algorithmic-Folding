@@ -27,6 +27,10 @@ namespace inClassHacking
             );
             return dist;
         }
+
+        public Point2D mirrored(double paperSize){
+          return new Point2D(paperSize-this.x, this.y);
+        }
     
 
         public static bool operator==(Point2D p1, Point2D p2){

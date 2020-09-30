@@ -38,6 +38,7 @@ namespace inClassHacking{
       LeafNode legs = new LeafNode(12, 1, inNode2, tree);
       inNode2.addInteriorNode(inNode3, 1);
       LeafNode legs2 = new LeafNode(13, 1, inNode3, tree);
+      LeafNode test = new LeafNode(15, 1, inNode2, tree, true);
       LeafNode tail = new LeafNode(14, 1, inNode3, tree, true);
 
       FileHandler treeFileHandler = new FileHandler(DEBUG, 20, 20, 200);
@@ -57,6 +58,24 @@ namespace inClassHacking{
       double paperSizeY = tree.getPaperSizeY();
       FileHandler f = new FileHandler(DEBUG, paperSizeX, paperSizeY, zoomFactor); 
       
+
+      // List<Edge> e = new List<Edge>();
+      // List<Edge> e2 = new List<Edge>();
+      // e.Add(new Edge(circles[0].getCenter(),0, circles[2].getCenter(),1));
+      // e.Add(new Edge(circles[2].getCenter(), 1, circles[2].getCenter().mirrored(paperSizeX), 2));
+      // e.Add(new Edge(circles[2].getCenter().mirrored(paperSizeX), 2, circles[0].getCenter(), 0));
+      // e2.Add(new Edge(circles[0].getCenter(),0, circles[2].getCenter(),1));
+      // e2.Add(new Edge(circles[2].getCenter(), 1, circles[2].getCenter().mirrored(paperSizeX), 2));
+      // e2.Add(new Edge(circles[2].getCenter().mirrored(paperSizeX), 2, circles[0].getCenter(), 0));
+
+      // foreach(var edge in e2){
+      //   creases.Add(new Crease(edge.p1, edge.p1, Color.Grey));
+      // }
+
+
+      // lang.sweep(creases, e, e2);
+
+
       f.exportSVG("export.svg", circles, creases);
 
       // treeFunction();
