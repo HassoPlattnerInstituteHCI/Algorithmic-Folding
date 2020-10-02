@@ -12,7 +12,7 @@ namespace inClassHacking{
     double undef = -1;
 
     List<Edge> edges = new List<Edge>();
-    List<Circle> circles;
+    List<Circle> circles = new List<Circle>();
 
     double[,] distances;
     int removedEdgesCounter = 0;
@@ -21,38 +21,49 @@ namespace inClassHacking{
     List<Edge> inputEdges = new List<Edge>();
     List<LeafNode> nodes = new List<LeafNode>();
 
-    public LangsAlgorithm(List<LeafNode> nodes, List<Circle> circles){
-      // circles.Reverse(); 
-      // nodes.Reverse();  //correct order is important for sweeping process (perpendiculars are calculated "to the right" - wrong order leads to infinite loop)
+    public LangsAlgorithm(List<LeafNode> nodes){
+       //correct order of circles and nodes is important for sweeping process (perpendiculars are calculated "to the right" - wrong order leads to infinite loop as the polygon would grow)
 
-      this.circles = circles;
-      this.nodes = nodes;
+      for(int i=0; i<nodes.Count; i++){
+        this.circles.Add(nodes[i].circle);
+        this.nodes.Add(nodes[i]);
+      }
+      // this.nodes = nodes;
 
       // edges = new List<Edge>(); //list of edges filled based on circles[]
       
     }
 
+    public LangsAlgorithm(List<Circle> circles){
+      this.circles = circles;
+    }
+
     public List<Crease> sweepingProcess(){
       axialCreases(creases);
 
-      Console.WriteLine("Circles: ");
-      foreach(var c in circles){
-        Console.WriteLine(c.getCenter());
-      }
-      Console.WriteLine("\nNodes: ");
-      foreach(var n in nodes){
-        Console.WriteLine(n.circle.getCenter());
-      }
+      // Console.WriteLine("Circles: ");
+      // foreach(var c in circles){
+      //   Console.WriteLine(c.getCenter());
+      // }
+      // Console.WriteLine("\nNodes: ");
+      // foreach(var n in nodes){
+      //   Console.WriteLine(n.circle.getCenter());
+      // }
       
+      // addEdgesWithMarkers(edges, nodes);
 
-      addEdgesWithMarkers(edges, nodes);
-
+      Edge newEdge;
+      for(int i=0; i<circles.Count-1; i++){
+        newEdge = new Edge(circles[i].getCenter(), i, circles[i+1].getCenter(), i+1);
+        edges.Add(newEdge);
+      }
+      edges.Add(new Edge(circles.Last().getCenter(), circles.Count-1, circles[0].getCenter(), 0));
+      
       
 
       foreach(var e in edges){
         inputEdges.Add(new Edge(e));
       }
-
 
       distances = calculateTreeDistances();
 
@@ -130,11 +141,20 @@ namespace inClassHacking{
     }
 
     double[,] calculateTreeDistances(){
-        double[,] distances = new double[nodes.Count, nodes.Count];
+        // double[,] distances = new double[nodes.Count, nodes.Count];
 
-        for(int i=0; i<nodes.Count; i++){
-          for(int j=0; j<nodes.Count; j++){
-            distances[i, j] = nodes[i].getTreeDistanceTo(nodes[j]);
+        // for(int i=0; i<nodes.Count; i++){
+        //   for(int j=0; j<nodes.Count; j++){
+        //     distances[i, j] = nodes[i].getTreeDistanceTo(nodes[j]);
+        //   }
+        // }
+
+        double[,] distances = new double[circles.Count, circles.Count];
+
+        for(int i=0; i<circles.Count;i++){
+          distances[i, i]=0;
+          for(int j=i; j<circles.Count; j++){
+            distances[i, j] = circles[i].getCenter().getDistance(circles[j].getCenter());
           }
         }
 
@@ -152,7 +172,7 @@ namespace inClassHacking{
       }
     }
 
-    // int rec = 20;
+    int rec = 100;
 
 
 
@@ -183,15 +203,17 @@ namespace inClassHacking{
 
       while(again){
 
-
         parallelSweep(edges, sweepingLength); //sweep every edge
         edges = updateVerticesandMarkers(edges); //update vertices of polygon
 
-        // Console.WriteLine("again=true\n");
+        // Console.WriteLine(edges.Count);
+        // foreach(var edge in edges){
+        //   Console.WriteLine(edge.p1);
+        // }
         drawRivers(creases, edges, initialEdges);  
         
-      // rec--;
-      // if(rec<0) return;    
+      rec--;
+      if(rec<0) return;    
 
         for(int i=0; i<edges.Count; i++){
           Edge edge = edges[i];
@@ -246,7 +268,6 @@ namespace inClassHacking{
                   // creases.Add(new Crease(A_, edge.p1, Color.Grey));
                   // creases.Add(new Crease(A_, inputEdges[i].p1, Color.Grey));
                   // creases.Add(new Crease(edge.p1, secondEdge.p1, Color.Blue));
-
                   
                 }else{ //the according edge was already splitted so we try the other edge of this vertex
                   

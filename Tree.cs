@@ -146,7 +146,7 @@ namespace inClassHacking{
           outerNodes[0].circle = outerNodesCircle;
           ret.Add(outerNodes[0]);
         }
-        else{ //NEEDS TO BE TESTED
+        else{ 
           thisCircleCenter = new Point2D(startPosition);
           thisCircleCenter.x -= (outerNodes[0].size);
           if(thisCircleCenter.x < drawingOffsetX) drawingOffsetX = thisCircleCenter.x;
@@ -208,6 +208,90 @@ namespace inClassHacking{
       public double getPaperSizeY(){
         return maxY;
       }
+
+      public List<LeafNode> exampleBeetleNodes(){
+
+        List<LeafNode> nodes = new List<LeafNode>();
+        List<InteriorNode> inNodes = new List<InteriorNode>();
+        int i=0;
+
+        foreach(var n in this.treeNodes){
+          if(n.GetType() == typeof(LeafNode)){
+              LeafNode Lnode = (LeafNode) n;
+              i++;
+              nodes.Add(Lnode);
+              Lnode.circle = new Circle(new Point2D(0, 0), 0);
+            }else{
+              InteriorNode Inode = (InteriorNode) n;
+              inNodes.Add(Inode);
+            }
+        }
+
+        // nodes[0].circle = new Circle(new Point2D(0, 0), nodes[0].size);
+        // nodes[1].circle = new Circle(new Point2D(-nodes[1].size-nodes[0].size, 0), nodes[1].size);
+
+        // nodes[7].circle = new Circle(new Point2D(0, pythagorean(nodes[0].size + nodes[1].size, nodes[1].size + inNodes[0].relatedInteriorNodes[inNodes[1]])), nodes[7].size);
+
+        // nodes[6].circle = new Circle(new Point2D(0, nodes[7].circle.getCenter().y + inNodes[1].relatedInteriorNodes[inNodes[2]] + inNodes[2].relatedInteriorNodes[inNodes[3]]), nodes[6].size);
+
+        // nodes[2].circle = new Circle(new Point2D(-nodes[0].size-2*nodes[1].size- inNodes[0].relatedInteriorNodes[inNodes[1]] - inNodes[1].relatedInteriorNodes[inNodes[2]], 0), nodes[2].size);
+
+        // nodes[3].circle = new Circle(new Point2D(nodes[2].circle.getCenter().x, 2*nodes[2].size+inNodes[2].relatedInteriorNodes[inNodes[3]]+inNodes[3].relatedInteriorNodes[inNodes[4]]+nodes[3].size), nodes[3].size);
+
+        // nodes[4].circle = new Circle(new Point2D(-nodes[4].size, -2*nodes[2].circle.getCenter().x), nodes[4].size);
+
+        // foreach(var node in nodes){
+        //   if(node.circle.getCenter().x < drawingOffsetX) drawingOffsetX = node.circle.getCenter().x;
+        //   if(node.circle.getCenter().y < drawingOffsetY) drawingOffsetY = node.circle.getCenter().y;
+        // }
+
+        // drawingOffsetX = -drawingOffsetX+2;
+        // drawingOffsetY = -drawingOffsetY+2;
+
+        // foreach(var node in nodes){
+        //   node.circle.setCenter(new Point2D(node.circle.getCenter().x+drawingOffsetX, node.circle.getCenter().y+drawingOffsetY));
+        // }
+        List<Circle> circles = Positioning.calculateCirclePositioning();
+        for(int j=0; j<circles.Count; j++){
+          nodes[j].circle = circles[j];
+        }
+
+        return nodes;
+
+      }
+
+      public static Tree exampleBeetleTree(){
+        Tree tree = new Tree();
+
+        InteriorNode inNode1 = new InteriorNode(0, tree);
+        InteriorNode inNode2 = new InteriorNode(1, tree);
+        InteriorNode inNode3 = new InteriorNode(2, tree);
+        InteriorNode inNode4 = new InteriorNode(3, tree);
+        InteriorNode inNode5 = new InteriorNode(4, tree);
+        InteriorNode inNode6 = new InteriorNode(5, tree);
+        LeafNode head = new LeafNode(10, 1, inNode1, tree, true);
+        LeafNode antenna = new LeafNode(11, 4, inNode1, tree);
+        inNode1.addInteriorNode(inNode2, 1);
+        LeafNode middle1 = new LeafNode(12, 1, inNode2, tree, true);
+        inNode2.addInteriorNode(inNode3, 1);
+        LeafNode legs1 = new LeafNode(13, 4, inNode3, tree);
+        inNode3.addInteriorNode(inNode4, 1);
+        LeafNode middle2 = new LeafNode(14, 1, inNode4, tree, true);
+        inNode4.addInteriorNode(inNode5, 1);
+        LeafNode legs2 = new LeafNode(15, 6, inNode5, tree);
+        inNode5.addInteriorNode(inNode6, 2);
+        LeafNode legs3 = new LeafNode(16, 8, inNode6, tree);
+        LeafNode tail = new LeafNode(17, 4, inNode6, tree, true);
+
+        tree.drawingOffsetX = 29.23;
+        tree.drawingOffsetY = 29.23;
+
+        return tree;
+      }
+
+      double pythagorean(double b, double c){ 
+        return Math.Sqrt(c*c - b*b);
+    } 
 
     }
 }

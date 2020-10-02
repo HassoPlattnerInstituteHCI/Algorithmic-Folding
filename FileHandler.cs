@@ -18,8 +18,33 @@ namespace inClassHacking
             this.paperSizeY = paperSizeY;
             this.zoomFactor = zoomFactor;
         }
+        
         public void exportSVG(string filename, List<Circle> circles, List<Crease> creases = null)
         {
+            creases = creases ?? new List<Crease>();
+
+            List<string> svg = new List<string>();
+            SVG_init(svg);
+
+            foreach(var circle in circles){
+              drawCircle(svg, circle);
+            }
+            foreach(var crease in creases){
+              drawCrease(svg, crease);
+            }
+
+            SVG_ending(svg);
+            File.WriteAllLines(filename,svg.ToArray());
+            if (DEBUG) Console.WriteLine(filename);
+        }
+
+        public void exportSVG(string filename, List<LeafNode> nodes, List<Crease> creases = null)
+        {
+            List<Circle> circles = new List<Circle>();
+
+            foreach(var node in nodes){
+              circles.Add(node.circle);
+            }
             creases = creases ?? new List<Crease>();
 
             List<string> svg = new List<string>();

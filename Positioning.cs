@@ -4,14 +4,16 @@ using System.Collections.Generic;
 namespace inClassHacking{
   class Positioning{
     double[] distances= new double[5];
-    double[] input = new double[13];
+    // static double[] input = {4,4, 6, 8, 1, 1, 1, 1, 1, 1, 1, 2, 4};
 
     public Positioning(double[] distances, double[] input){
       this.distances = distances;
-      this.input = input;
+      // this.input = input;
     }
 
-    public List<Circle> calculateCirclePositioning(){
+    public static List<Circle> calculateCirclePositioning(){
+      double[] distances = {9.63, 2.7, 14.56, 6.63, 29.26};
+      double[] input = {4,4, 6, 8, 1, 1, 1, 1, 1, 1, 1, 2, 4};
       double s, w, x, y, z;
       w=distances[0];
       x=distances[1];
@@ -27,10 +29,10 @@ namespace inClassHacking{
       circles.Add(new Circle(new Point2D(0, s-y), input[2]));
       circles.Add(new Circle(new Point2D(z, s), input[3]));
 
-      circles.Add(new Circle(new Point2D(s/2, calculate6thCirclesY(circles)), input[6]));
+      circles.Add(new Circle(new Point2D(s/2, Positioning.calculate6thCirclesY(circles)), input[6]));
       circles.Insert(5, new Circle(new Point2D(s/2, circles[5].getCenter().y+circles[5].getRadius()+input[7]+input[8]+input[9]), input[9]));
       double distanceAbove = input[10]+input[11];
-      circles.Insert(5, addLastCircleRigid(circles, distanceAbove, s)); 
+      circles.Insert(5, Positioning.addLastCircleRigid(circles, distanceAbove, s)); 
 
       for(int i=0; i<circles.Count;i++){
         circles[i].setIndex(i);
@@ -39,7 +41,8 @@ namespace inClassHacking{
       return circles;
     }
 
-    double calculate6thCirclesY(List<Circle> circles){ //distance to cirlce 2 and 9 (top middle left and top middle right) important -> Pythagorean
+    static double calculate6thCirclesY(List<Circle> circles){ //distance to cirlce 2 and 9 (top middle left and top middle right) important -> Pythagorean
+      double[] input = {4,4, 6, 8, 1, 1, 1, 1, 1, 1, 1, 2, 4};
       double c = circles[1].getRadius()+input[4]+input[5];
       double b = circles[1].getRadius()+circles[0].getRadius();
       double a = Math.Sqrt(c*c - b*b);
@@ -47,7 +50,9 @@ namespace inClassHacking{
       return a;
     }    
 //weiter runterrücken durch river
-    Circle addLastCircleRigid(List<Circle> circles, double distanceAbove, double s){ 
+    static Circle addLastCircleRigid(List<Circle> circles, double distanceAbove, double s){ 
+
+      double[] input = {4,4, 6, 8, 1, 1, 1, 1, 1, 1, 1, 2, 4};
 
       double radius = input[12];
 
