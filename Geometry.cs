@@ -217,6 +217,8 @@ namespace inClassHacking
     Point2D center;
     double radius;
     int index;
+    
+    public LeafNode node;
 
     public Circle(Point2D center, double radius){
       this.radius = radius;

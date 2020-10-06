@@ -23,16 +23,16 @@ namespace inClassHacking{
 
       List<Circle> circles = new List<Circle>();
 
-      circles.Add(new Circle(new Point2D(s/2, 0), input[4]));
+      // circles.Add(new Circle(new Point2D(s/2, 0), input[4]));
       circles.Add(new Circle(new Point2D(w, 0), input[0]));
       circles.Add(new Circle(new Point2D(0, x), input[1]));
       circles.Add(new Circle(new Point2D(0, s-y), input[2]));
       circles.Add(new Circle(new Point2D(z, s), input[3]));
 
       circles.Add(new Circle(new Point2D(s/2, Positioning.calculate6thCirclesY(circles)), input[6]));
-      circles.Insert(5, new Circle(new Point2D(s/2, circles[5].getCenter().y+circles[5].getRadius()+input[7]+input[8]+input[9]), input[9]));
+      circles.Insert(4, new Circle(new Point2D(s/2, circles[4].getCenter().y+circles[4].getRadius()+input[7]+input[8]+input[9]), input[9]));
       double distanceAbove = input[10]+input[11];
-      circles.Insert(5, Positioning.addLastCircleRigid(circles, distanceAbove, s)); 
+      circles.Insert(4, Positioning.addLastCircleRigid(circles, distanceAbove, s)); 
 
       for(int i=0; i<circles.Count;i++){
         circles[i].setIndex(i);
@@ -43,8 +43,8 @@ namespace inClassHacking{
 
     static double calculate6thCirclesY(List<Circle> circles){ //distance to cirlce 2 and 9 (top middle left and top middle right) important -> Pythagorean
       double[] input = {4,4, 6, 8, 1, 1, 1, 1, 1, 1, 1, 2, 4};
-      double c = circles[1].getRadius()+input[4]+input[5];
-      double b = circles[1].getRadius()+circles[0].getRadius();
+      double c = circles[0].getRadius()+input[4]+input[5];
+      double b = circles[0].getRadius()+input[4];
       double a = Math.Sqrt(c*c - b*b);
 
       return a;
@@ -56,15 +56,15 @@ namespace inClassHacking{
 
       double radius = input[12];
 
-      Circle helper = new Circle(new Point2D(s/2, circles[5].getCenter().y+circles[5].getRadius()+distanceAbove+radius), radius);
+      Circle helper = new Circle(new Point2D(s/2, circles[4].getCenter().y+circles[4].getRadius()+distanceAbove+radius), radius);
 
-      double r = circles[4].getRadius();
+      double r = circles[3].getRadius();
       double a = Math.Sqrt((r+helper.getRadius())*(r+helper.getRadius()) - r*r);
-      double b = Math.Sqrt(Math.Pow(circles[4].getCenter().getDistance(helper.getCenter()), 2) - r*r);
+      double b = Math.Sqrt(Math.Pow(circles[3].getCenter().getDistance(helper.getCenter()), 2) - r*r);
       double scaleFactor = b/a;
       radius = radius*scaleFactor;
       
-      Circle circle = new Circle(new Point2D(s/2, circles[5].getCenter().y+circles[5].getRadius()+distanceAbove+radius), radius);
+      Circle circle = new Circle(new Point2D(s/2, circles[4].getCenter().y+circles[4].getRadius()+distanceAbove+radius), radius);
 
       if(radius<input[12]){
          radius = input[12];
