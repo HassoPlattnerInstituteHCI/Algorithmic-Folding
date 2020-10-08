@@ -25,7 +25,18 @@ namespace inClassHacking
             );
             return dist;
         }
-
+       public override bool Equals(Object obj){
+          if ((obj == null) || ! this.GetType().Equals(obj.GetType()))
+              return false;
+          else{
+              Point3D p = (Point3D) obj;
+              return (p.x == x & p.y == y & p.z == z);
+              }
+        }
+        public override int GetHashCode()
+        {
+          throw new Exception("no hash code logic implemented yet");
+        }
         public static bool operator==(Point3D p1, Point3D p2){
           return (p1.x == p2.x & p1.y == p2.y & p1.z == p2.z);
         }
@@ -46,7 +57,7 @@ namespace inClassHacking
         }
     }
 
-    class Triangle 
+    class Triangle
     {
         public Point3D a, b, c;
         public double alpha, beta, gamma;
