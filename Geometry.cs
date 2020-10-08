@@ -94,19 +94,18 @@ namespace inClassHacking
                 ) / (2 * adj_side1 * adj_side2)
             );
         }
-
         public override string ToString(){
           return a.ToString() + ", " + b.ToString() + ", " + c.ToString();
         }
     }
 
-    struct Neighbors{
-      public DualgraphTriangle aSide, bSide, cSide; //DualgraphTriangles that share an edge
-
+    class Neighbors{
+      //public DualgraphTriangle aSide, bSide, cSide; //DualgraphTriangles that share an edge
+      public List<DualgraphTriangle> sides = new List<DualgraphTriangle>();
       public Neighbors(DualgraphTriangle aSide, DualgraphTriangle bSide, DualgraphTriangle cSide){
-        this.aSide = aSide;
-        this.bSide = bSide;
-        this.cSide = cSide;
+        this.sides.Add(aSide);
+        this.sides.Add(bSide);
+        this.sides.Add(cSide);
       }
     }
 
@@ -157,11 +156,11 @@ namespace inClassHacking
     public int getStartPoint(Triangle triangle){ //returns position of first triangle out of triangulation-list that has to be added to the strip dependend on dualpath (index of triangle added before)
       if(triangle == null){ //when calling toStrip() for the 1st time
         return 0;
-      }else if(triangle == neighbor.aSide){
+      }else if(triangle == neighbor.sides[0]){
         return 3;
-      }else if(triangle == neighbor.bSide){
+      }else if(triangle == neighbor.sides[1]){
         return 1;
-      }else if(triangle == neighbor.cSide){
+      }else if(triangle == neighbor.sides[2]){
         return 5;
       }else{
         return UNDEF;
