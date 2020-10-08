@@ -111,7 +111,8 @@ namespace inClassHacking
     }
 
   class DualgraphTriangle: Triangle{ //special class for calculation of dualgraph and hamiltonian refinement
-    public Point3D center, centerOfEdgeA, centerOfEdgeB, centerOfEdgeC;
+    public Point3D center;
+    public List<Point3D> edges = new List<Point3D>();
     public Neighbors neighbor;
     public List<Triangle> triangulation = new List<Triangle>(); //stores 6 smaller triangles in exact order to "walk around the dualgraph"
     public static int UNDEF = -1;
@@ -138,19 +139,19 @@ namespace inClassHacking
     }
 
     private void calculateCenterOfEdges(){
-      centerOfEdgeA = (b+c)/2;
-      centerOfEdgeB = (a+c)/2;
-      centerOfEdgeC = (a+b)/2;
+      edges.Add((b+c)/2);
+      edges.Add((a+c)/2);
+      edges.Add((a+b)/2);
     }
 
     public void triangulate(){ //split the triangle in 6 smaller ones
       // 6 (instead of 3) because we need to split the edges to get to the next triangle while "walking around the dualgraph"
-      triangulation.Add(new Triangle(a, center, centerOfEdgeB));
-      triangulation.Add(new Triangle(centerOfEdgeB, center, c));
-      triangulation.Add(new Triangle(c, center, centerOfEdgeA));
-      triangulation.Add(new Triangle(centerOfEdgeA, center, b));
-      triangulation.Add(new Triangle(b, center, centerOfEdgeC));
-      triangulation.Add(new Triangle(centerOfEdgeC, center, a));
+      triangulation.Add(new Triangle(a, center, edges[1]));
+      triangulation.Add(new Triangle(edges[1], center, c));
+      triangulation.Add(new Triangle(c, center, edges[0]));
+      triangulation.Add(new Triangle(edges[0], center, b));
+      triangulation.Add(new Triangle(b, center, edges[2]));
+      triangulation.Add(new Triangle(edges[2], center, a));
     }
 
     public int getStartPoint(Triangle triangle){ //returns position of first triangle out of triangulation-list that has to be added to the strip dependend on dualpath (index of triangle added before)
