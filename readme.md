@@ -1,8 +1,7 @@
-# Algorithmic-Folding
-The code base for the Algorithmic Folding class (Winter Term 2020/21). **Each lecture** or set of lectures should have a **separate branch** for its codebase.
+# SVG creation tool
+This tool will convert a design in Cinderella into a PDF so that it can be laser cut.
+Note that the tool only works if all connections are created as segments!
 
-## General Advice
-1. Never push to `master`
-2. For each branch, add a section "*How to Run*" in the `readme.md` that explains, how to run the code
-3. Write imperative commit messages, that would finish the sentence "If applied, this commit will ` Change the behaviour of class x`."
-4. Describe what was done and why, but not how
+#How to Run
+Copy the contents of the SVG_creation files in Cinderella to the Editor -> Events -> Drawing (this can be opened with ctrl+9) Now the linkages should be created. All elements will be made invisible, so that the file can be exported as pdf immediately. This can be done for example with a button in the lower left corner. If changes are to be made to the design, you can display all invisible elements by clicking on a button in the lower menu bar.
+Gridlines have to be deactivated, so that it can be directly lasercut

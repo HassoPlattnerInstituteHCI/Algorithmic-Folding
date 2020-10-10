@@ -1,0 +1,105 @@
+drawing(list):=(
+startx=0;
+forall(list, segment,
+	seg1=[-1.6,startx];
+	seg2=[-1.6,startx+2.5];
+	seg3=[segment_3+1.6,startx+2.5];
+	seg4=[segment_3+1.6,startx];
+	linesize(1);
+	draw([seg1,seg2],color->(255,0,0));draw([seg2,seg3],color->(255,0,0));
+	draw([seg3,seg4],color->(255,0,0));draw([seg4,seg1],color->(255,0,0));
+	i=1;
+	forall(segment_2, distance,
+		drawcircle([distance,startx+1.25],0.5,color->(255,0,0));
+		drawtext([0.7+distance,startx+0.6],text(segment_1_i), color->(0,0,255));
+		i=i+1);
+	startx=startx+4;
+));
+
+scaling(list):=(
+i=1;
+mindistance=|segments_1_1_1,segments_1_1_2|;
+forall(segments, segment,
+	maxdistancesum=0;
+	node=segment_1_1;
+	forall(segment_1, p,
+		distancesum=0;
+		forall(segment_1, p1,
+			distancesum=distancesum+|p,p1|;
+			if(mindistance>|p,p1| & (p.name!=p1.name), mindistance=|p,p1|));
+		if(distancesum>maxdistancesum,
+			maxdistancesum=distancesum;
+			node=p;
+		);
+	);
+	distances=linkedsort(segment_1, apply(segment_1, |node,#|));
+	segments_i=[segment_1, distances, max(distances), segment_2];
+	i=i+1;
+);
+
+linkedsort(list1, list2):=(
+repeat(length(list2), i,
+	key2=list2_i;
+	key1=list1_i
+	j=i-1;
+	if(j>0,
+	while(j > 0 & list2_j > key2,
+		list2_(j+1)=list2_j;
+		list1_(j+1)=list1_j;
+		j=j-1;
+	));
+	list2_(j+1)=key2;
+	list1_(j+1)=key1;
+);
+list2);
+
+scalefactor=2.3/mindistance;
+segments=apply(segments,
+  [#_1, apply(#_2, d, d*scalefactor), (#_3)*scalefactor, #_4];
+));
+
+points = allpoints();
+lines = alllines();
+segments=[];
+forall(lines,l,
+	line=text(inspect(l,"definition"));
+	startindex=indexof(line, "(");
+	endindex=indexof(line, ";");
+	start=substring(line,startindex,startindex+1);
+	end=substring(line,endindex,endindex+1);
+	containsstart=false;
+	containsend=false;
+	forall(points,
+		if(#.name==start,
+			containsstart=true));
+	forall(points,
+		if(#.name==end,
+			containsend=true));
+	if(containsstart&containsend,
+		startp=select(points,#.name==start)_1;
+		endp=select(points,#.name==end)_1;
+		length=|startp,endp|;
+		segments=append(segments, [[startp, endp], l.name]));
+);
+
+elements=allelements();
+forall(elements,inspect(#, "visibility", 0));
+forall(points, point,
+	ptn = text(inspect(point,"definition"));
+	index=indexof(ptn, "(");
+	linename=substring(ptn,index,index+1);
+	match=false;
+	forall(lines,
+		if(#.name==linename,
+			match=true));
+	
+	if(match,
+		i=1;
+		forall(segments, segment,
+			if(segment_2 == linename,
+				segments_i=[append(segment_1, point), segment_2]);
+		i=i+1;))
+);
+scaling(segments);
+drawing(segments);
+forall(segments,println(#));
