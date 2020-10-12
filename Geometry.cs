@@ -116,13 +116,6 @@ namespace inClassHacking
     public List<Triangle> triangulation = new List<Triangle>(); //stores 6 smaller triangles in exact order to "walk around the dualgraph"
     public static int UNDEF = -1;
 
-    public DualgraphTriangle(Point3D a, Point3D b, Point3D c): base(a, b, c){
-      neighbor = new Neighbors(null, null, null);
-      calculateCenter();
-      calculateCenterOfEdges();
-      triangulate();
-    }
-
     public DualgraphTriangle(Triangle triangle): base(triangle.a, triangle.b, triangle.c){
       neighbor = new Neighbors(null, null, null);
       calculateCenter();

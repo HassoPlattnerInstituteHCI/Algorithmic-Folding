@@ -31,7 +31,6 @@ namespace inClassHacking{
       }
     }
     public void findNeighbor(DualgraphTriangle thisTriangle){ //add triangle with correct edge in this Triangles neighbor attribute, if they share an edge
-
       for(int i = 1; i<triangles.Count; i++){
         DualgraphTriangle other = triangles[i];
         if(thisTriangle == other) continue; //don't check against itself
