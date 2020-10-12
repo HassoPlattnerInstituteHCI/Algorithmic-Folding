@@ -20,45 +20,22 @@ namespace inClassHacking{
         findNeighbor(triangles[i]);
       }
     }
-
+    private void isAdjacentTo(DualgraphTriangle t1, DualgraphTriangle t2){
+      for (int j =0; j <=2; j++){
+        for (int i = 0; i<=2; i++){
+          if (t1.edges[j] == t2.edges[i]){
+            t1.neighbor.sides[j] = t2;
+            t2.neighbor.sides[i] = t1;
+          }
+        }
+      }
+    }
     public void findNeighbor(DualgraphTriangle thisTriangle){ //add triangle with correct edge in this Triangles neighbor attribute, if they share an edge
 
       for(int i = 1; i<triangles.Count; i++){
         DualgraphTriangle other = triangles[i];
         if(thisTriangle == other) continue; //don't check against itself
-
-        if(thisTriangle.edges[0] == other.edges[0]){
-          thisTriangle.neighbor.sides[0] = other;
-          other.neighbor.sides[0] = thisTriangle;
-        } else if(thisTriangle.edges[0] == other.edges[1]){
-          thisTriangle.neighbor.sides[0] = other;
-          other.neighbor.sides[1] = thisTriangle;
-        } else if(thisTriangle.edges[0] == other.edges[2]){
-          thisTriangle.neighbor.sides[0] =other;
-          other.neighbor.sides[2] = thisTriangle;
-        }
-
-        else if(thisTriangle.edges[1] == other.edges[0]){
-          thisTriangle.neighbor.sides[1] = other;
-          other.neighbor.sides[0] = thisTriangle;
-        } else if(thisTriangle.edges[1] == other.edges[1]){
-          thisTriangle.neighbor.sides[1] = other;
-          other.neighbor.sides[1] = thisTriangle;
-        } else if(thisTriangle.edges[1] == other.edges[2]){
-          thisTriangle.neighbor.sides[1] = other;
-          other.neighbor.sides[2] = thisTriangle;
-        }
-
-        else if(thisTriangle.edges[2] == other.edges[0]){
-          thisTriangle.neighbor.sides[2] =other;
-          other.neighbor.sides[0] = thisTriangle;
-        } else if(thisTriangle.edges[2] == other.edges[1]){
-          thisTriangle.neighbor.sides[2] =other;
-          other.neighbor.sides[1] = thisTriangle;
-        }else if(thisTriangle.edges[2] == other.edges[2]){
-          thisTriangle.neighbor.sides[2] =other;
-          other.neighbor.sides[2] = thisTriangle;
-        }
+        isAdjacentTo(thisTriangle,other);
       }
     }
 
