@@ -59,6 +59,9 @@ namespace inClassHacking
 
     class Triangle
     {
+        public Point3D center;
+        public List<Point3D> edges = new List<Point3D>();
+        public List<Triangle> triangulation = new List<Triangle>(); //stores 6 smaller triangles in exact order to "walk around the dualgraph"
         public Point3D a, b, c;
         public double alpha, beta, gamma;
         public Triangle(Point3D a, Point3D b, Point3D c)
@@ -97,63 +100,57 @@ namespace inClassHacking
         public override string ToString(){
           return a.ToString() + ", " + b.ToString() + ", " + c.ToString();
         }
+        public void triangulate(){ //split the triangle in 6 smaller ones
+          // 6 (instead of 3) because we need to split the edges to get to the next triangle while "walking around the dualgraph"
+          triangulation.Add(new Triangle(a, center, edges[1]));
+          triangulation.Add(new Triangle(edges[1], center, c));
+          triangulation.Add(new Triangle(c, center, edges[0]));
+          triangulation.Add(new Triangle(edges[0], center, b));
+          triangulation.Add(new Triangle(b, center, edges[2]));
+          triangulation.Add(new Triangle(edges[2], center, a));
+        }
+        public void calculateCenter(){
+          double centerX = (a.x + b.x + c.x)/3;
+          double centerY = (a.y + b.y + c.y)/3;
+          double centerZ = (a.z + b.z + c.z)/3;
+          center = new Point3D(centerX,centerY, centerZ);
+        }
+
+        public void calculateCenterOfEdges(){
+          edges.Add((b+c)/2);
+          edges.Add((a+c)/2);
+          edges.Add((a+b)/2);
+        }
     }
 
-    class Neighbors{
-      //public DualgraphTriangle aSide, bSide, cSide; //DualgraphTriangles that share an edge
-      public List<DualgraphTriangle> sides = new List<DualgraphTriangle>();
-      public Neighbors(DualgraphTriangle aSide, DualgraphTriangle bSide, DualgraphTriangle cSide){
+    class NeighborNodes{
+      //public DualgraphNode aSide, bSide, cSide; //DualgraphNodes that share an edge
+      public List<DualgraphNode> sides = new List<DualgraphNode>();
+      public NeighborNodes(DualgraphNode aSide, DualgraphNode bSide, DualgraphNode cSide){
         this.sides.Add(aSide);
         this.sides.Add(bSide);
         this.sides.Add(cSide);
       }
     }
 
-  class DualgraphTriangle: Triangle{ //special class for calculation of dualgraph and hamiltonian refinement
-    public Point3D center;
-    public List<Point3D> edges = new List<Point3D>();
-    public Neighbors neighbor;
-    public List<Triangle> triangulation = new List<Triangle>(); //stores 6 smaller triangles in exact order to "walk around the dualgraph"
+  class DualgraphNode: Triangle{ //special class for calculation of dualgraph and hamiltonian refinement
+    public NeighborNodes neighbors;
     public static int UNDEF = -1;
 
-    public DualgraphTriangle(Triangle triangle): base(triangle.a, triangle.b, triangle.c){
-      neighbor = new Neighbors(null, null, null);
+    public DualgraphNode(Triangle triangle): base(triangle.a, triangle.b, triangle.c){
+      neighbors = new NeighborNodes(null, null, null);
       calculateCenter();
       calculateCenterOfEdges();
       triangulate();
     }
-
-    private void calculateCenter(){
-      double centerX = (a.x + b.x + c.x)/3;
-      double centerY = (a.y + b.y + c.y)/3;
-      double centerZ = (a.z + b.z + c.z)/3;
-      center = new Point3D(centerX,centerY, centerZ);
-    }
-
-    private void calculateCenterOfEdges(){
-      edges.Add((b+c)/2);
-      edges.Add((a+c)/2);
-      edges.Add((a+b)/2);
-    }
-
-    public void triangulate(){ //split the triangle in 6 smaller ones
-      // 6 (instead of 3) because we need to split the edges to get to the next triangle while "walking around the dualgraph"
-      triangulation.Add(new Triangle(a, center, edges[1]));
-      triangulation.Add(new Triangle(edges[1], center, c));
-      triangulation.Add(new Triangle(c, center, edges[0]));
-      triangulation.Add(new Triangle(edges[0], center, b));
-      triangulation.Add(new Triangle(b, center, edges[2]));
-      triangulation.Add(new Triangle(edges[2], center, a));
-    }
-
     public int getStartPoint(Triangle triangle){ //returns position of first triangle out of triangulation-list that has to be added to the strip dependend on dualpath (index of triangle added before)
       if(triangle == null){ //when calling toStrip() for the 1st time
         return 0;
-      }else if(triangle == neighbor.sides[0]){
+      }else if(triangle == neighbors.sides[0]){
         return 3;
-      }else if(triangle == neighbor.sides[1]){
+      }else if(triangle == neighbors.sides[1]){
         return 1;
-      }else if(triangle == neighbor.sides[2]){
+      }else if(triangle == neighbors.sides[2]){
         return 5;
       }else{
         return UNDEF;
