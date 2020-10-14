@@ -141,7 +141,6 @@ namespace inClassHacking
       neighbors = new NeighborNodes(null, null, null);
       calculateCenter();
       calculateCenterOfEdges();
-      triangulate();
     }
     public int getStartPoint(Triangle triangle){ //returns position of first triangle out of triangulation-list that has to be added to the strip dependend on dualpath (index of triangle added before)
       if(triangle == null){ //when calling toStrip() for the 1st time

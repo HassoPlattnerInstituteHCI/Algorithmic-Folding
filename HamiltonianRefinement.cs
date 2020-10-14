@@ -12,6 +12,11 @@ namespace inClassHacking{
       triangles.Add(DualgraphNode);
       processed.Add(DualgraphNode, false);
     }
+    public void triangulate(){
+      foreach(DualgraphNode node in triangles){
+        node.triangulate();
+      }
+    }
 
     public void createDualGraph(){ //finding triangles next to each other in right order so we can "walk around" them in toStrip()
       for(int i = 0; i<triangles.Count; i++){

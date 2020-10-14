@@ -43,7 +43,7 @@ namespace inClassHacking
                 hamiltonian.addTriangle(triangle);
               }
               hamiltonian.createDualGraph();
-
+              hamiltonian.triangulate();
               hamiltonian.toStrip(s); //adds triangles to strip with hamiltonian refinement
               if(DEBUG) Console.WriteLine("number of triangles imported: " + stl.Count);
               if(DEBUG) Console.WriteLine("number of triangles exported: " + s.getNumberOfTriangles());
