@@ -1,3 +1,19 @@
+linkedsort(list1, list2):=(
+repeat(length(list2), i,
+	key2=list2_i;
+	key1=list1_i
+	j=i-1;
+	if(j>0,
+	while(j > 0 & list2_j > key2,
+		list2_(j+1)=list2_j;
+		list1_(j+1)=list1_j;
+		j=j-1;
+	));
+	list2_(j+1)=key2;
+	list1_(j+1)=key1;
+);
+list2);
+
 drawing(list):=(
 startx=0;
 forall(list, segment,
@@ -36,27 +52,11 @@ forall(segments, segment,
 	segments_i=[segment_1, distances, max(distances), segment_2];
 	i=i+1;
 );
-
-linkedsort(list1, list2):=(
-repeat(length(list2), i,
-	key2=list2_i;
-	key1=list1_i
-	j=i-1;
-	if(j>0,
-	while(j > 0 & list2_j > key2,
-		list2_(j+1)=list2_j;
-		list1_(j+1)=list1_j;
-		j=j-1;
-	));
-	list2_(j+1)=key2;
-	list1_(j+1)=key1;
-);
-list2);
-
 scalefactor=2.3/mindistance;
 segments=apply(segments,
   [#_1, apply(#_2, d, d*scalefactor), (#_3)*scalefactor, #_4];
 ));
+
 
 points = allpoints();
 lines = alllines();
@@ -88,6 +88,7 @@ forall(points, point,
 	ptn = text(inspect(point,"definition"));
 	index=indexof(ptn, "(");
 	linename=substring(ptn,index,index+1);
+	linename2=substring(ptn,index+2,index+3);
 	match=false;
 	forall(lines,
 		if(#.name==linename,
@@ -98,7 +99,10 @@ forall(points, point,
 		forall(segments, segment,
 			if(segment_2 == linename,
 				segments_i=[append(segment_1, point), segment_2]);
-		i=i+1;))
+			if(segment_2 == linename2,
+				segments_i=[append(segment_1, point), segment_2]);
+			i=i+1)
+	)
 );
 scaling(segments);
 drawing(segments);
