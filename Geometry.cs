@@ -60,10 +60,10 @@ namespace inClassHacking
     class Triangle
     {
         public Point3D center;
-        public List<Point3D> edges = new List<Point3D>();
+        public List<Point3D> edges = new List<Point3D>(); //centers of the edges of the triangle
         public List<Triangle> triangulation = new List<Triangle>(); //stores 6 smaller triangles in exact order to "walk around the dualgraph"
-        public Point3D a, b, c;
-        public double alpha, beta, gamma;
+        public Point3D a, b, c; //corners of the triangle
+        public double alpha, beta, gamma; //angles in the triangles
         public Triangle(Point3D a, Point3D b, Point3D c)
         {
             this.a = a;
@@ -115,7 +115,6 @@ namespace inClassHacking
           double centerZ = (a.z + b.z + c.z)/3;
           center = new Point3D(centerX,centerY, centerZ);
         }
-
         public void calculateCenterOfEdges(){
           edges.Add((b+c)/2);
           edges.Add((a+c)/2);
@@ -136,7 +135,6 @@ namespace inClassHacking
   class DualgraphNode: Triangle{ //special class for calculation of dualgraph and hamiltonian refinement
     public NeighborNodes neighbors;
     public static int UNDEF = -1;
-
     public DualgraphNode(Triangle triangle): base(triangle.a, triangle.b, triangle.c){
       neighbors = new NeighborNodes(null, null, null);
       calculateCenter();

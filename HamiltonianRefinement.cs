@@ -4,24 +4,20 @@ using System;
 namespace inClassHacking{
 
   class HamiltonianRefinement{
-
     List<DualgraphNode> triangles = new List<DualgraphNode>(); //all imported triangles
     Dictionary<DualgraphNode, bool> processed = new Dictionary<DualgraphNode, bool>();
     public void addTriangle(Triangle triangle){
-      DualgraphNode DualgraphNode = new DualgraphNode(triangle);
-      triangles.Add(DualgraphNode);
-      processed.Add(DualgraphNode, false);
+      DualgraphNode node = new DualgraphNode(triangle);
+      triangles.Add(node);
+      processed.Add(node, false);
     }
     public void triangulate(){
-      foreach(DualgraphNode node in triangles){
+      foreach(DualgraphNode node in triangles)
         node.triangulate();
-      }
     }
-
     public void createDualGraph(){ //finding triangles next to each other in right order so we can "walk around" them in toStrip()
-      for(int i = 0; i<triangles.Count; i++){
-        findNeighbors(triangles[i]);
-      }
+      foreach (DualgraphNode node in triangles)
+        findNeighbors(node);
     }
     private void isAdjacentTo(DualgraphNode thisNode, DualgraphNode otherNode){
       for (int j =0; j <=2; j++){
