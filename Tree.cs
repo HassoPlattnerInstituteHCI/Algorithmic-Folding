@@ -5,7 +5,7 @@ using System.Linq;
 namespace inClassHacking{
 
   public class Node{
-    double undef = -1;
+    //double undef = -1;
     public bool middle; //not "mirrored" for symmetrie
     public int index;
     public Circle circle;
@@ -77,7 +77,7 @@ namespace inClassHacking{
         if(d!=-1) return d+this.relatedInteriorNodes[interiorNode];
       }
       return -1;
-    } 
+    }
   }
 
 
@@ -113,7 +113,7 @@ namespace inClassHacking{
 
         Point2D thisCircleCenter;
         Circle outerNodesCircle, retCircle;
-        
+
         if(outerNodes[0].getCenterNeighbor() != null){
 
           // for(int i=middleNodes.Count-1; i>=0; i--){
@@ -135,7 +135,7 @@ namespace inClassHacking{
           outerNodesCircle.node = outerNodes[0];
           ret.Add(outerNodesCircle);
         }
-        else{ 
+        else{
           thisCircleCenter = new Point2D(startPosition);
           thisCircleCenter.x -= (outerNodes[0].size);
           if(thisCircleCenter.x < drawingOffsetX) drawingOffsetX = thisCircleCenter.x;
@@ -216,7 +216,7 @@ namespace inClassHacking{
         }
 
         List<Circle> circles = Positioning.calculateCirclePositioning();
-        
+
         circles[0].node = nodes[0];
         circles[1].node = nodes[2];
         circles[2].node = nodes[4];
@@ -259,9 +259,9 @@ namespace inClassHacking{
         return tree;
       }
 
-      double pythagorean(double b, double c){ 
+      double pythagorean(double b, double c){
         return Math.Sqrt(c*c - b*b);
-      } 
+      }
 
       public static List<Circle> exampleDeerCircles(){
         List<Circle> deerCircles = new List<Circle>();
@@ -272,7 +272,7 @@ namespace inClassHacking{
         deerCircles.Add(new Circle(new Point2D(0.0698, 0.0698), 0.04422));
         deerCircles.Add(new Circle(new Point2D(0, 0.2594), 0.0761));
         deerCircles.Add(new Circle(new Point2D(0.2775, 0.5), 0.2205));
-        
+
         foreach(var circle in deerCircles){
           LeafNode node = new LeafNode();
           circle.node = node;

@@ -8,7 +8,7 @@ namespace inClassHacking
 
   public class Point2D
     {
-        public double x, y; 
+        public double x, y;
         public Point2D(double x,double y)
         {
             this.x = x;
@@ -31,15 +31,25 @@ namespace inClassHacking
         public Point2D mirrored(double paperSize){
           return new Point2D(paperSize-this.x, this.y);
         }
-    
-
+        public override bool Equals(Object obj){
+           if ((obj == null) || ! this.GetType().Equals(obj.GetType()))
+               return false;
+           else{
+               Point2D p = (Point2D) obj;
+               return (p.x == x & p.y == y);
+               }
+         }
+         public override int GetHashCode()
+         {
+           throw new Exception("no hash code logic implemented yet");
+         }
         public static bool operator==(Point2D p1, Point2D p2){
           if(object.ReferenceEquals(p2, null) && object.ReferenceEquals(p1, null))return true;
           if(object.ReferenceEquals(p1, null))return false;
           if(object.ReferenceEquals(p2, null))return false;
           return (Math.Round(p1.x, 3) == Math.Round(p2.x,3) & Math.Round(p1.y, 3) == Math.Round(p2.y, 3));
         }
-        
+
         public static bool operator!=(Point2D p1, Point2D p2){
           return !(p1==p2);
         }
@@ -102,6 +112,18 @@ namespace inClassHacking
     public Vector getReverse(){
       return new Vector(-this.x, -this.y);
     }
+    public override bool Equals(Object obj){
+       if ((obj == null) || ! this.GetType().Equals(obj.GetType()))
+           return false;
+       else{
+           Vector v = (Vector) obj;
+           return (v.x == x & v.y == y);
+           }
+     }
+     public override int GetHashCode()
+     {
+       throw new Exception("no hash code logic implemented yet");
+     }
     public static Vector operator/(Vector v, double d){
       return new Vector(v.x/d, v.y/d);
     }
@@ -116,7 +138,7 @@ namespace inClassHacking
     public static bool operator!=(Vector v1, Vector v2){
       return !(v1==v2);
     }
-    
+
     public override string ToString(){
       return ("(" + this.x + " ," + this.y + ")");
     }
@@ -167,14 +189,14 @@ namespace inClassHacking
     }
     this.markers.Add(marker);
   }
-    
+
   public void parallelSweep(double length){
     p1 += vec.getNormalLeft()*length;
     p2 += vec.getNormalLeft()*length;
 
     for(int i = 0; i<markers.Count; i++){
       if(!(markers[i] == null)){
-        markers[i] += vec.getNormalLeft()*length; 
+        markers[i] += vec.getNormalLeft()*length;
       }
     }
   }
@@ -193,7 +215,7 @@ namespace inClassHacking
   public void updateMarkers(){
     double epsilon = 0.2;
     for(int i=0; i<this.markers.Count; i++){
-      
+
       if(!(this.markers[i] == null)){
         Point2D marker = this.markers[i];
         if(marker.x < this.p1.x-epsilon && marker.x < this.p2.x-epsilon){
@@ -217,7 +239,7 @@ namespace inClassHacking
     Point2D center;
     double radius;
     int index;
-    
+
     public LeafNode node;
 
     public Circle(Point2D center, double radius){
@@ -231,7 +253,7 @@ namespace inClassHacking
 
     public int getIndex(){return index;}
     public void setIndex(int i){this.index=i;}
-    
+
     public Point2D getCenter(){
       return center;
     }
