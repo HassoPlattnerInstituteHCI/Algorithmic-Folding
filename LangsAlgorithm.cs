@@ -15,7 +15,6 @@ namespace inClassHacking{
     List<Circle> circles = new List<Circle>();
 
     double[,] distances;
-    int removedEdgesCounter = 0;
 
     List<Crease> creases = new List<Crease>();
     List<Edge> inputEdges = new List<Edge>();
@@ -29,35 +28,43 @@ namespace inClassHacking{
     }
 
     public List<Crease> sweepingProcess(){
-      axialCreases(creases);                // create creases and edges between the circles
-      foreach(var e in edges)               // copy edges to inputEdges
+      axialCreasesandMarkers(creases);                // create creases and edges between the circles
+      foreach(var e in edges){               // copy edges to inputEdges
         inputEdges.Add(new Edge(e));
+      }
       distances = calculateTreeDistances(); // builds a matrix of all distances in the tree
       sweep(creases, edges, inputEdges);    // the actual sweeping of the polygon
       return creases;
     }
-    void axialCreases(List<Crease> creases){  // create edges and creases that connect the circles
+    void axialCreasesAndMarkers(List<Crease> creases){  // create edges and creases that connect the circles
+    Edge newEdge;
       for(int i=0; i<circles.Count-1; i++){
         creases.Add(new Crease(circles[i].getCenter(), circles[i+1].getCenter(), Color.Green));
-        edges.Add(new Edge(circles[i].getCenter(), i, circles[i+1].getCenter(), i+1));
-      }
-      creases.Add(new Crease(circles[0].getCenter(), circles.Last().getCenter(), Color.Green)); //connect the last circle with an edge to the first one to close the polygon
-      edges.Add(new Edge(circles.Last().getCenter(), circles.Count-1, circles[0].getCenter(), 0));
-    }
-
-    void addEdgesWithMarkers(List<Edge> edges, List<LeafNode> nodes){
-      Edge newEdge;
-      for(int i=0; i<nodes.Count-1; i++){
-        newEdge = new Edge(nodes[i].circle.getCenter(), i, nodes[i+1].circle.getCenter(), i+1);
+        newEdge = new Edge(circles[i].getCenter(), i, circles[i+1].getCenter(), i+1);
+        edges.Add(newEdge);
         if(nodes[i].relatedNode != nodes[i+1].relatedNode)
            addMarker(newEdge, nodes[i], nodes[i+1]);
-        edges.Add(newEdge);
       }
-      newEdge = new Edge(nodes.Last().circle.getCenter(), nodes.Count-1, nodes[0].circle.getCenter(), 0);
+      creases.Add(new Crease(circles[0].getCenter(), circles.Last().getCenter(), Color.Green)); //connect the last circle with an edge to the first one to close the polygon
+      newEdge = new Edge(circles.Last().getCenter(), circles.Count-1, circles[0].getCenter(), 0);
+      edges.Add(newEdge);
       if(nodes[0].relatedNode != nodes.Last().relatedNode)
         addMarker(newEdge, nodes.Last(), nodes[0]);
-      edges.Add(newEdge);
     }
+
+    // void addEdgesWithMarkers(List<Edge> edges, List<LeafNode> nodes){
+    //   Edge newEdge;
+    //   for(int i=0; i<nodes.Count-1; i++){
+    //     newEdge = new Edge(nodes[i].circle.getCenter(), i, nodes[i+1].circle.getCenter(), i+1);
+    //     if(nodes[i].relatedNode != nodes[i+1].relatedNode)
+    //        addMarker(newEdge, nodes[i], nodes[i+1]);
+    //     edges.Add(newEdge);
+    //   }
+    //   newEdge = new Edge(nodes.Last().circle.getCenter(), nodes.Count-1, nodes[0].circle.getCenter(), 0);
+    //   if(nodes[0].relatedNode != nodes.Last().relatedNode)
+    //     addMarker(newEdge, nodes.Last(), nodes[0]);
+    //   edges.Add(newEdge);
+    // }
 
     void addMarker(Edge edge, LeafNode node1, LeafNode node2){
       if(node1.relatedNode != node2.relatedNode)
@@ -66,7 +73,8 @@ namespace inClassHacking{
 
     bool addMarker(Edge edge, InteriorNode inNode, LeafNode node2, InteriorNode lastChecked=null){
       if(inNode == node2.relatedNode){
-        edge.addMarker(node2.circle.getCenter()-edge.vec*node2.size);
+        // edge.addMarker(node2.circle.getCenter()-edge.vec*node2.size);
+        edge.addMarker(edge.p2-edge.vec*node2.size);
         return true;
       }
 
@@ -96,7 +104,6 @@ namespace inClassHacking{
           Edge edge = edges[i];
           if(edge.getLength() < 2*sweepingLength){  //contraction event (next iteration we would have 0 length)
             edges.Remove(edge);
-            removedEdgesCounter++;
           }
           if(edges.Count<3){                        // rabit ear molecule
             for(int z=0; z<edges.Count-1; z++)
@@ -140,6 +147,8 @@ namespace inClassHacking{
                     if(j-i<3)
                       splittingEdge = addMarkersToSplittingEdge(splittingEdge, edges[k]);
                   }
+
+
                   int n;
                   for(n=0; n<i; n++){
                     e2.Add(new Edge(edges[n]));
@@ -150,15 +159,19 @@ namespace inClassHacking{
                   for(int m=j; m<edges.Count; m++){
                     e2.Add(new Edge(edges[m]));
                     initialEdges2.Add(new Edge(edges[m]));
-                    if(i+edges.Count-j < 3)
+                    if(edges.Count-j < 3)
                       splittingEdge2 = addMarkersToSplittingEdge(splittingEdge2, edges[m]);
                   }
+
+
                   foreach(var marker in splittingEdge.markers){
                     splittingEdge2.addMarker(marker);
                   }
                   foreach(var marker in splittingEdge2.markers){
                     splittingEdge.addMarker(marker);
                   }
+
+                  
                   initialEdges1.Add(new Edge(splittingEdge));
                   e.Add(splittingEdge);
                   initialEdges2.Insert(n, new Edge(splittingEdge2));
