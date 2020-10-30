@@ -174,33 +174,29 @@ namespace inClassHacking{
     }
     bool isSplitEvent(Edge edge, Edge secondEdge,List<Edge> inputEdges, int j){
       double equationSolution = Int64.MaxValue;
+
+      if(secondEdge.vec == inputEdges[secondEdge.index1].vec && edge.vec == inputEdges[edge.index1].vec){
+          equationSolution = solveEquation(edge, inputEdges[secondEdge.index1],inputEdges[secondEdge.index1].p1,secondEdge, secondEdge.p2);
+      }else{ //the according edge was already splitted so we try the other edge of this vertex
+          Edge altSecondEdge = (j!=0) ? edges[j-1] : edges.Last();
+          Edge altInputEdge = (j!=0) ? inputEdges[j-1] : inputEdges.Last();
+          equationSolution = solveEquation(edge, altInputEdge,altInputEdge.p2,altSecondEdge, altSecondEdge.p2);
+          }
+      return (equationSolution < distances[edge.index1, secondEdge.index1]);
+    }
+    double solveEquation(Edge edge, Edge firstEdge, Point2D p1, Edge secondEdge, Point2D p2){
+      double solution;
       double AA_ = undef;
       double CC_ = undef;
       Point2D A_ = null;
       Point2D C_ = null;
-
-      if(secondEdge.vec == inputEdges[secondEdge.index1].vec && edge.vec == inputEdges[edge.index1].vec){
-          C_ = Folding.findIntersection(inputEdges[secondEdge.index1].vec, inputEdges[secondEdge.index1].p1, secondEdge.vec.getNormalRight(), secondEdge.p1);
-          CC_ = inputEdges[secondEdge.index1].p1.getDistance(C_);
-          A_ = Folding.findIntersection(inputEdges[edge.index1].vec, inputEdges[edge.index1].p1, edge.vec.getNormalRight(), edge.p1);
-          AA_ = inputEdges[edge.index1].p1.getDistance(A_);
-          equationSolution = edge.p1.getDistance(secondEdge.p1) + AA_ + CC_;
-          // Console.WriteLine("first");
-
-          equationSolution = Math.Round(equationSolution, 2);
-
-      }else{ //the according edge was already splitted so we try the other edge of this vertex
-
-          Edge altSecondEdge = (j!=0) ? edges[j-1] : edges.Last();
-          Edge altInputEdge = (j!=0) ? inputEdges[j-1] : inputEdges.Last();
-
-            C_ = Folding.findIntersection(altInputEdge.vec, altInputEdge.p2, altSecondEdge.vec.getNormalRight(), altSecondEdge.p2);
-            CC_ = altInputEdge.p2.getDistance(C_);
-            A_ = Folding.findIntersection(inputEdges[edge.index1].vec, inputEdges[edge.index1].p1, edge.vec.getNormalRight(), edge.p1);
-            AA_ = inputEdges[edge.index1].p1.getDistance(A_);
-            equationSolution = edge.p1.getDistance(secondEdge.p1) + AA_ + CC_;
-          }
-      return (equationSolution < distances[edge.index1, secondEdge.index1]);
+      C_ = Folding.findIntersection(firstEdge.vec, p1, secondEdge.vec.getNormalRight(), p2);
+      CC_ = p1.getDistance(C_);
+      A_ = Folding.findIntersection(inputEdges[edge.index1].vec, inputEdges[edge.index1].p1, edge.vec.getNormalRight(), edge.p1);
+      AA_ = inputEdges[edge.index1].p1.getDistance(A_);
+      solution = edge.p1.getDistance(secondEdge.p1) + AA_ + CC_;
+      solution = Math.Round(solution, 2);
+      return solution;
     }
     bool linedUp(List<Edge> edges){
       for(int i=1; i<edges.Count; i++){
