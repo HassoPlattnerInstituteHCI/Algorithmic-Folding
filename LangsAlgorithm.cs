@@ -28,7 +28,7 @@ namespace inClassHacking{
     }
 
     public List<Crease> sweepingProcess(){
-      axialCreasesandMarkers(creases);                // create creases and edges between the circles
+      axialCreasesAndMarkers(creases);                // create creases and edges between the circles
       foreach(var e in edges){               // copy edges to inputEdges
         inputEdges.Add(new Edge(e));
       }
@@ -51,20 +51,6 @@ namespace inClassHacking{
       if(nodes[0].relatedNode != nodes.Last().relatedNode)
         addMarker(newEdge, nodes.Last(), nodes[0]);
     }
-
-    // void addEdgesWithMarkers(List<Edge> edges, List<LeafNode> nodes){
-    //   Edge newEdge;
-    //   for(int i=0; i<nodes.Count-1; i++){
-    //     newEdge = new Edge(nodes[i].circle.getCenter(), i, nodes[i+1].circle.getCenter(), i+1);
-    //     if(nodes[i].relatedNode != nodes[i+1].relatedNode)
-    //        addMarker(newEdge, nodes[i], nodes[i+1]);
-    //     edges.Add(newEdge);
-    //   }
-    //   newEdge = new Edge(nodes.Last().circle.getCenter(), nodes.Count-1, nodes[0].circle.getCenter(), 0);
-    //   if(nodes[0].relatedNode != nodes.Last().relatedNode)
-    //     addMarker(newEdge, nodes.Last(), nodes[0]);
-    //   edges.Add(newEdge);
-    // }
 
     void addMarker(Edge edge, LeafNode node1, LeafNode node2){
       if(node1.relatedNode != node2.relatedNode)
@@ -118,9 +104,9 @@ namespace inClassHacking{
               Edge secondEdge = edges[j];
               if(secondEdge==null) continue;
               if(Math.Abs(edge.index1 - secondEdge.index1) <= 1) continue; //do not split edges next to each other
-              if(Math.Abs(edge.index1 - secondEdge.index1) == edges.Count) continue; //do not split last and first edge (next to each other)
+              if(edge.index1 - secondEdge.index1 == edges.Count) continue; //do not split last and first edge (next to each other)
               if(edge.vec == secondEdge.vec) continue;
-              if(isSplitEvent(edge,secondEdge,inputEdges, j)){
+              if(isSplitEvent(edge,secondEdge,inputEdges)){
                   again = false;
                   Console.WriteLine("split between " + edge.index1 + " and " + secondEdge.index1 + " with length: ");
                   Console.WriteLine(edge.p1.getDistance(secondEdge.p1));
@@ -131,8 +117,6 @@ namespace inClassHacking{
 
                   creases.Add(new Crease(edge.p1, secondEdge.p1, Color.Grey));
 
-                  //splitEdges(edge,secondEdge,i);
-                  //left poly
                   Edge splittingEdge = new Edge(secondEdge.p1, secondEdge.index1, edge.p1, edge.index1);
                   Edge splittingEdge2 = new Edge(edge.p1, edge.index1, secondEdge.p1, secondEdge.index1);
                   List<Edge> e,e2,initialEdges1,initialEdges2;
@@ -142,27 +126,15 @@ namespace inClassHacking{
                   e2 = new List<Edge>();
 
                   for(int k=i; k<j; k++){
-                    initialEdges1.Add(new Edge(edges[k]));
-                    e.Add(new Edge(edges[k]));
-                    if(j-i<3)
-                      splittingEdge = addMarkersToSplittingEdge(splittingEdge, edges[k]);
+                    func(edges[k], initialEdges1, e, splittingEdge, j-i);
                   }
-
-
                   int n;
                   for(n=0; n<i; n++){
-                    e2.Add(new Edge(edges[n]));
-                    initialEdges2.Add(new Edge(edges[n]));
-                    if(i+edges.Count-j < 3)
-                      splittingEdge2 = addMarkersToSplittingEdge(splittingEdge2, edges[n]);
+                    func(edges[n], initialEdges2, e2, splittingEdge2, i+edges.Count-j);
                   }
                   for(int m=j; m<edges.Count; m++){
-                    e2.Add(new Edge(edges[m]));
-                    initialEdges2.Add(new Edge(edges[m]));
-                    if(edges.Count-j < 3)
-                      splittingEdge2 = addMarkersToSplittingEdge(splittingEdge2, edges[m]);
+                    func(edges[m], initialEdges2, e2, splittingEdge2, edges.Count-j);
                   }
-
 
                   foreach(var marker in splittingEdge.markers){
                     splittingEdge2.addMarker(marker);
@@ -171,7 +143,6 @@ namespace inClassHacking{
                     splittingEdge.addMarker(marker);
                   }
 
-                  
                   initialEdges1.Add(new Edge(splittingEdge));
                   e.Add(splittingEdge);
                   initialEdges2.Insert(n, new Edge(splittingEdge2));
@@ -185,14 +156,23 @@ namespace inClassHacking{
         }
       }
     }
-    bool isSplitEvent(Edge edge, Edge secondEdge,List<Edge> inputEdges, int j){
-      double equationSolution = Int64.MaxValue;
 
-      if(secondEdge.vec == inputEdges[secondEdge.index1].vec && edge.vec == inputEdges[edge.index1].vec){
-          equationSolution = solveEquation(edge, inputEdges[secondEdge.index1],inputEdges[secondEdge.index1].p1,secondEdge, secondEdge.p2);
+    void func(Edge edge, List<Edge> initialEdges, List<Edge> e, Edge splittingEdge, int z){
+      initialEdges.Add(new Edge(edge));
+      e.Add(new Edge(edge));
+      if(z<3)
+        splittingEdge = addMarkersToSplittingEdge(splittingEdge, edge);
+    }
+
+    bool isSplitEvent(Edge edge, Edge secondEdge, List<Edge> inputEdges){
+      double equationSolution = Int64.MaxValue;
+      // if(secondEdge.vec == inputEdges[secondEdge.index1].vec && edge.vec == inputEdges[edge.index1].vec){
+      if(true){
+          equationSolution = solveEquation(edge, inputEdges[secondEdge.index1],inputEdges[secondEdge.index1].p1,secondEdge, secondEdge.p1);
       }else{ //the according edge was already splitted so we try the other edge of this vertex
-          Edge altSecondEdge = (j!=0) ? edges[j-1] : edges.Last();
-          Edge altInputEdge = (j!=0) ? inputEdges[j-1] : inputEdges.Last();
+          Edge altSecondEdge = (secondEdge.index1!=0) ? edges[secondEdge.index1-1] : edges.Last();
+          Edge altInputEdge = (secondEdge.index1!=0) ? inputEdges[secondEdge.index1-1] : inputEdges.Last();
+          Console.WriteLine(altSecondEdge.index1 + " - " + altInputEdge.index1);
           equationSolution = solveEquation(edge, altInputEdge,altInputEdge.p2,altSecondEdge, altSecondEdge.p2);
           }
       return (equationSolution < distances[edge.index1, secondEdge.index1]);
