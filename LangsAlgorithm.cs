@@ -126,14 +126,14 @@ namespace inClassHacking{
                   e2 = new List<Edge>();
 
                   for(int k=i; k<j; k++){
-                    func(edges[k], initialEdges1, e, splittingEdge, j-i);
+              processEdge(edges[k], initialEdges1, e, splittingEdge, j-i);
                   }
                   int n;
                   for(n=0; n<i; n++){
-                    func(edges[n], initialEdges2, e2, splittingEdge2, i+edges.Count-j);
+                    processEdge(edges[n], initialEdges2, e2, splittingEdge2, i+edges.Count-j);
                   }
                   for(int m=j; m<edges.Count; m++){
-                    func(edges[m], initialEdges2, e2, splittingEdge2, edges.Count-j);
+                    processEdge(edges[m], initialEdges2, e2, splittingEdge2, edges.Count-j);
                   }
 
                   foreach(var marker in splittingEdge.markers){
@@ -157,7 +157,7 @@ namespace inClassHacking{
       }
     }
 
-    void func(Edge edge, List<Edge> initialEdges, List<Edge> e, Edge splittingEdge, int z){
+    void processEdge(Edge edge, List<Edge> initialEdges, List<Edge> e, Edge splittingEdge, int z){
       initialEdges.Add(new Edge(edge));
       e.Add(new Edge(edge));
       if(z<3)
@@ -169,8 +169,8 @@ namespace inClassHacking{
       if(secondEdge.vec == input[secondEdge.index1].vec && edge.vec == input[edge.index1].vec){
         equationSolution = solveEquation(edge, input[secondEdge.index1],input[secondEdge.index1].p1,secondEdge, secondEdge.p1, secondEdge.p1);
       }else{ //the according edge was already splitted so we try the other edge of this vertex
-        Edge altSecondEdge = (j!=0) ? es[j-1] : es.Last();
-        Edge altInputEdge = (j!=0) ? input[j-1] : input.Last();
+        Edge altSecondEdge = (secondEdge.index1!=0) ? es[secondEdge.index1-1] : es.Last();
+        Edge altInputEdge = (secondEdge.index1!=0) ? input[secondEdge.index1-1] : input.Last();
         equationSolution = solveEquation(edge, altInputEdge,altInputEdge.p2,altSecondEdge, altSecondEdge.p2, secondEdge.p1);
       }
       return (equationSolution < distances[edge.index1, secondEdge.index1]);
