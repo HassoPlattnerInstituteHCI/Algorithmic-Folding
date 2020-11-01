@@ -106,7 +106,7 @@ namespace inClassHacking{
               if(Math.Abs(edge.index1 - secondEdge.index1) <= 1) continue; //do not split edges next to each other
               if(edge.index1 - secondEdge.index1 == edges.Count) continue; //do not split last and first edge (next to each other)
               if(edge.vec == secondEdge.vec) continue;
-              if(isSplitEvent(edge,secondEdge,inputEdges)){
+              if(isSplitEvent(edge,secondEdge,inputEdges,j,edges)){
                   again = false;
                   Console.WriteLine("split between " + edge.index1 + " and " + secondEdge.index1 + " with length: ");
                   Console.WriteLine(edge.p1.getDistance(secondEdge.p1));
@@ -164,32 +164,25 @@ namespace inClassHacking{
         splittingEdge = addMarkersToSplittingEdge(splittingEdge, edge);
     }
 
-    bool isSplitEvent(Edge edge, Edge secondEdge, List<Edge> inputEdges){
+    bool isSplitEvent(Edge edge, Edge secondEdge, List<Edge> input, int j, List<Edge> es){
       double equationSolution = Int64.MaxValue;
-      // if(secondEdge.vec == inputEdges[secondEdge.index1].vec && edge.vec == inputEdges[edge.index1].vec){
-      if(true){
-          equationSolution = solveEquation(edge, inputEdges[secondEdge.index1],inputEdges[secondEdge.index1].p1,secondEdge, secondEdge.p1);
+      if(secondEdge.vec == input[secondEdge.index1].vec && edge.vec == input[edge.index1].vec){
+        equationSolution = solveEquation(edge, input[secondEdge.index1],input[secondEdge.index1].p1,secondEdge, secondEdge.p1, secondEdge.p1);
       }else{ //the according edge was already splitted so we try the other edge of this vertex
-          Edge altSecondEdge = (secondEdge.index1!=0) ? edges[secondEdge.index1-1] : edges.Last();
-          Edge altInputEdge = (secondEdge.index1!=0) ? inputEdges[secondEdge.index1-1] : inputEdges.Last();
-          Console.WriteLine(altSecondEdge.index1 + " - " + altInputEdge.index1);
-          equationSolution = solveEquation(edge, altInputEdge,altInputEdge.p2,altSecondEdge, altSecondEdge.p2);
-          }
+        Edge altSecondEdge = (j!=0) ? es[j-1] : es.Last();
+        Edge altInputEdge = (j!=0) ? input[j-1] : input.Last();
+        equationSolution = solveEquation(edge, altInputEdge,altInputEdge.p2,altSecondEdge, altSecondEdge.p2, secondEdge.p1);
+      }
       return (equationSolution < distances[edge.index1, secondEdge.index1]);
     }
-    double solveEquation(Edge edge, Edge firstEdge, Point2D p1, Edge secondEdge, Point2D p2){
-      double solution;
-      double AA_ = undef;
-      double CC_ = undef;
-      Point2D A_ = null;
-      Point2D C_ = null;
+    double solveEquation(Edge edge, Edge firstEdge, Point2D p1, Edge secondEdge, Point2D p2, Point2D p3){
+      double AA_, CC_;
+      Point2D A_, C_;
       C_ = Folding.findIntersection(firstEdge.vec, p1, secondEdge.vec.getNormalRight(), p2);
       CC_ = p1.getDistance(C_);
       A_ = Folding.findIntersection(inputEdges[edge.index1].vec, inputEdges[edge.index1].p1, edge.vec.getNormalRight(), edge.p1);
       AA_ = inputEdges[edge.index1].p1.getDistance(A_);
-      solution = edge.p1.getDistance(secondEdge.p1) + AA_ + CC_;
-      solution = Math.Round(solution, 2);
-      return solution;
+      return Math.Round(edge.p1.getDistance(p3) + AA_ + CC_, 2);
     }
     bool linedUp(List<Edge> edges){
       for(int i=1; i<edges.Count; i++){
