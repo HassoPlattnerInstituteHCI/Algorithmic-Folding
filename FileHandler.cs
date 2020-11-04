@@ -10,6 +10,9 @@ namespace inClassHacking
       double paperSizeX, paperSizeY;
       private bool DEBUG;
       int zoomFactor;
+      double treeDrawingOffsetX = 0;
+      double treeDrawingOffsetY = 0;
+      List<int> drawnNodes = new List<int>();
 
         public FileHandler(bool debug, double paperSizeX, double paperSizeY, int zoomFactor)
         {
@@ -18,8 +21,8 @@ namespace inClassHacking
             this.paperSizeY = paperSizeY;
             this.zoomFactor = zoomFactor;
         }
-        
-        public void exportSVG(string filename, List<Circle> circles, List<Crease> creases = null)
+
+        public bool exportSVG(string filename, List<Circle> circles, List<Crease> creases = null)
         {
             creases = creases ?? new List<Crease>();
 
@@ -36,9 +39,10 @@ namespace inClassHacking
             SVG_ending(svg);
             File.WriteAllLines(filename,svg.ToArray());
             if (DEBUG) Console.WriteLine(filename);
+            return true;
         }
 
-        public void exportSVG(string filename, List<LeafNode> nodes, List<Crease> creases = null)
+        public bool exportSVG(string filename, List<LeafNode> nodes, List<Crease> creases = null)
         {
             List<Circle> circles = new List<Circle>();
 
@@ -60,13 +64,14 @@ namespace inClassHacking
             SVG_ending(svg);
             File.WriteAllLines(filename,svg.ToArray());
             if (DEBUG) Console.WriteLine(filename);
+            return true;
         }
-        
+
         public void SVG_ending (List<string> svg)
         {
-            svg.Add("</svg>"); 
+            svg.Add("</svg>");
         }
-        
+
         public List<string> SVG_init(List<string> svg)
         {
             svg.Add("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
@@ -95,7 +100,7 @@ namespace inClassHacking
 
           svg.Add("<line x1=\""+ ((paperSizeX-crease.p1.x)*zoomFactor) + "\" y1=\"" + crease.p1.y*zoomFactor + "\" x2=\"" + ((paperSizeX-crease.p2.x)*zoomFactor) + "\" y2=\"" + crease.p2.y*zoomFactor + "\" stroke=\"" + colToHex(crease.color) +  "\" style=\"stroke-width:4\" />");
         }
-        
+
         private string colToHex(Color c)
         {
             string hex = "";
@@ -110,21 +115,15 @@ namespace inClassHacking
             if (c== Color.Grey)
                 hex = "#808080";
             return hex;
-        } 
-    
+        }
 
-//Tree 
 
-    Tree tree;
-    double treeDrawingOffsetX = 0;
-    double treeDrawingOffsetY = 0;
-    List<int> drawnNodes = new List<int>();
-
-    public void exportSVG(string file, Tree tree){
+//Tree methods
+    public bool exportSVG(string file, Tree tree){
           List<Circle> drawing = new List<Circle>();
           List<Crease> lines = new List<Crease>();
           Point2D firstPosition = new Point2D(0, 2);
-  
+
           List<string> svg = new List<string>();
           SVG_init(svg);
 
@@ -158,25 +157,24 @@ namespace inClassHacking
 
           SVG_ending(svg);
           File.WriteAllLines(file, svg.ToArray());
-          if (DEBUG) Console.WriteLine("exported SVG");
-
+          return true;
         }
 
         void addNodesToDrawing(List<Circle> drawing, List<Crease> lines, Node startingNode, Point2D position){
           Circle nodeDrawing = new Circle(position, 0.3);
           drawing.Add(nodeDrawing);
           drawnNodes.Add(startingNode.index);
-          
+
           if(startingNode.GetType() == typeof(LeafNode)){
 
             LeafNode node = (LeafNode) startingNode;
-            
+
             Point2D nextPosition = new Point2D(position);
-            nextPosition.x += node.size; 
+            nextPosition.x += node.size;
             addNodesToDrawing(drawing, lines, node.relatedNode, nextPosition);
 
           }else{
-            
+
             InteriorNode node = (InteriorNode) startingNode;
 
             // foreach(var leafNode in node.relatedLeafNodes.Values){
@@ -198,13 +196,13 @@ namespace inClassHacking
                 lines.Add(new Crease(drawingCenter, new Point2D(position), Color.Green));
                 continue;
               }
-              
+
               switch(i){
-                case 0: 
+                case 0:
                         drawingCenter.x -= leafNode.size;
                         break;
 
-                case 1: 
+                case 1:
                         drawingCenter -= new Vector(1, 1).normalized()*leafNode.size;
                         break;
 
@@ -226,7 +224,7 @@ namespace inClassHacking
             foreach(var interiorNode in node.relatedInteriorNodes.Keys){
               Point2D nextPosition = new Point2D(position);
               nextPosition.y += node.relatedInteriorNodes[interiorNode];
-              
+
               if(drawnNodes.Contains(interiorNode.index)) continue;
               lines.Add(new Crease(new Point2D(nextPosition.x, nextPosition.y), position, Color.Grey));
               addNodesToDrawing(drawing, lines, interiorNode, nextPosition);

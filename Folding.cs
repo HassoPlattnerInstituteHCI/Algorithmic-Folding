@@ -41,9 +41,9 @@ namespace inClassHacking{
       creases.Add(new Crease(circles[4].getCenter(), circles[7].getCenter(), Color.Green));
       creases.Add(new Crease(circles[5].getCenter(), circles[6].getCenter(), Color.Green));
     }
+/*
+void lowerPart(List<Crease> creases){
 
-    void lowerPart(List<Crease> creases){
-      
       Vector up = new Vector(0, -1);
       Vector down = new Vector(0, 1);
       Vector left = new Vector(1, 0);
@@ -67,7 +67,7 @@ namespace inClassHacking{
       Point2D edgeCircle3low = circles[3].getCenter() + circle4To3.getReverse().normalized()*circles[3].getRadius();
       Point2D edgeCircle4right = circles[4].getCenter() + circle4To7.normalized() * circles[4].getRadius();
       Point2D edgeCircle4left = circles[4].getCenter() + circle4To3.normalized()*circles[4].getRadius();
-      
+
       Point2D edgeCircle5above = new Point2D(s/2, circles[5].getCenter().y-circles[5].getRadius());
       Point2D edgeCircle5below = new Point2D(s/2, circles[5].getCenter().y+circles[5].getRadius());
       Point2D edgeCircle6left = new Point2D(circles[6].getCenter().x-circles[6].getRadius(), circles[6].getCenter().y);
@@ -81,7 +81,7 @@ namespace inClassHacking{
       Point2D helper1 = findIntersection(right,  edgeCircle2left, circle2To1.getNormalRight(), edgeCircle2right);
       Vector circle3ToHelper1 = new Vector(circles[3].getCenter(), helper0);
       Point2D helper2 = findIntersection(circle4To3.getNormalLeft(), edgeCircle3low, circle3ToHelper1, circles[3].getCenter());
-      Point2D helper3 = findIntersection(circle4To7.getNormalRight(), edgeCircle4right, up, lowerMiddle); 
+      Point2D helper3 = findIntersection(circle4To7.getNormalRight(), edgeCircle4right, up, lowerMiddle);
       Point2D helper4 = new Point2D(circles[0].getCenter().x-circles[0].getRadius(), circles[5].getCenter().y-circles[5].getRadius()-input[6]);
 
       Vector helper4ToCircle5 = new Vector(helper4, circles[5].getCenter());
@@ -104,7 +104,7 @@ namespace inClassHacking{
       Point2D helper10 = findIntersection(left, edegCircle6Below, circle6LeftTo1.getNormalLeft(), helper8);
 
       Vector upperHelper10 = new Vector(helper8, helper10);
-      
+
       Point2D helper20 = helper7+upperHelper10;
       Point2D helper21 = helper6+upperHelper10;
 
@@ -138,9 +138,9 @@ namespace inClassHacking{
       Point2D helper22 = findIntersection(helper44To21, helper45, upperHelper10, helper9);
       if(helper22.x<helper45.x) helper22.x = helper45.x;
 
-      Vector helper1To61 = new Vector(helper1, helper61);      
+      Vector helper1To61 = new Vector(helper1, helper61);
       Vector helper41To45 = new Vector(helper41, helper45);
-  
+
       Point2D vertexCircle1Rivers = findIntersection(helper1To61 ,helper1, helper41To45, helper41);
 
 //start adding creases
@@ -230,8 +230,8 @@ namespace inClassHacking{
       creases.Add(new Crease(helper45, helper22, Color.Blue));
       creases.Add(new Crease(helper9, helper22, Color.Blue));
       creases.Add(new Crease(edgeCircle1Left, helper60, Color.Blue));
-      
-      
+
+
       creases.Add(new Crease(vertexCircle1Rivers, helper1, Color.Red));
       creases.Add(new Crease(vertexCircle1Rivers, helper41, Color.Red));
       creases.Add(new Crease(vertexCircle1Rivers, circles[1].getCenter(), Color.Red));
@@ -240,7 +240,7 @@ namespace inClassHacking{
       Vector vertex1ToCircle1 = new Vector(vertexCircle1Rivers, circles[1].getCenter());
 
       Point2D helper70 = findIntersection(helper10To20, helper10, vertex1ToCircle1, vertexCircle1Rivers);
-      
+
       creases.Add(new Crease(helper70, helper10, Color.Red));
 
       Vector helper1To30 = new Vector(helper1, helper30);
@@ -260,7 +260,7 @@ namespace inClassHacking{
       creases.Add(new Crease(vertexInCircle7, helper41, Color.Red));
       creases.Add(new Crease(vertexInCircle7, circles[7].getCenter(), Color.Red));
 
-    }
+    }*/
 
     public Point2D calculateCenterOfCircumsizedCircle(Point2D pointA, Point2D pointB, Point2D pointC){
       //center of circumscribed circle (https://kilchb.de/faqmath4.php#:~:text=Antwort%3A%20Die%20drei%20Punkte%20seinen,des%20Umkreises%20der%20drei%20Punkte.)
@@ -280,14 +280,14 @@ namespace inClassHacking{
   public static Point2D findIntersection(Vector v1, Point2D p1, Vector v2, Point2D p2){
       Sparse2DMatrix<int, int, double> aMatrix = new Sparse2DMatrix<int, int, double>();
       aMatrix[0, 0] = v1.x; aMatrix[0, 1] = v2.x;
-      aMatrix[1, 0] = v1.y; aMatrix[1, 1] = v2.y; 
+      aMatrix[1, 0] = v1.y; aMatrix[1, 1] = v2.y;
 
       SparseArray<int, double> bVector = new SparseArray<int, double>();
-      bVector[0] = p2.x-p1.x; bVector[1] = p2.y-p1.y; 
+      bVector[0] = p2.x-p1.x; bVector[1] = p2.y-p1.y;
 
       SparseArray<int, double> xVector = new SparseArray<int, double>();
       int numberOfEquations = 2;
-      
+
       // Solve the simultaneous equations.
       LinearEquationSolverStatus solverStatus =
           LinearEquationSolver.Solve(numberOfEquations,

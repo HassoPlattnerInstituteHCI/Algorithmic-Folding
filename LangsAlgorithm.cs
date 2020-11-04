@@ -9,8 +9,7 @@ namespace inClassHacking{
   public class LangsAlgorithm{
 
     public double sweepingLength = 0.05;
-    double undef = -1;
-
+    public bool DEBUG;
     List<Edge> edges = new List<Edge>();
     List<Circle> circles = new List<Circle>();
 
@@ -20,11 +19,13 @@ namespace inClassHacking{
     List<Edge> inputEdges = new List<Edge>();
     List<LeafNode> nodes = new List<LeafNode>();
 
-    public LangsAlgorithm(List<Circle> circles){
+    public LangsAlgorithm(List<Circle> circles, bool debug=false){
       this.circles = circles;
       foreach(var circle in circles){
         nodes.Add(circle.node);
       }
+      if (debug)
+        this.DEBUG=debug;
     }
 
     public List<Crease> sweepingProcess(){
@@ -106,10 +107,10 @@ namespace inClassHacking{
               if(Math.Abs(edge.index1 - secondEdge.index1) <= 1) continue; //do not split edges next to each other
               if(edge.index1 - secondEdge.index1 == edges.Count) continue; //do not split last and first edge (next to each other)
               if(edge.vec == secondEdge.vec) continue;
-              if(isSplitEvent(edge,secondEdge,inputEdges,j,edges)){
+              if(isSplitEvent(edge,secondEdge,inputEdges,edges)){
                   again = false;
-                  Console.WriteLine("split between " + edge.index1 + " and " + secondEdge.index1 + " with length: ");
-                  Console.WriteLine(edge.p1.getDistance(secondEdge.p1));
+                  if (DEBUG){Console.WriteLine("split between " + edge.index1 + " and " + secondEdge.index1 + " with length: ");
+                  Console.WriteLine(edge.p1.getDistance(secondEdge.p1));}
 
                   //avoid splitting same edges twice
                   distances[edge.index1, secondEdge.index1] = -1;
@@ -126,7 +127,7 @@ namespace inClassHacking{
                   e2 = new List<Edge>();
 
                   for(int k=i; k<j; k++){
-              processEdge(edges[k], initialEdges1, e, splittingEdge, j-i);
+                    processEdge(edges[k], initialEdges1, e, splittingEdge, j-i);
                   }
                   int n;
                   for(n=0; n<i; n++){
@@ -164,13 +165,13 @@ namespace inClassHacking{
         splittingEdge = addMarkersToSplittingEdge(splittingEdge, edge);
     }
 
-    bool isSplitEvent(Edge edge, Edge secondEdge, List<Edge> input, int j, List<Edge> es){
+    bool isSplitEvent(Edge edge, Edge secondEdge, List<Edge> input, List<Edge> es){
       double equationSolution = Int64.MaxValue;
       if(secondEdge.vec == input[secondEdge.index1].vec && edge.vec == input[edge.index1].vec){
         equationSolution = solveEquation(edge, input[secondEdge.index1],input[secondEdge.index1].p1,secondEdge, secondEdge.p1, secondEdge.p1);
       }else{ //the according edge was already splitted so we try the other edge of this vertex
-        Edge altSecondEdge = (secondEdge.index1!=0) ? es[secondEdge.index1-1] : es.Last();
-        Edge altInputEdge = (secondEdge.index1!=0) ? input[secondEdge.index1-1] : input.Last();
+        Edge altSecondEdge = (secondEdge.index1!=0) ? edges[secondEdge.index1-1] : edges.Last();
+        Edge altInputEdge = (secondEdge.index1!=0) ? inputEdges[secondEdge.index1-1] : inputEdges.Last();
         equationSolution = solveEquation(edge, altInputEdge,altInputEdge.p2,altSecondEdge, altSecondEdge.p2, secondEdge.p1);
       }
       return (equationSolution < distances[edge.index1, secondEdge.index1]);

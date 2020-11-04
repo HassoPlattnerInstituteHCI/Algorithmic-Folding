@@ -46,7 +46,7 @@ namespace inClassHacking{
       return null;
     }
 
-    public double getTreeDistanceTo(LeafNode other){
+    public double getTreeDistanceTo(LeafNode other){ //recursively walks the tree until other node is reached
       if(other == this) return 0;
       return this.size+this.relatedNode.getTreeDistanceTo(other);
     }
@@ -83,12 +83,16 @@ namespace inClassHacking{
 
 
     public class Tree{
+      public bool DEBUG;
       public List<Node> treeNodes = new List<Node>();
 
       public double drawingOffsetX=0;
       public double drawingOffsetY=0;
       public double maxY=0;
-
+      public Tree(bool debug = false) {
+        if(debug)
+         this.DEBUG=debug;
+      }
       public void addNode(Node node){
         treeNodes.Add(node);
       }
@@ -170,10 +174,11 @@ namespace inClassHacking{
               ret.Add(middleCircle);
 
               if(i!=1){
-                Console.WriteLine("change lower y");
-                Console.WriteLine(lowerPosition);
+                if (DEBUG){Console.WriteLine("change lower y");
+                Console.WriteLine(lowerPosition);}
                 lowerPosition.y -= middleNodes[i].getTreeDistanceTo(middleNodes[i-1]);
-                Console.WriteLine(lowerPosition);
+                if (DEBUG)
+                  Console.WriteLine(lowerPosition);
               }
 
             }
@@ -189,7 +194,8 @@ namespace inClassHacking{
       }
 
       public double getPaperSizeX(){
-        Console.WriteLine("papersize: " + drawingOffsetX);
+        if (DEBUG)
+          Console.WriteLine("papersize: " + drawingOffsetX);
         return 2*this.drawingOffsetX;
       }
 
@@ -215,7 +221,7 @@ namespace inClassHacking{
             }
         }
 
-        List<Circle> circles = Positioning.calculateCirclePositioning();
+        List<Circle> circles = Positioning.calculateCirclePositioningBeetle();
 
         circles[0].node = nodes[0];
         circles[1].node = nodes[2];
