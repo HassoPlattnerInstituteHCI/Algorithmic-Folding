@@ -10,7 +10,7 @@ namespace inClassHacking
     public enum MountainValley {Mountain, Valley}
     public enum Direction { Left, Right }
 
-      class Strip
+    class Strip
     {
         private double stripWidth;
         private bool DEBUG;
@@ -19,7 +19,7 @@ namespace inClassHacking
         int counter = 0;
 
         private List<Segment> segments = new List<Segment>();
-        public Strip(double w, bool DEBUG)
+        public Strip(double w, bool DEBUG=false)
         {
             this.stripWidth = w;
             this.DEBUG = DEBUG;
@@ -27,7 +27,7 @@ namespace inClassHacking
 
         public void addPlain(double len){
             Segment s = new Segment(
-                stripWidth, 
+                stripWidth,
                 len
             );
             segments.Add(s);
@@ -37,8 +37,8 @@ namespace inClassHacking
         public void addFold(MountainValley mv, int angle)
         {
             Segment s = new Segment(
-                stripWidth, 
-                mv, 
+                stripWidth,
+                mv,
                 angle
             );
             segments.Add(s);
@@ -110,9 +110,9 @@ namespace inClassHacking
                 addCornerGadget(MountainValley.Valley);
                 posY +=stripWidth;
             }
-            turn (); 
+            turn ();
             addPlain (triangle.b.getDistance(triangle.c)+cornerExtension(triangle)+stripWidth);
-            
+
             if(d == Direction.Right){
               addFold(MountainValley.Valley, 90);
               turn();

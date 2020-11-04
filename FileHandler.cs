@@ -8,12 +8,12 @@ namespace inClassHacking
     class FileHandler{
       private double stripWidth;
       private bool DEBUG;
-      public FileHandler(double w, bool DEBUG)
+      public FileHandler(double w, bool DEBUG=false)
         {
             this.stripWidth = w;
             this.DEBUG = DEBUG;
         }
-        public void exportSVG(Strip strip)
+        public bool exportSVG(Strip strip)
         {
             List<string> svg = new List<string>();
             SVG_init(svg);
@@ -32,10 +32,11 @@ namespace inClassHacking
             SVG_ending(svg);
             File.WriteAllLines("export.svg",svg.ToArray());
             if (DEBUG) Console.WriteLine("exported SVG");
+            return true;
         }
         public void SVG_ending (List<string> svg)
         {
-            svg.Add("</svg>"); 
+            svg.Add("</svg>");
         }
         public void SVG_addSegment(List<string> svg, Segment s, double x)
         {
@@ -45,7 +46,7 @@ namespace inClassHacking
                     "x1=\"" + (int)(x + s.draw().x1) + "\" " +
                     "y1=\"" + (int)(s.draw().y1+1) + "\" " +
                     "x2=\"" + (int)(x + s.draw().x2) + "\" " +
-                    "y2=\"" + (int)(s.draw().y2 +1) + 
+                    "y2=\"" + (int)(s.draw().y2 +1) +
                     "\"/>"
                    );
         }
@@ -69,10 +70,10 @@ namespace inClassHacking
                     "fill=\"none\" " +
                     "stroke=\"#000000\" " +
                     "stroke-miterlimit=\"10\" " +
-                    "width=\"" 
-                    + (int)(strip.getLength()+1) + 
-                    "\" height=\"" 
-                    + (int)(stripWidth) + 
+                    "width=\""
+                    + (int)(strip.getLength()+1) +
+                    "\" height=\""
+                    + (int)(stripWidth) +
                     "\"/>"
                    );
         }
@@ -88,8 +89,8 @@ namespace inClassHacking
             if (c == Color.Yellow)
                 hex = "FFFF00";
             return hex;
-        } 
-        // public static string 
+        }
+        // public static string
         public List<Triangle> importSTL(string filename)
         {
             List<Triangle> triangles = new List<Triangle>();
@@ -109,7 +110,7 @@ namespace inClassHacking
                         case 2:{c = pointFromString(line);break;
                             }
                     }
-                    val++; 
+                    val++;
                 }
                 if (line.Contains("endloop"))
                 {
@@ -123,8 +124,8 @@ namespace inClassHacking
             string sub= s.Trim();
             string[] coords = sub.Split(' ');
             return new Point3D(
-                double.Parse(coords[1]), 
-                double.Parse(coords[2]), 
+                double.Parse(coords[1]),
+                double.Parse(coords[2]),
                 double.Parse(coords[3])
             );
         }

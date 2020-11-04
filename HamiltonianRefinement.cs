@@ -49,21 +49,15 @@ namespace inClassHacking{
       if(startingIndex == DualgraphNode.UNDEF) return;
 
       for(int i = 0; i<6; i++){
-        if((startingIndex+i)%6 == 1){
-          if(triangle.neighbors.sides[1] != null){
+        if((startingIndex+i)%6 == 1)
+          if(triangle.neighbors.sides[1] != null)
             toStrip(strip, triangle.neighbors.sides[1], triangle);
-          }
-        }
-        if((startingIndex+i)%6 == 3){
-          if(triangle.neighbors.sides[0] != null){
+        if((startingIndex+i)%6 == 3)
+          if(triangle.neighbors.sides[0] != null)
             toStrip(strip, triangle.neighbors.sides[0], triangle);
-          }
-        }
-        if((startingIndex+i)%6 == 5){
-          if(triangle.neighbors.sides[2] != null){
+        if((startingIndex+i)%6 == 5)
+          if(triangle.neighbors.sides[2] != null)
             toStrip(strip, triangle.neighbors.sides[2], triangle);
-          }
-        }
         strip.addTriangle(triangle.triangulation[(startingIndex+i)%6]);
       }
     }

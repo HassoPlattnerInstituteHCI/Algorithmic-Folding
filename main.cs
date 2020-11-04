@@ -8,7 +8,7 @@ namespace inClassHacking
     class MainClass
     {
         public static double stripWidth = 1; //5 is best for origami simulation, 0.2 - 1 for debugging output
-        public const bool DEBUG = true;
+        public const bool DEBUG = false;
         public static Debug debug = new Debug(stripWidth);
 
         public static void Main(string[] args)
@@ -29,14 +29,9 @@ namespace inClassHacking
               }
               input = args[0];  //first param = input string
             }else{
-            //  input = "test.stl";  //simple triangle
-            //  input = "input.stl"; //cube
-            //  input = "zip.stl";
-              input = "turm.stl";  //castle's tower
-            // input = "Part2.stl";
+              input = "turm.stl";
             }
             List<Triangle> stl = f.importSTL(input);
-
             if(withHamiltonianRefinement){
               HamiltonianRefinement hamiltonian = new HamiltonianRefinement();
               foreach(var triangle in stl){
@@ -45,17 +40,16 @@ namespace inClassHacking
               hamiltonian.createDualGraph();
               hamiltonian.triangulate();
               hamiltonian.toStrip(s); //adds triangles to strip with hamiltonian refinement
-              if(DEBUG) Console.WriteLine("number of triangles imported: " + stl.Count);
-              if(DEBUG) Console.WriteLine("number of triangles exported: " + s.getNumberOfTriangles());
-
+              if(DEBUG) {
+                Console.WriteLine("number of triangles imported: " + stl.Count);
+                Console.WriteLine("number of triangles exported: " + s.getNumberOfTriangles());
+                }
             }else{
               foreach (var triangle in stl)
-              {
                   s.addTriangle(triangle);
-              }
-            }
-
-            f.exportSVG(s);
+                }
+            if (f.exportSVG(s))
+              Console.WriteLine("exported SVG");
             if(DEBUG) debug.createDebuggingOutput();
         }
     }
