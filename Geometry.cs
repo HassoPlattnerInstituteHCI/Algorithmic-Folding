@@ -5,7 +5,6 @@ using System.Collections.Generic;
 
 namespace inClassHacking
 {
-
     class Point3D
     {
         public double x, y, z;
@@ -71,12 +70,9 @@ namespace inClassHacking
             this.c = c;
             calcAngles();
         }
-        public double getHeight()
+        public double getHeight()// given alpha as top
         {
-            // given alpha as top
-            double h;
-            h = a.getDistance(b) * Math.Sin(beta);
-            return h;
+            return a.getDistance(b) * Math.Sin(beta);
         }
         public void calcAngles()
         {
@@ -110,10 +106,7 @@ namespace inClassHacking
           triangulation.Add(new Triangle(edges[2], center, a));
         }
         public void calculateCenter(){
-          double centerX = (a.x + b.x + c.x)/3;
-          double centerY = (a.y + b.y + c.y)/3;
-          double centerZ = (a.z + b.z + c.z)/3;
-          center = new Point3D(centerX,centerY, centerZ);
+          center = new Point3D((a.x + b.x + c.x)/3,(a.y + b.y + c.y)/3, (a.z + b.z + c.z)/3);
         }
         public void calculateCenterOfEdges(){
           edges.Add((b+c)/2);

@@ -32,6 +32,7 @@ namespace inClassHacking
               input = "turm.stl";
             }
             List<Triangle> stl = f.importSTL(input);
+
             if(withHamiltonianRefinement){
               HamiltonianRefinement hamiltonian = new HamiltonianRefinement();
               foreach(var triangle in stl){

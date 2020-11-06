@@ -26,40 +26,36 @@ namespace inClassHacking
         }
 
         public void addPlain(double len){
-            Segment s = new Segment(
+            segments.Add(new Segment(
                 stripWidth,
                 len
-            );
-            segments.Add(s);
+            ));
             if(DEBUG) MainClass.debug.drawStrip(len, d);
         }
 
         public void addFold(MountainValley mv, int angle)
         {
-            Segment s = new Segment(
+            segments.Add(new Segment(
                 stripWidth,
                 mv,
                 angle
-            );
-            segments.Add(s);
+            ));
+            if (DEBUG) Console.WriteLine("added fold");
         }
-
         public void addCornerGadget(MountainValley mv)
         {
             if (d == Direction.Right){
                 addFold(mv,45);
                 addFold(mv,-45);
-            }
-            if (d == Direction.Left){
+            }else{
                 addFold(mv,-45);
                 addFold(mv,45);
             }
+            if (DEBUG) Console.WriteLine("added corner");
         }
         public void turn(){
-                if (d == Direction.Right)
-                    d = Direction.Left;
-                else
-                    d = Direction.Right;
+          d = (d==Direction.Right) ? Direction.Left: Direction.Right;
+          if (DEBUG) Console.WriteLine("turn");
         }
 
         public List<Segment>getSegments(){
@@ -68,32 +64,21 @@ namespace inClassHacking
         public double getLength()
         {
             double length = 0;
-            if (segments != null){
+            if (segments != null)
                 foreach (var segment in segments)
-                {
                     length += segment.length;
-                }
-            }
             return length;
         }
         public double lengthAt(int index)
         {
             double length = 0;
-            if (segments == null)
-                return 0;
+            if (segments == null) return 0;
             for (int i = 0; i < index;  i++)
-            {
                 length += segments.ElementAt(i).length;
-            }
             return length;
         }
         private double cornerExtension(Triangle t){
-                if (d==Direction.Left){
-                    return Math.Tan(0.5*Math.PI-t.gamma)*stripWidth;
-                    }
-                else{
-                    return Math.Tan(0.5*Math.PI-t.beta)*stripWidth;
-                    }
+          return (d==Direction.Left)? Math.Tan(0.5*Math.PI-t.gamma)*stripWidth : Math.Tan(0.5*Math.PI-t.beta)*stripWidth;
         }
         public void addTriangle(Triangle triangle)
         {
@@ -137,7 +122,6 @@ namespace inClassHacking
     {
         public MountainValley mv;
         private int angle;
-
         public Fold (int angle, MountainValley direction = MountainValley.Mountain)
         {
             this.mv = direction;
@@ -145,39 +129,39 @@ namespace inClassHacking
         }
         public bool fromTop()
         {
-            if (angle > 0)
-                return true;
-            else
-                return false;
+            return (angle > 0) ? true:false;
         }
     }
-
+    public class Plain
+    {
+        private double length;
+        public Plain(double len){
+            this.length = len;
+        }
+        public double getLength() {return length;}
+    }
     public class Segment
     {
         private double width;
         public double length;
         private Fold f;
         private type t;
-
+        private Plain p;
         public Segment(double w, MountainValley d, int a, type t = type.Fold) // specify fold segment
         {
             this.t = t;
             this.width = w;
             double rad = a * 2 * Math.PI / 360;
             this.length = Math.Abs((w / Math.Tan(rad)));
-            f = new Fold(a, d);
+            this.f = new Fold(a, d);
         }
         public Segment(double w, double l, type t = type.Plain) // specify plain segment
         {
             this.length = l;
             this.t = t;
             this.width = w;
+            this.p = new Plain(l);
         }
-        public Fold getFold()
-        {
-            return f;
-        }
-
         public Line draw()
         {
             Line l = new Line();
@@ -187,14 +171,11 @@ namespace inClassHacking
             { l.y1 = 0; l.y2 = width; }
             else
             { l.y1 = width; l.y2 = 0; }
-            if (f.mv == MountainValley.Mountain) { l.c = Color.Red; }
-            else { l.c = Color.Blue; }
+            l.c = (f.mv == MountainValley.Mountain) ? Color.Red : Color.Blue;
             return l;
         }
-
-        public type getType()
-        {
-            return t;
-        }
+        public Plain getPlain(){return p;}
+        public Fold getFold(){return f;}
+        public type getType(){ return t;}
     }
 }
