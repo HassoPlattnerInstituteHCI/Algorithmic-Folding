@@ -283,9 +283,51 @@ namespace inClassHacking{
           LeafNode node = new LeafNode();
           circle.node = node;
         }
-
         return deerCircles;
       }
 
+      public static Tree exampleLongAntennaTree(){
+        Tree tree = new Tree();
+
+        InteriorNode inNode1 = new InteriorNode(0, tree);
+        // LeafNode head = new LeafNode(10, 1, inNode1, tree, true);
+        LeafNode head = new LeafNode(11, 3.38, inNode1, tree, true);
+        LeafNode arm1 = new LeafNode(12, 2, inNode1, tree);
+        LeafNode arm2 = new LeafNode(13, 2, inNode1, tree);
+        LeafNode arm3 = new LeafNode(14, 2, inNode1, tree);
+        LeafNode leg = new LeafNode(15, 6, inNode1, tree);
+
+        tree.drawingOffsetX = 12/2;
+        tree.drawingOffsetY = 12/2;
+
+        return tree;
+      }
+
+      public List<Circle> exampleLongAntennaCircles(){
+        List<LeafNode> nodes = new List<LeafNode>();
+        foreach(var n in this.treeNodes){
+          if(n.GetType() == typeof(LeafNode)){
+              LeafNode Lnode = (LeafNode) n;
+              nodes.Add(Lnode);
+              Lnode.circle = new Circle(new Point2D(0, 0), 0);
+            }
+        }
+
+        List<Circle> circles = new List<Circle>();
+
+        circles.Add(new Circle(new Point2D(6, 5), 3.38));
+        circles.Add(new Circle(new Point2D(4, 0), 2));
+        circles.Add(new Circle(new Point2D(0, 0), 2));
+        circles.Add(new Circle(new Point2D(0, 4), 2));
+        circles.Add(new Circle(new Point2D(0, 12), 6));
+
+        circles[0].node = nodes[0];
+        circles[1].node = nodes[1];
+        circles[2].node = nodes[2];
+        circles[3].node = nodes[3];
+        circles[4].node = nodes[4];
+
+        return circles;
+      }
     }
 }
