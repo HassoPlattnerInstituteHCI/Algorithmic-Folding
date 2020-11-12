@@ -170,7 +170,7 @@ namespace inClassHacking{
       if(secondEdge.vec == input[secondEdge.index1].vec && edge.vec == input[edge.index1].vec){
         equationSolution = solveEquation(edge, input[secondEdge.index1],input[secondEdge.index1].p1,secondEdge, secondEdge.p1, secondEdge.p1);
       }else{ //the according edge was already splitted so we try the other edge of this vertex
-        Edge altSecondEdge = (secondEdge.index1!=0) ? edges[secondEdge.index1-1] : edges.Last();
+        Edge altSecondEdge = (secondEdge.index1!=0) ? es[secondEdge.index1-1] : es.Last();
         Edge altInputEdge = (secondEdge.index1!=0) ? inputEdges[secondEdge.index1-1] : inputEdges.Last();
         equationSolution = solveEquation(edge, altInputEdge,altInputEdge.p2,altSecondEdge, altSecondEdge.p2, secondEdge.p1);
       }
