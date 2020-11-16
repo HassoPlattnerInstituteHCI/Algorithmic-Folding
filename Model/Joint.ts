@@ -4,8 +4,8 @@ import Plate from "./Plate";
 
 // the THREE.Vector2-objects supplied in the constructor should be reference variables to the actual Vector2-Points of the polygons used by plates to represent their outlines in 2D space
 export default class Joint {
-  private readonly plate1: Plate;
-  private readonly plate2: Plate;
+  private plate1: Plate;
+  private plate2: Plate;
   private readonly pointsOfPlate1: THREE.Vector2[];
   private readonly pointsOfPlate2: THREE.Vector2[];
   private readonly pointsOfPlate1_3d: THREE.Vector3[];
@@ -34,6 +34,11 @@ export default class Joint {
 
   public getPlates(): [Plate, Plate] {
     return [this.plate1, this.plate2];
+  }
+
+  public setPlates(plate1: Plate, plate2: Plate): void {
+    this.plate1 = plate1;
+    this.plate2 = plate2;
   }
 
   public getOtherPlate(plate: Plate = this.plate1): Plate {

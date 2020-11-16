@@ -92,6 +92,14 @@ export default class Unfolding {
     fs.writeFileSync(fileName, svgText);
   }
 
+  // takes a 3d position on a plate and returns the 2d position of that point in the Unfolding
+  public map3dToUnfolding(pos: THREE.Vector3, plate: Plate): THREE.Vector2 {
+    const matrix = this.placements.get(plate);
+    const pos2d = plate.map3dTo2d(pos);
+
+    return GeometryUtil.applyMatrix4(pos2d.clone(), matrix);
+  }
+
   /**
    * Positional methods for the entire Unfolding
    */

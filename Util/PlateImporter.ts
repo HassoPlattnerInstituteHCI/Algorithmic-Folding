@@ -56,7 +56,21 @@ function clone3(origin: THREE.Vector3): THREE.Vector3 {
 
 function createJointLessPlate(mockup: PlateMockup): Plate {
   const poly = new Polygon(mockup.polygon[0], mockup.polygon[1]);
-  return new Plate(mockup.id, mockup.points, poly, []);
+  const conversion = getConversion(mockup.points, poly.getPoints());
+  return new Plate(mockup.id, mockup.points, poly, [], conversion);
+}
+
+// assumes that each plate has >= 3 points and that the 3d and 2d points are sorted to match according to index
+function getConversion(points3d: THREE.Vector3[], points2d: THREE.Vector2[]): [THREE.Vector3[], THREE.Vector2[]] {
+  const start3d = points3d[0].clone();
+  const vec13d = points3d[2].clone().sub(points3d[0]);
+  const vec23d = points3d[1].clone().sub(points3d[0]);
+
+  const start2d = points2d[0].clone();
+  const vec12d = points2d[2].clone().sub(points2d[0]);
+  const vec22d = points2d[1].clone().sub(points2d[0]);
+
+  return [[start3d, vec13d, vec23d], [start2d, vec12d, vec22d]];
 }
 
 function setJoints(mockup: PlateMockup, plateMap: Map<string, Plate>): void {
@@ -124,7 +138,7 @@ function findPoints(plate: Plate, copyPoints: THREE.Vector2[]) {
   return points;
 }
 
-function getNormal(points: THREE.Vector2[]): THREE.Vector2 {
+export function getNormal(points: THREE.Vector2[]): THREE.Vector2 {
   const points3 = points.map(v => new THREE.Vector3(v.x, v.y, 0));
   const normal = points3[1].sub(points3[0]).cross(new THREE.Vector3(0, 0, 1));
   normal.normalize();

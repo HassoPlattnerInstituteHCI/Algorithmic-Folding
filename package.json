@@ -4,9 +4,11 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "@types/mathjs": "^6.0.7",
     "@types/node": "^14.10.1",
     "js-graph-algorithms": "^1.0.18",
     "jsts": "^2.5.1",
+    "mathjs": "^7.6.0",
     "three": "^0.110.0"
   },
   "devDependencies": {},
