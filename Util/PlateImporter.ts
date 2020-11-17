@@ -34,6 +34,7 @@ function recreateMockup(mockup: PlateMockup): PlateMockup {
   const poly1 = mockup.polygon[0].map(p => clone2(p));
   const poly2 = mockup.polygon[1].map(arr => arr.map(p => clone2(p)));
   const polygon = [poly1, poly2];
+  const globalToLocalMatrix = mockup.globalToLocalMatrix;
 
   const joints = mockup.joints.map(joint => {
     const p1 = joint[1].map(p => clone2(p));
@@ -43,7 +44,7 @@ function recreateMockup(mockup: PlateMockup): PlateMockup {
     return [joint[0], p1, p2, p3, p4];
   });
 
-  return new PlateMockup(mockup.id, points, polygon, joints);
+  return new PlateMockup(mockup.id, points, polygon, joints, globalToLocalMatrix);
 }
 
 function clone2(origin: THREE.Vector2): THREE.Vector2 {
@@ -56,8 +57,7 @@ function clone3(origin: THREE.Vector3): THREE.Vector3 {
 
 function createJointLessPlate(mockup: PlateMockup): Plate {
   const poly = new Polygon(mockup.polygon[0], mockup.polygon[1]);
-  const conversion = getConversion(mockup.points, poly.getPoints());
-  return new Plate(mockup.id, mockup.points, poly, [], conversion);
+  return new Plate(mockup.id, mockup.points, poly, [], mockup.globalToLocalMatrix);
 }
 
 // assumes that each plate has >= 3 points and that the 3d and 2d points are sorted to match according to index
@@ -150,12 +150,14 @@ class PlateMockup {
   public id: string;
   public points: THREE.Vector3[];
   public polygon: [THREE.Vector2[], THREE.Vector2[][]];
+  public globalToLocalMatrix: THREE.Matrix4;
   public joints: Array<[string, THREE.Vector2[], THREE.Vector2[], THREE.Vector3[], THREE.Vector3[]]>;
 
-  constructor(id: string, points, polygon, joints) {
+  constructor(id: string, points, polygon, joints, globalToLocalMatrix) {
     this.id = id;
     this.points = points;
     this.polygon = polygon;
+    this.globalToLocalMatrix = globalToLocalMatrix;
     this.joints = joints;
   }
 }
