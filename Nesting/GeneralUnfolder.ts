@@ -184,8 +184,8 @@ export class StarUnfolder extends Unfolder {
       const points2_2d = points2.map(p => plate.map3dTo2d(p));
 
       // create the plates
-      const plate1 = new Plate(plate.getId() + "1", points1, new Polygon(points1_2d), [], plate.getConversion());
-      const plate2 = new Plate(plate.getId() + "2", points2, new Polygon(points2_2d), [], plate.getConversion());
+      const plate1 = new Plate(plate.getId() + "1", points1, new Polygon(points1_2d), [], plate.getGlobalToLocalMatrix());
+      const plate2 = new Plate(plate.getId() + "2", points2, new Polygon(points2_2d), [], plate.getGlobalToLocalMatrix());
 
 
 
