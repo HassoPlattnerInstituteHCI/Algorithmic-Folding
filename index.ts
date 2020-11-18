@@ -4,7 +4,7 @@ import {BfsEdgeUnfolder, BruteForceEdgeUnfolder, DfsEdgeUnfolder, SteepestEdgeUn
 
 // import plates
 console.log("Starting now");
-const plates = importPlates('imports/chair.json');
+const plates = importPlates('imports/boxel.json');
 
 // unfold
 new DfsEdgeUnfolder().nest(plates).saveSvg('dfs.svg');
