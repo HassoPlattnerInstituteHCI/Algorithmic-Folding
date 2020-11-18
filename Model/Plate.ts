@@ -106,6 +106,6 @@ export default class Plate {
     const side1 = this.points[(maxI + 1) % len].clone().sub(this.points[maxI]);
     const side2 = this.points[maxI].clone().sub(this.points[(maxI + len - 1) % len]);
 
-    return side1.clone().cross(side2).normalize();
+    return side2.clone().cross(side1).normalize();
   }
 }
