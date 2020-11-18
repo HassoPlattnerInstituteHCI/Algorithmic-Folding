@@ -151,8 +151,7 @@ export class DfsEdgeUnfolder extends Unfolder {
     const unfolding = new Unfolding(startPlate);
 
     // create a set of all plates and remove the startPlate
-    const plateSet = new Set<Plate>();
-    for (const plate of plates) plateSet.add(plate);
+    const plateSet = new Set<Plate>(plates);
     plateSet.delete(startPlate);
 
     // nest:
@@ -184,8 +183,7 @@ export class BfsEdgeUnfolder extends Unfolder {
 
   public nest(plates: Plate[]): Unfolding {
     // create a set of all plates
-    const plateSet = new Set<Plate>();
-    for (const plate of plates) plateSet.add(plate);
+    const plateSet = new Set<Plate>(plates);
 
     // nest:
     return this.nestBFS(plateSet);
@@ -232,8 +230,7 @@ export class BruteForceEdgeUnfolder extends Unfolder {
     const unfolding = new Unfolding(startPlate);
 
     // create a set of all plates and remove the startPlate
-    const plateSet = new Set<Plate>();
-    for (const plate of plates) plateSet.add(plate);
+    const plateSet = new Set<Plate>(plates);
     plateSet.delete(startPlate);
 
     // nest:
