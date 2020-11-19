@@ -10,22 +10,23 @@ namespace inClassHacking{
 
     public double sweepingLength = 0.05;
     public bool DEBUG;
+    public bool VISUAL;
     List<Edge> edges = new List<Edge>();
     List<Circle> circles = new List<Circle>();
 
     double[,] distances;
-
+    int counter=0;
     List<Crease> creases = new List<Crease>();
     List<Edge> inputEdges = new List<Edge>();
     List<LeafNode> nodes = new List<LeafNode>();
 
-    public LangsAlgorithm(List<Circle> circles, bool debug=false){
+    public LangsAlgorithm(List<Circle> circles, bool debug=false, bool visual=false){
       this.circles = circles;
       foreach(var circle in circles){
         nodes.Add(circle.node);
       }
-      if (debug)
-        this.DEBUG=debug;
+      this.DEBUG=debug;
+      this.VISUAL=visual;
     }
 
     public List<Crease> sweepingProcess(){
@@ -87,6 +88,7 @@ namespace inClassHacking{
         parallelSweep(edges, sweepingLength);     //sweep every edge by sweepingLength
         edges = updateVerticesandMarkers(edges);  //update vertices of polygon
         drawRivers(creases, edges, initialEdges);
+        if (VISUAL) debugExport(circles,creases,"snapshot"+counter+".svg");counter++;
         for(int i=0; i<edges.Count; i++){
           Edge edge = edges[i];
           if(edge.getLength() < 2*sweepingLength){  //contraction event (next iteration we would have 0 length)
@@ -129,8 +131,7 @@ namespace inClassHacking{
                   for(int k=i; k<j; k++){
                     processEdge(edges[k], initialEdges1, e, splittingEdge, j-i);
                   }
-                  int n;
-                  for(n=0; n<i; n++){
+                  for(int n=0; n<i; n++){
                     processEdge(edges[n], initialEdges2, e2, splittingEdge2, i+edges.Count-j);
                   }
                   for(int m=j; m<edges.Count; m++){
@@ -143,12 +144,10 @@ namespace inClassHacking{
                   foreach(var marker in splittingEdge2.markers){
                     splittingEdge.addMarker(marker);
                   }
-
                   initialEdges1.Add(new Edge(splittingEdge));
                   e.Add(splittingEdge);
-                  initialEdges2.Insert(n, new Edge(splittingEdge2));
-                  e2.Insert(n, splittingEdge2);
-
+                  initialEdges2.Insert(i, new Edge(splittingEdge2));
+                  e2.Insert(i, splittingEdge2);
                   sweep(creases, e, initialEdges1);
                   sweep(creases, e2, initialEdges2);
               }
@@ -157,7 +156,10 @@ namespace inClassHacking{
         }
       }
     }
-
+    void debugExport(List<Circle> c, List<Crease> cr, string s){
+      FileHandler f = new FileHandler(DEBUG, 12, 12, 90); //for deer 29.22, 29.22, 50
+      f.exportSVG(s, c, cr);
+    }
     void processEdge(Edge edge, List<Edge> initialEdges, List<Edge> e, Edge splittingEdge, int z){
       initialEdges.Add(new Edge(edge));
       e.Add(new Edge(edge));

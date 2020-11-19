@@ -35,11 +35,7 @@ namespace inClassHacking
             foreach(var crease in creases){
               drawCrease(svg, crease);
             }
-
-            SVG_ending(svg);
-            File.WriteAllLines(filename,svg.ToArray());
-            if (DEBUG) Console.WriteLine(filename);
-            return true;
+            return writeFile(filename,svg);
         }
 
         public bool exportSVG(string filename, List<LeafNode> nodes, List<Crease> creases = null)
@@ -60,18 +56,19 @@ namespace inClassHacking
             foreach(var crease in creases){
               drawCrease(svg, crease);
             }
-
-            SVG_ending(svg);
-            File.WriteAllLines(filename,svg.ToArray());
-            if (DEBUG) Console.WriteLine(filename);
-            return true;
+            return writeFile(filename,svg);
         }
 
         public void SVG_ending (List<string> svg)
         {
             svg.Add("</svg>");
         }
-
+        public bool writeFile(string file, List<string> svg){
+          SVG_ending(svg);
+          Directory.CreateDirectory("export");
+          File.WriteAllLines("export/"+file, svg.ToArray());
+          return true;
+        }
         public List<string> SVG_init(List<string> svg)
         {
             svg.Add("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
@@ -154,10 +151,7 @@ namespace inClassHacking
             line.p2.y += treeDrawingOffsetY;
             drawCrease(svg, line);
           }
-
-          SVG_ending(svg);
-          File.WriteAllLines(file, svg.ToArray());
-          return true;
+          return writeFile(file,svg);
         }
 
         void addNodesToDrawing(List<Circle> drawing, List<Crease> lines, Node startingNode, Point2D position){
