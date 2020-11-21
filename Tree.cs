@@ -286,27 +286,38 @@ namespace inClassHacking{
         InteriorNode frontNode = new InteriorNode(index++,tree);
         InteriorNode backNode = new InteriorNode(index++,tree);
         frontNode.addInteriorNode(backNode,1);
-        LeafNode head = new LeafNode(index++,1,frontNode,tree);
+        LeafNode head = new LeafNode(index++,1,frontNode,tree, true);
         LeafNode foreLeg1 = new LeafNode(index++,1,frontNode,tree);
-        LeafNode foreLeg2 = new LeafNode(index++,1,frontNode,tree);
+        //LeafNode foreLeg2 = new LeafNode(index++,1,frontNode,tree);
         LeafNode hindLeg1 = new LeafNode(index++,1,backNode,tree);
-        LeafNode hindLeg2 = new LeafNode(index++,1,backNode,tree);
-        LeafNode tail = new LeafNode(index++,1,backNode,tree);
+        //LeafNode hindLeg2 = new LeafNode(index++,1,backNode,tree);
+        LeafNode tail = new LeafNode(index++,1,backNode,tree, true);
+
+        tree.drawingOffsetX = 3.74/2;
+        tree.drawingOffsetY = 3.74/2;
 
         return tree;
       }
       public List<Circle> exampleLizardCircles(){
+        List<LeafNode> nodes = new List<LeafNode>();
+        foreach(var n in this.treeNodes){
+          if(n.GetType() == typeof(LeafNode)){
+              LeafNode Lnode = (LeafNode) n;
+              nodes.Add(Lnode);
+              Lnode.circle = new Circle(new Point2D(0, 0), 0);
+            }
+        }
         List<Circle> lizardCircles = new List<Circle>();
         lizardCircles.Add(new Circle(new Point2D(1.87,0.71), 1));
         lizardCircles.Add(new Circle(new Point2D(0, 0), 1));
-        lizardCircles.Add(new Circle(new Point2D(3.74, 0), 1));
+        //lizardCircles.Add(new Circle(new Point2D(3.74, 0), 1));
         lizardCircles.Add(new Circle(new Point2D(0, 3.03), 1));
-        lizardCircles.Add(new Circle(new Point2D(3.74, 3.03), 1));
+        //lizardCircles.Add(new Circle(new Point2D(3.74, 3.03), 1));
         lizardCircles.Add(new Circle(new Point2D(1.87,3.74), 1));
 
-        foreach(var circle in lizardCircles){
-          LeafNode node = new LeafNode();
-          circle.node = node;
+        for(int i=0; i<lizardCircles.Count(); i++){
+          
+          lizardCircles[i].node = nodes[i];
         }
         return lizardCircles;
       }

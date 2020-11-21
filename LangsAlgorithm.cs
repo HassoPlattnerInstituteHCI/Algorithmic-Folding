@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using SparseCollections;
-using Mathematics;
+//using Mathematics;
 
 namespace inClassHacking{
 
@@ -181,9 +181,9 @@ namespace inClassHacking{
     double solveEquation(Edge edge, Edge firstEdge, Point2D p1, Edge secondEdge, Point2D p2, Point2D p3){
       double AA_, CC_;
       Point2D A_, C_;
-      C_ = Folding.findIntersection(firstEdge.vec, p1, secondEdge.vec.getNormalRight(), p2);
+      C_ = Geometry.findIntersection(firstEdge.vec, p1, secondEdge.vec.getNormalRight(), p2);
       CC_ = p1.getDistance(C_);
-      A_ = Folding.findIntersection(inputEdges[edge.index1].vec, inputEdges[edge.index1].p1, edge.vec.getNormalRight(), edge.p1);
+      A_ = Geometry.findIntersection(inputEdges[edge.index1].vec, inputEdges[edge.index1].p1, edge.vec.getNormalRight(), edge.p1);
       AA_ = inputEdges[edge.index1].p1.getDistance(A_);
       return Math.Round(edge.p1.getDistance(p3) + AA_ + CC_, 2);
     }

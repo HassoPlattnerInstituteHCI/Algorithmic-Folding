@@ -2,6 +2,8 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
+using SparseCollections;
+using Mathematics;
 
 namespace inClassHacking
 {
@@ -204,11 +206,11 @@ namespace inClassHacking
   public void updateVertices(Edge left, Edge right){
 
     if( (right.vec.x != this.vec.x) && (right.vec.x != this.vec.getReverse().x)){
-      this.p2 = Folding.findIntersection(right.vec.getReverse(), right.p2, this.vec, this.p1);
+      this.p2 = Geometry.findIntersection(right.vec.getReverse(), right.p2, this.vec, this.p1);
     }
 
     if( (left.vec.x != this.vec.x) && (left.vec.x != this.vec.getReverse().x)){
-      this.p1 = Folding.findIntersection(left.vec, left.p1, this.vec.getReverse(), this.p2);
+      this.p1 = Geometry.findIntersection(left.vec, left.p1, this.vec.getReverse(), this.p2);
     }
   }
 
@@ -279,6 +281,33 @@ namespace inClassHacking
       this.p1 = p1;
       this.p2 = p2;
       this.color = c;
+    }
+  }
+
+  public class Geometry{
+
+   public static Point2D findIntersection(Vector v1, Point2D p1, Vector v2, Point2D p2){
+      Sparse2DMatrix<int, int, double> aMatrix = new Sparse2DMatrix<int, int, double>();
+      aMatrix[0, 0] = v1.x; aMatrix[0, 1] = v2.x;
+      aMatrix[1, 0] = v1.y; aMatrix[1, 1] = v2.y;
+
+      SparseArray<int, double> bVector = new SparseArray<int, double>();
+      bVector[0] = p2.x-p1.x; bVector[1] = p2.y-p1.y;
+
+      SparseArray<int, double> xVector = new SparseArray<int, double>();
+      int numberOfEquations = 2;
+
+      // Solve the simultaneous equations.
+      LinearEquationSolverStatus solverStatus =
+          LinearEquationSolver.Solve(numberOfEquations,
+                                      aMatrix,
+                                      bVector,
+                                      xVector);
+
+      Point2D r = p1+v1*xVector[0];
+      // Console.WriteLine("Solution: s=" + xVector[0] + ", t=" + xVector[1] + r);
+
+      return r;
     }
   }
 }

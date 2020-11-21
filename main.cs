@@ -21,6 +21,7 @@ namespace inClassHacking{
 
       tree = Tree.exampleLizardTree(); //overwrites tree with lizard
       List<Circle> circles = tree.exampleLizardCircles(); //circles for lizards's pattern
+      circles = circles.GetRange(0, 4);
 
       LangsAlgorithm lang = new LangsAlgorithm(circles,DEBUG, VISUAL);
       List<Crease> creases = lang.sweepingProcess();
