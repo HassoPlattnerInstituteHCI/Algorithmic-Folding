@@ -22,14 +22,14 @@ namespace inClassHacking
             this.zoomFactor = zoomFactor;
         }
 
-        public bool exportSVG(string filename, List<Circle> circles, List<Crease> creases = null)
+        public bool exportSVG(string filename, Tree tree, List<Crease> creases = null)
         {
             creases = creases ?? new List<Crease>();
 
             List<string> svg = new List<string>();
             SVG_init(svg);
 
-            foreach(var circle in circles){
+            foreach(var circle in tree.circles){
               drawCircle(svg, circle);
             }
             foreach(var crease in creases){

@@ -14,17 +14,16 @@ namespace inClassHacking{
     public int zoom;
     public double pageWidth;
     List<Edge> edges = new List<Edge>();
-    List<Circle> circles = new List<Circle>();
-
+    Tree tree = new Tree();
     double[,] distances;
     int counter=0;
     List<Crease> creases = new List<Crease>();
     List<Edge> inputEdges = new List<Edge>();
     List<LeafNode> nodes = new List<LeafNode>();
 
-    public LangsAlgorithm(List<Circle> circles, bool debug=false, bool visual=false, int zoomFactor=90, double width=100){
-      this.circles = circles;
-      foreach(var circle in circles){
+    public LangsAlgorithm(Tree tree, bool debug=false, bool visual=false, int zoomFactor=90, double width=100){
+      this.tree = tree;
+      foreach(var circle in tree.circles){
         nodes.Add(circle.node);
       }
       this.DEBUG=debug;
@@ -44,15 +43,15 @@ namespace inClassHacking{
     }
     void axialCreasesAndMarkers(List<Crease> creases){  // create edges and creases that connect the circles
     Edge newEdge;
-      for(int i=0; i<circles.Count-1; i++){
-        creases.Add(new Crease(circles[i].getCenter(), circles[i+1].getCenter(), Color.Green));
-        newEdge = new Edge(circles[i].getCenter(), i, circles[i+1].getCenter(), i+1);
+      for(int i=0; i<tree.circles.Count-1; i++){
+        creases.Add(new Crease(tree.circles[i].getCenter(), tree.circles[i+1].getCenter(), Color.Green));
+        newEdge = new Edge(tree.circles[i].getCenter(), i, tree.circles[i+1].getCenter(), i+1);
         edges.Add(newEdge);
         if(nodes[i].relatedNode != nodes[i+1].relatedNode)
            addMarker(newEdge, nodes[i], nodes[i+1]);
       }
-      creases.Add(new Crease(circles[0].getCenter(), circles.Last().getCenter(), Color.Green)); //connect the last circle with an edge to the first one to close the polygon
-      newEdge = new Edge(circles.Last().getCenter(), circles.Count-1, circles[0].getCenter(), 0);
+      creases.Add(new Crease(tree.circles[0].getCenter(), tree.circles.Last().getCenter(), Color.Green)); //connect the last circle with an edge to the first one to close the polygon
+      newEdge = new Edge(tree.circles.Last().getCenter(), tree.circles.Count-1, tree.circles[0].getCenter(), 0);
       edges.Add(newEdge);
       if(nodes[0].relatedNode != nodes.Last().relatedNode)
         addMarker(newEdge, nodes.Last(), nodes[0]);
@@ -92,7 +91,7 @@ namespace inClassHacking{
         parallelSweep(edges, sweepingLength);     //sweep every edge by sweepingLength
         edges = updateVerticesandMarkers(edges);  //update vertices of polygon
         drawRivers(creases, edges, initialEdges);
-        if (VISUAL) debugExport(circles,creases,"snapshot"+counter+".svg");counter++;
+        if (VISUAL) debugExport(tree,creases,"snapshot"+counter+".svg");counter++;
         for(int i=0; i<edges.Count; i++){
           Edge edge = edges[i];
           if(edge.getLength() < 2*sweepingLength){  //contraction event (next iteration we would have 0 length)
@@ -160,7 +159,7 @@ namespace inClassHacking{
         }
       }
     }
-    void debugExport(List<Circle> c, List<Crease> cr, string s){
+    void debugExport(Tree t, List<Crease> cr, string s){
       /*double size=1.0;
       switch (demoModel){
         case 0:{  size = 29.22;scale=50;break;} // beetle
@@ -168,7 +167,7 @@ namespace inClassHacking{
         case 2:{  size = 3.733;scale=90;break;} // lizard
       }*/
       FileHandler f = new FileHandler(DEBUG, pageWidth, zoom);
-      f.exportSVG(s, c, cr);
+      f.exportSVG(s, t, cr);
     }
     void processEdge(Edge edge, List<Edge> initialEdges, List<Edge> e, Edge splittingEdge, int z){
       initialEdges.Add(new Edge(edge));

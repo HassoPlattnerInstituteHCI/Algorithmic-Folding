@@ -85,6 +85,7 @@ namespace inClassHacking{
     public class Tree{
       public bool DEBUG;
       public List<Node> treeNodes = new List<Node>();
+      public List<Circle> circles = new List<Circle>();
 
       public double drawingOffsetX=0;
       public double drawingOffsetY=0;
@@ -237,6 +238,7 @@ namespace inClassHacking{
       }
 
       public static Tree exampleBeetleTree(){
+        Console.WriteLine("loading the beetle");
         Tree tree = new Tree();
 
         InteriorNode inNode1 = new InteriorNode(0, tree);
@@ -261,10 +263,11 @@ namespace inClassHacking{
 
         tree.drawingOffsetX = 29.23/2;
         tree.drawingOffsetY = 29.23/2;
-
+        tree.circles = tree.exampleBeetleCircles();
         return tree;
       }
       public static Tree exampleLongAntennaTree(){
+        Console.WriteLine("loading a beetle with long antennas");
         Tree tree = new Tree();
 
         InteriorNode inNode1 = new InteriorNode(0, tree);
@@ -277,10 +280,11 @@ namespace inClassHacking{
 
         tree.drawingOffsetX = 12/2;
         tree.drawingOffsetY = 12/2;
-
+        tree.circles = tree.exampleLongAntennaCircles();
         return tree;
       }
       public static Tree exampleLizardTree(){
+        Console.WriteLine("loading a lizard");
         Tree tree = new Tree();
         int index = 0;
         InteriorNode frontNode = new InteriorNode(index++,tree);
@@ -295,7 +299,7 @@ namespace inClassHacking{
 
         tree.drawingOffsetX = 3.74/2;
         tree.drawingOffsetY = 3.74/2;
-
+        tree.circles = tree.exampleLizardCircles();
         return tree;
       }
       public List<Circle> exampleLizardCircles(){
@@ -361,7 +365,6 @@ namespace inClassHacking{
         circles[2].node = nodes[2];
         circles[3].node = nodes[3];
         circles[4].node = nodes[4];
-
         return circles;
       }
 
