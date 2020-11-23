@@ -11,6 +11,8 @@ namespace inClassHacking{
     public double sweepingLength = 0.05;
     public bool DEBUG;
     public bool VISUAL;
+    public int zoom;
+    public double pageWidth;
     List<Edge> edges = new List<Edge>();
     List<Circle> circles = new List<Circle>();
 
@@ -20,13 +22,15 @@ namespace inClassHacking{
     List<Edge> inputEdges = new List<Edge>();
     List<LeafNode> nodes = new List<LeafNode>();
 
-    public LangsAlgorithm(List<Circle> circles, bool debug=false, bool visual=false){
+    public LangsAlgorithm(List<Circle> circles, bool debug=false, bool visual=false, int zoomFactor=90, double width=100){
       this.circles = circles;
       foreach(var circle in circles){
         nodes.Add(circle.node);
       }
       this.DEBUG=debug;
       this.VISUAL=visual;
+      this.zoom = zoomFactor;
+      this.pageWidth = width;
     }
 
     public List<Crease> sweepingProcess(){
@@ -157,7 +161,13 @@ namespace inClassHacking{
       }
     }
     void debugExport(List<Circle> c, List<Crease> cr, string s){
-      FileHandler f = new FileHandler(DEBUG, 12, 12, 90); //for deer 29.22, 29.22, 50
+      /*double size=1.0;
+      switch (demoModel){
+        case 0:{  size = 29.22;scale=50;break;} // beetle
+        case 1:{  size = 12;scale=90;break;}    // antenna beetle
+        case 2:{  size = 3.733;scale=90;break;} // lizard
+      }*/
+      FileHandler f = new FileHandler(DEBUG, pageWidth, zoom);
       f.exportSVG(s, c, cr);
     }
     void processEdge(Edge edge, List<Edge> initialEdges, List<Edge> e, Edge splittingEdge, int z){

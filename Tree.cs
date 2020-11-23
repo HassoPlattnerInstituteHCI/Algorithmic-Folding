@@ -6,7 +6,7 @@ namespace inClassHacking{
 
   public class Node{
     //double undef = -1;
-    public bool middle; //not "mirrored" for symmetrie
+    public bool middle; //not "mirrored" for symmetry
     public int index;
     public Circle circle;
 
@@ -314,11 +314,8 @@ namespace inClassHacking{
         lizardCircles.Add(new Circle(new Point2D(0, 3.03), 1));
         //lizardCircles.Add(new Circle(new Point2D(3.74, 3.03), 1));
         lizardCircles.Add(new Circle(new Point2D(1.87,3.74), 1));
-
-        for(int i=0; i<lizardCircles.Count(); i++){
-          
+        for(int i=0; i<lizardCircles.Count(); i++)
           lizardCircles[i].node = nodes[i];
-        }
         return lizardCircles;
       }
       double pythagorean(double b, double c){
@@ -341,7 +338,6 @@ namespace inClassHacking{
         }
         return deerCircles;
       }
-
       public List<Circle> exampleLongAntennaCircles(){
         List<LeafNode> nodes = new List<LeafNode>();
         foreach(var n in this.treeNodes){
@@ -368,5 +364,6 @@ namespace inClassHacking{
 
         return circles;
       }
+
     }
 }

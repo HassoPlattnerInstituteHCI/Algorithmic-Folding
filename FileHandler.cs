@@ -14,11 +14,11 @@ namespace inClassHacking
       double treeDrawingOffsetY = 0;
       List<int> drawnNodes = new List<int>();
 
-        public FileHandler(bool debug, double paperSizeX, double paperSizeY, int zoomFactor)
+        public FileHandler(bool debug, double paperSize, int zoomFactor)
         {
             DEBUG = debug;
-            this.paperSizeX = paperSizeX;
-            this.paperSizeY = paperSizeY;
+            this.paperSizeX = paperSize;
+            this.paperSizeY = paperSize;
             this.zoomFactor = zoomFactor;
         }
 
