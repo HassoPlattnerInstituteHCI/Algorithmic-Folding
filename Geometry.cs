@@ -170,7 +170,6 @@ namespace inClassHacking
     this.markers = new List<Point2D>();
     this.vec = new Vector(p1, p2).normalized();
   }
-
   public PolygonEdge(PolygonEdge e){
     this.p1 = e.p1;
     this.p2 = e.p2;

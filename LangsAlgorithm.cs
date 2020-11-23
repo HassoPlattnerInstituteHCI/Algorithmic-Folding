@@ -77,7 +77,7 @@ namespace inClassHacking{
       while(again){
         sweepEdges(polygon, sweepingLength);          // sweep every edge by sweepingLength
         polygon = updateVerticesandMarkers(polygon);  // update vertices of polygon
-        drawRivers(creases, polygon, initialEdges);   // draw in the rivers
+        addCreases(creases, polygon, initialEdges);   // add all new creases
         if (VISUAL) debugExport(tree,creases,"snapshot"+counter+".svg");counter++;  // take a visual snapshot
         for(int i=0; i<polygon.Count; i++){
           PolygonEdge edge = polygon[i];
@@ -90,33 +90,23 @@ namespace inClassHacking{
                 creases.Add(new Crease(polygon[z].p1, polygon[z].p2, creaseColor));
             return;
           }
-          if(linedUp(polygon)) return;              // colinear edges make no sense--polygon is death now stop sweeping this polygon
-          if(polygon.Count > 3){                    // no contractions found, check for splitting events
-            for(int j=i; j<polygon.Count; j++){
-              if(i==0 && j==polygon.Count-1) continue;
-              PolygonEdge secondEdge = polygon[j];
-              if(secondEdge==null) continue;
-              if(Math.Abs(edge.index1 - secondEdge.index1) <= 1) continue; //do not split edges next to each other
-              if(edge.index1 - secondEdge.index1 == polygon.Count) continue; //do not split last and first edge (next to each other)
-              if(edge.vec == secondEdge.vec) continue;
+          if(linedUp(polygon)) return;                  // colinear edges make no sense--polygon is death now stop sweeping this polygon
+          if(polygon.Count > 3){                        // no contractions found, check for splitting events
+            for(int j=i; j<polygon.Count; j++){         // compare to all other edges in the polygon
+              if(i==0 && j==polygon.Count-1) continue;  // cannot split the first with the last edge
+              PolygonEdge secondEdge = polygon[j];      // the other edge to check for splitting
+              if(skipOddCases(polygon,edge,secondEdge)) continue; // check for odd cases
               if(isSplitEvent(tree, edge,secondEdge,inputEdges,polygon)){
                   again = false;
-                  if (DEBUG){Console.WriteLine("split between " + edge.index1 + " and " + secondEdge.index1 + " with length: ");
-                  Console.WriteLine(edge.p1.getDistance(secondEdge.p1));}
-
-                  //avoid splitting same edges twice
-                  tree.distances[edge.index1, secondEdge.index1] = -1;
-                  tree.distances[secondEdge.index1, edge.index1] = -1;
-
-                  creases.Add(new Crease(edge.p1, secondEdge.p1, internalCreaseColor));
-
-                  PolygonEdge splittingEdge = new PolygonEdge(secondEdge.p1, secondEdge.index1, edge.p1, edge.index1);
-                  PolygonEdge splittingEdge2 = new PolygonEdge(edge.p1, edge.index1, secondEdge.p1, secondEdge.index1);
-                  List<PolygonEdge> startPolygonA, startPolygonB,splitPolygonA,splitPolygonB;
-                  startPolygonA = new List<PolygonEdge>();
-                  startPolygonB = new List<PolygonEdge>();
-                  splitPolygonA = new List<PolygonEdge>();
-                  splitPolygonB = new List<PolygonEdge>();
+                  if (DEBUG) Console.WriteLine("split between " + edge.index1 + " and " + secondEdge.index1 + " with length: \r\n" + edge.p1.getDistance(secondEdge.p1));
+                  tree.removeFromDistancesMatrix(edge,secondEdge);                        //avoid splitting same edges twice
+                  creases.Add(new Crease(edge.p1, secondEdge.p1, internalCreaseColor));   // make the internal crease before splitting the actual polygon in A and B
+                  List<PolygonEdge> startPolygonA = new List<PolygonEdge>(),              // like we started out, we define two new polygons A and B which have
+                    startPolygonB= new List<PolygonEdge>(),
+                    splitPolygonA= new List<PolygonEdge>(),
+                    splitPolygonB= new List<PolygonEdge>();
+                  PolygonEdge splittingEdge = new PolygonEdge(secondEdge.p1, secondEdge.index1, edge.p1, edge.index1);  // define the splitting edge for the A side
+                  PolygonEdge splittingEdge2 = new PolygonEdge(edge.p1, edge.index1, secondEdge.p1, secondEdge.index1); // same but reversed splitting edge for the B side
 
                   for(int k=i; k<j; k++)
                     processEdge(polygon[k], startPolygonA, splitPolygonA, splittingEdge, j-i);
@@ -124,34 +114,17 @@ namespace inClassHacking{
                     processEdge(polygon[n], startPolygonB, splitPolygonB, splittingEdge2, i+polygon.Count-j);
                   for(int m=j; m<polygon.Count; m++)
                     processEdge(polygon[m], startPolygonB, splitPolygonB, splittingEdge2, polygon.Count-j);
-                  foreach(var marker in splittingEdge.markers)
-                    splittingEdge2.setMarker(marker);
-                  foreach(var marker in splittingEdge2.markers){
-                    splittingEdge.setMarker(marker);
-                  }
-                  startPolygonA.Add(new PolygonEdge(splittingEdge));
-                  splitPolygonA.Add(splittingEdge);
-                  startPolygonB.Insert(i, new PolygonEdge(splittingEdge2));
-                  splitPolygonB.Insert(i, splittingEdge2);
-                  sweep(tree, creases, splitPolygonA, startPolygonA);
-                  sweep(tree, creases, splitPolygonB, startPolygonB);
+                  cloneMarkers(splittingEdge,splittingEdge2);
+                  (startPolygonA,splitPolygonA) = insertSplitEdge(startPolygonA.Count,startPolygonA,splitPolygonA,splittingEdge); //insert the splitting edge into the A polygon
+                  (startPolygonB,splitPolygonB) = insertSplitEdge(i,startPolygonB,splitPolygonB,splittingEdge2);  //repeat for B
+                  sweep(tree, creases, splitPolygonA, startPolygonA); //recursively call the main algorithm to sweep the new spin-offs for the A side
+                  sweep(tree, creases, splitPolygonB, startPolygonB); // and the same for the B side
               }
             }
           }
         }
       }
     }
-    void debugExport(Tree t, List<Crease> cr, string s){
-      FileHandler f = new FileHandler(DEBUG, t.getPaperSizeX(), zoom);
-      f.exportSVG(s, t, cr);
-    }
-    void processEdge(PolygonEdge edge, List<PolygonEdge> initialEdges, List<PolygonEdge> e, PolygonEdge splittingEdge, int z){
-      initialEdges.Add(new PolygonEdge(edge));
-      e.Add(new PolygonEdge(edge));
-      if(z<3)
-        splittingEdge = addMarkersToSplittingEdge(splittingEdge, edge);
-    }
-
     bool isSplitEvent(Tree tree, PolygonEdge edge, PolygonEdge secondEdge, List<PolygonEdge> input, List<PolygonEdge> es){
       double equationSolution = Int64.MaxValue;
       if(secondEdge.vec == input[secondEdge.index1].vec && edge.vec == input[edge.index1].vec){
@@ -172,64 +145,86 @@ namespace inClassHacking{
       AA_ = inputEdges[edge.index1].p1.getDistance(A_);
       return Math.Round(edge.p1.getDistance(p3) + AA_ + CC_, 2);
     }
-    bool linedUp(List<PolygonEdge> edges){
-      for(int i=1; i<edges.Count; i++){
-        if(edges[i].vec != edges[i-1].vec && edges[i].vec != edges[i-1].vec.getReverse()){
-          return false;
-        }
+    void processEdge(PolygonEdge edge, List<PolygonEdge> initialEdges, List<PolygonEdge> e, PolygonEdge splittingEdge, int z){
+      initialEdges.Add(new PolygonEdge(edge));
+      e.Add(new PolygonEdge(edge));
+      if(z<3)
+        splittingEdge = addMarkersToSplittingEdge(splittingEdge, edge);
+    }
+    void sweepEdges(List<PolygonEdge> edges, double sweepingLength){
+      foreach(var edge in edges)
+        edge.parallelSweep(sweepingLength);
+    }
+    void addCreases(List<Crease> creases, List<PolygonEdge> edges, List<PolygonEdge> initialEdges){
+      for(int l=0; l<edges.Count; l++){
+          PolygonEdge edge = edges[l];
+          for(int k=0; k<edge.markers.Count; k++){
+            if(!(edge.markers[k] == null)){
+              if(k>initialEdges[l].markers.Count-1)continue;
+              creases.Add(new Crease(initialEdges[l].markers[k], edge.markers[k], riverColor));
+            }
+          }
+          creases.Add(new Crease(edge.p1, initialEdges[l].p1, creaseColor));
       }
-      return true;
     }
 
-    void sweepEdges(List<PolygonEdge> edges, double sweepingLength){
-      foreach(var edge in edges){
-        edge.parallelSweep(sweepingLength);
+    PolygonEdge addMarkersToSplittingEdge(PolygonEdge splittingEdge, PolygonEdge edge){
+      Vector splitVector = new Vector(splittingEdge.p2, splittingEdge.p1).normalized();
+      foreach(var marker in edge.markers){
+        if(!(marker == null)){
+          if(edge.p2 == splittingEdge.p1){
+            double d = edge.p2.getDistance(marker);
+            splittingEdge.setMarker(splittingEdge.p1+splitVector.getReverse()*d);
+          }else{
+            double d = edge.p1.getDistance(marker);
+            splittingEdge.setMarker(splittingEdge.p2-splitVector.getReverse()*d);
+          }
+        }
       }
+      return splittingEdge;
+    }
+
+    //less exciting helper methods
+    bool skipOddCases(List<PolygonEdge> p, PolygonEdge e1, PolygonEdge e2){
+      return ((e2==null) ||
+        (Math.Abs(e1.index1 - e2.index1) <= 1) ||
+        (e1.index1 - e2.index1 == p.Count) ||
+        (e1.vec == e2.vec));
+    }
+    (List<PolygonEdge> p1, List<PolygonEdge> p2) insertSplitEdge(int index, List<PolygonEdge> polygon, List<PolygonEdge> splitPolygon, PolygonEdge splitEdge){
+      polygon.Insert(index,new PolygonEdge(splitEdge));
+      splitPolygon.Insert(index,splitEdge);
+      return (polygon, splitPolygon);
+    }
+    void cloneMarkers (PolygonEdge edge1, PolygonEdge edge2){
+      foreach(var marker in edge1.markers)
+        edge2.setMarker(marker);
+      foreach(var marker in edge2.markers)
+        edge1.setMarker(marker);
+    }
+    void debugExport(Tree t, List<Crease> cr, string s){
+      FileHandler f = new FileHandler(DEBUG, t.getPaperSizeX(), zoom);
+      f.exportSVG(s, t, cr);
+    }
+    bool linedUp(List<PolygonEdge> edges){
+      for(int i=1; i<edges.Count; i++)
+        if(edges[i].vec != edges[i-1].vec && edges[i].vec != edges[i-1].vec.getReverse())
+          return false;
+      return true;
     }
 
     List<PolygonEdge> updateVerticesandMarkers(List<PolygonEdge> edges){
       edges[0].updateVertices(edges.Last(), edges[1]);
       edges[0].updateMarkers();
-
       for(int i = 1; i<edges.Count-1; i++){
         edges[i].updateVertices(edges[i-1], edges[i+1]);
         edges[i].updateMarkers();
       }
-
       edges.Last().updateVertices(edges[edges.Count-2], edges[0]);
       edges.Last().updateMarkers();
-
       return edges;
     }
 
 
-  void drawRivers(List<Crease> creases, List<PolygonEdge> edges, List<PolygonEdge> initialEdges){
-    for(int l=0; l<edges.Count; l++){
-        PolygonEdge edge = edges[l];
-        for(int k=0; k<edge.markers.Count; k++){
-          if(!(edge.markers[k] == null)){
-            if(k>initialEdges[l].markers.Count-1)continue;
-            creases.Add(new Crease(initialEdges[l].markers[k], edge.markers[k], riverColor));
-          }
-        }
-        creases.Add(new Crease(edge.p1, initialEdges[l].p1, creaseColor));
-    }
-  }
-
-  PolygonEdge addMarkersToSplittingEdge(PolygonEdge splittingEdge, PolygonEdge edge){
-    Vector splitVector = new Vector(splittingEdge.p2, splittingEdge.p1).normalized();
-    foreach(var marker in edge.markers){
-      if(!(marker == null)){
-        if(edge.p2 == splittingEdge.p1){
-          double d = edge.p2.getDistance(marker);
-          splittingEdge.setMarker(splittingEdge.p1+splitVector.getReverse()*d);
-        }else{
-          double d = edge.p1.getDistance(marker);
-          splittingEdge.setMarker(splittingEdge.p2-splitVector.getReverse()*d);
-        }
-      }
-    }
-    return splittingEdge;
-  }
 }
 }

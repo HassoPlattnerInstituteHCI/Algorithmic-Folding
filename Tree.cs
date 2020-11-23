@@ -105,6 +105,10 @@ namespace inClassHacking{
         }
         leafNodes = n;
       }
+      public void removeFromDistancesMatrix(PolygonEdge fromEdge, PolygonEdge toEdge){  //remove distances from matrix
+        distances[fromEdge.index1, toEdge.index1] = -1;
+        distances[toEdge.index1, fromEdge.index1] = -1;
+      }
       public void calculateTreeDistances(){                                             // builds a matrix of all distances in the tree
           double[,] d = new double[leafNodes.Count, leafNodes.Count];
           for(int i=0; i<leafNodes.Count; i++)
