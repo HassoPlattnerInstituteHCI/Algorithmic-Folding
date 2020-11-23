@@ -85,8 +85,9 @@ namespace inClassHacking{
     public class Tree{
       public bool DEBUG;
       public List<Node> treeNodes = new List<Node>();
+      public List<LeafNode> leafNodes = new List<LeafNode>();
       public List<Circle> circles = new List<Circle>();
-
+      public double [,] distances;
       public double drawingOffsetX=0;
       public double drawingOffsetY=0;
       public double maxY=0;
@@ -97,7 +98,20 @@ namespace inClassHacking{
       public void addNode(Node node){
         treeNodes.Add(node);
       }
-
+      public void setLeafNodes(){
+        List<LeafNode> n = new List<LeafNode>();
+        foreach(var circle in circles){
+          n.Add(circle.node);
+        }
+        leafNodes = n;
+      }
+      public void calculateTreeDistances(){                                             // builds a matrix of all distances in the tree
+          double[,] d = new double[leafNodes.Count, leafNodes.Count];
+          for(int i=0; i<leafNodes.Count; i++)
+            for(int j=0; j<leafNodes.Count; j++)
+              d[i, j] = leafNodes[i].getTreeDistanceTo(leafNodes[j]);
+          distances = d;
+      }
       public List<Circle> calculateCirclePositioning(){
 
         List<Circle> ret = new List<Circle>();

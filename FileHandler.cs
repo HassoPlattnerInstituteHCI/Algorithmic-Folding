@@ -5,13 +5,15 @@ using System.Collections.Generic;
 
 namespace inClassHacking
 {
-
+    public enum Color{Red, Green, Blue, Yellow, Grey, Black, Burlywood, BlanchedAlmond};
     class FileHandler{
       double paperSizeX, paperSizeY;
       private bool DEBUG;
       int zoomFactor;
       double treeDrawingOffsetX = 0;
       double treeDrawingOffsetY = 0;
+      Color circleColor = Color.Burlywood;
+      Color backgroundColor = Color.BlanchedAlmond;
       List<int> drawnNodes = new List<int>();
 
         public FileHandler(bool debug, double paperSize, int zoomFactor)
@@ -80,14 +82,14 @@ namespace inClassHacking
                     "width=\""+paperSizeX*zoomFactor+ "px\" height=\"" + paperSizeY*zoomFactor + "px\" " +
                     "viewBox=\"0 0 "+zoomFactor*paperSizeX+" "+zoomFactor*paperSizeY+"\" " +
                     "enable-background=\"new 0 0 3456 6912\" " +
-                    "style=\"background: blanchedalmond\" " +
+                    "style=\"background: "+colToHex(backgroundColor) + "\" " +
                     "xml:space = \"preserve\">"
                    );
             return svg;
         }
         public void drawCircle(List<string> svg, Circle circle){
-          svg.Add("<circle cx=\"" + circle.getCenter().x*zoomFactor + "\" cy=\"" + circle.getCenter().y*zoomFactor + "\" r=\""+ zoomFactor*circle.getRadius()+ "\" stroke=\"black\" stroke-width=\"3\" fill=\"burlywood\" />");
-          svg.Add("<circle cx=\"" + ((paperSizeX-circle.getCenter().x)*zoomFactor) + "\" cy=\"" + circle.getCenter().y*zoomFactor + "\" r=\""+ zoomFactor*circle.getRadius()+ "\" stroke=\"black\" stroke-width=\"3\" fill=\"burlywood\" />");
+          svg.Add("<circle cx=\"" + circle.getCenter().x*zoomFactor + "\" cy=\"" + circle.getCenter().y*zoomFactor + "\" r=\""+ zoomFactor*circle.getRadius()+ "\" stroke=\"black\" stroke-width=\"3\" fill=\""+colToHex(circleColor) + "\" />");
+          svg.Add("<circle cx=\"" + ((paperSizeX-circle.getCenter().x)*zoomFactor) + "\" cy=\"" + circle.getCenter().y*zoomFactor + "\" r=\""+ zoomFactor*circle.getRadius()+ "\" stroke=\"black\" stroke-width=\"3\" fill=\""+colToHex(circleColor) + "\" />");
 
           if(DEBUG) Console.WriteLine("draw circle at " + circle.getCenter().x + ", " + circle.getCenter().y + " with radius " + circle.getRadius());
         }
@@ -111,6 +113,12 @@ namespace inClassHacking
                 hex = "#FFFF00";
             if (c== Color.Grey)
                 hex = "#808080";
+            if (c== Color.Black)
+                hex = "#000000";
+            if (c== Color.Burlywood)
+                hex = "#deb887";
+            if (c== Color.BlanchedAlmond)
+                hex = "#ffebcd";
             return hex;
         }
 

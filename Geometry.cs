@@ -145,8 +145,7 @@ namespace inClassHacking
       return ("(" + this.x + " ," + this.y + ")");
     }
   }
-
-  public class Edge{
+  public class PolygonEdge{
 
   public Point2D p1, p2;
   public int index1, index2;
@@ -154,7 +153,7 @@ namespace inClassHacking
 
   public List<Point2D> markers; //represent inner nodes of the tree on the polygon's edges
 
-  public Edge(Point2D p1, int index1, Point2D p2, int index2){ //Edge from p1 to p2, which are positions of two leaf nodes (circle's center)
+  public PolygonEdge(Point2D p1, int index1, Point2D p2, int index2){ //Edge from p1 to p2, which are positions of two leaf nodes (circle's center)
     this.p1 = p1;
     this.p2 = p2;
     this.index1 = index1;
@@ -163,7 +162,7 @@ namespace inClassHacking
     this.vec = new Vector(p1, p2).normalized();
   }
 
-  public Edge(Circle circle1, Circle circle2){ //Edge from p1 to p2, which are positions of two leaf nodes (circle's center)
+  public PolygonEdge(Circle circle1, Circle circle2){ //Edge from p1 to p2, which are positions of two leaf nodes (circle's center)
     this.p1 = circle1.getCenter();
     this.p2 = circle2.getCenter();
     this.index1 = circle1.getIndex();
@@ -172,7 +171,7 @@ namespace inClassHacking
     this.vec = new Vector(p1, p2).normalized();
   }
 
-  public Edge(Edge e){
+  public PolygonEdge(PolygonEdge e){
     this.p1 = e.p1;
     this.p2 = e.p2;
     this.index1 = e.index1;
@@ -185,7 +184,7 @@ namespace inClassHacking
     return Math.Sqrt((p1.x-p2.x)*(p1.x-p2.x) + (p1.y-p2.y)*(p1.y-p2.y));
   }
 
-  public void addMarker(Point2D marker){
+  public void setMarker(Point2D marker){
     foreach(var m in this.markers){ //dont add twice
       if(m == marker) return;
     }
@@ -203,7 +202,7 @@ namespace inClassHacking
     }
   }
 
-  public void updateVertices(Edge left, Edge right){
+  public void updateVertices(PolygonEdge left, PolygonEdge right){
 
     if( (right.vec.x != this.vec.x) && (right.vec.x != this.vec.getReverse().x)){
       this.p2 = Geometry.findIntersection(right.vec.getReverse(), right.p2, this.vec, this.p1);
@@ -236,7 +235,6 @@ namespace inClassHacking
     }
   }
 }
-
   public class Circle {
     Point2D center;
     double radius;
@@ -270,7 +268,7 @@ namespace inClassHacking
     }
   }
 
-  public enum Color{Red, Green, Blue, Yellow, Grey};
+
 
   public class Crease{
     public Point2D p1;
