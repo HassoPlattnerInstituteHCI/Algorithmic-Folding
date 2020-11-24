@@ -267,17 +267,23 @@ namespace inClassHacking
     }
   }
 
-
-
   public class Crease{
     public Point2D p1;
     public Point2D p2;
     public Color color;
+    public Vector direction;
 
     public Crease(Point2D p1, Point2D p2, Color c){
       this.p1 = p1;
       this.p2 = p2;
       this.color = c;
+      this.direction = new Vector (p1,p2);
+    }
+    public bool containsPoint(Point2D p){
+      return (p == p1 || p==p2);
+    }
+    public bool isColinearWith(Crease cr){
+      return (((this.direction == cr.direction || this.direction.getReverse() == cr.direction)) && ((containsPoint(cr.p1) || containsPoint(cr.p2))) && (cr.color == this.color));
     }
   }
 

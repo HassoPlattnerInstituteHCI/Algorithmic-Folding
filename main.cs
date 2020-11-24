@@ -10,6 +10,7 @@ namespace inClassHacking{
     public static bool VISUAL = false;
     public static int demoModel = 0;
     public static int zoomFactor = 100;
+    public static double sweepingLength = 0.05;
     public static void Main (string[] args) {
       clearExportFolder();
       Tree tree = new Tree();
@@ -21,7 +22,7 @@ namespace inClassHacking{
         case 2:{  tree = Tree.exampleLizardTree();break;}         // lizard
         default:{Console.WriteLine("undefined model"); return;}
       }
-      LangsAlgorithm lang = new LangsAlgorithm(tree,DEBUG, VISUAL,zoomFactor);
+      LangsAlgorithm lang = new LangsAlgorithm(tree,DEBUG, VISUAL,zoomFactor, sweepingLength);
       List<Crease> creases = lang.sweepingProcess(tree);
       FileHandler f = new FileHandler(DEBUG, tree.getPaperSizeX(), zoomFactor);
       if (f.exportSVG("export.svg", tree, creases))
@@ -38,18 +39,25 @@ namespace inClassHacking{
         if (String.Equals(args[c], "-h",StringComparison.OrdinalIgnoreCase)||
             String.Equals(args[c], "-help",StringComparison.OrdinalIgnoreCase)||
             String.Equals(args[c], "help",StringComparison.OrdinalIgnoreCase)){
-          Console.WriteLine("usage: main.exe -z zoomFactor -debug -visual -m model");
+          Console.WriteLine("usage: main.exe -z zoomFactor -debug -visual -m model -p precision");
           return false;
         }
         if (String.Equals(args[c], "-visual",StringComparison.OrdinalIgnoreCase))
           VISUAL = true;
         if (String.Equals(args[c], "-debug",StringComparison.OrdinalIgnoreCase))
           DEBUG = true;
+          if (String.Equals(args[c], "-p",StringComparison.OrdinalIgnoreCase))
+            if (++c < args.Length){
+              sweepingLength = double.Parse(args[c]);
+            }else{
+              Console.WriteLine("provide a double as precision (default= 0.05)");
+              return false;
+            }
         if (String.Equals(args[c], "-z",StringComparison.OrdinalIgnoreCase))
           if (++c < args.Length){
             zoomFactor = int.Parse(args[c]);
           }else{
-            Console.WriteLine("provide an integer as zoomfactor");
+            Console.WriteLine("provide an integer as zoomfactor (default= 100)");
             return false;
           }
         if (String.Equals(args[c], "-m",StringComparison.OrdinalIgnoreCase))

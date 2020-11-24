@@ -76,7 +76,7 @@ namespace inClassHacking{
       bool again = true;
       while(again){
         sweepEdges(polygon, sweepingLength);          // sweep every edge by sweepingLength
-        polygon = updateVerticesandMarkers(polygon);  // update vertices of polygon
+        updateVerticesandMarkers(polygon);            // update vertices of polygon
         addCreases(creases, polygon, initialEdges);   // add all new creases
         if (VISUAL) debugExport(tree,creases,"snapshot"+counter+".svg");counter++;  // take a visual snapshot
         for(int i=0; i<polygon.Count; i++){
@@ -101,6 +101,7 @@ namespace inClassHacking{
                   if (DEBUG) Console.WriteLine("split between " + edge.index1 + " and " + secondEdge.index1 + " with length: \r\n" + edge.p1.getDistance(secondEdge.p1));
                   tree.removeFromDistancesMatrix(edge,secondEdge);                        //avoid splitting same edges twice
                   creases.Add(new Crease(edge.p1, secondEdge.p1, internalCreaseColor));   // make the internal crease before splitting the actual polygon in A and B
+
                   List<PolygonEdge> startPolygonA = new List<PolygonEdge>(),              // like we started out, we define two new polygons A and B which have
                     startPolygonB= new List<PolygonEdge>(),
                     splitPolygonA= new List<PolygonEdge>(),
@@ -108,15 +109,21 @@ namespace inClassHacking{
                   PolygonEdge splittingEdge = new PolygonEdge(secondEdge.p1, secondEdge.index1, edge.p1, edge.index1);  // define the splitting edge for the A side
                   PolygonEdge splittingEdge2 = new PolygonEdge(edge.p1, edge.index1, secondEdge.p1, secondEdge.index1); // same but reversed splitting edge for the B side
 
-                  for(int k=i; k<j; k++)
-                    processEdge(polygon[k], startPolygonA, splitPolygonA, splittingEdge, j-i);
-                  for(int n=0; n<i; n++)
-                    processEdge(polygon[n], startPolygonB, splitPolygonB, splittingEdge2, i+polygon.Count-j);
-                  for(int m=j; m<polygon.Count; m++)
-                    processEdge(polygon[m], startPolygonB, splitPolygonB, splittingEdge2, polygon.Count-j);
+                  for (int k =0; k<polygon.Count;k++){
+                    if (k < i){           // copy edges from 0 to the split polygon
+                      insertEdge(polygon[k], startPolygonB, splitPolygonB, splittingEdge2, i+polygon.Count-j);
+                    }else if (k < j) {    // copy edges of i until j (the split-off polygon) into polygonA
+                      insertEdge(polygon[k], startPolygonA, splitPolygonA, splittingEdge, j-i);
+                    }else{                //copy all other edges (before the split) into polygon B as well
+                      insertEdge(polygon[k], startPolygonB, splitPolygonB, splittingEdge2, polygon.Count-j);
+                    }
+                  }
+
                   cloneMarkers(splittingEdge,splittingEdge2);
                   (startPolygonA,splitPolygonA) = insertSplitEdge(startPolygonA.Count,startPolygonA,splitPolygonA,splittingEdge); //insert the splitting edge into the A polygon
                   (startPolygonB,splitPolygonB) = insertSplitEdge(i,startPolygonB,splitPolygonB,splittingEdge2);  //repeat for B
+
+                  
                   sweep(tree, creases, splitPolygonA, startPolygonA); //recursively call the main algorithm to sweep the new spin-offs for the A side
                   sweep(tree, creases, splitPolygonB, startPolygonB); // and the same for the B side
               }
@@ -145,9 +152,9 @@ namespace inClassHacking{
       AA_ = inputEdges[edge.index1].p1.getDistance(A_);
       return Math.Round(edge.p1.getDistance(p3) + AA_ + CC_, 2);
     }
-    void processEdge(PolygonEdge edge, List<PolygonEdge> initialEdges, List<PolygonEdge> e, PolygonEdge splittingEdge, int z){
-      initialEdges.Add(new PolygonEdge(edge));
-      e.Add(new PolygonEdge(edge));
+    void insertEdge(PolygonEdge edge, List<PolygonEdge> startPoly, List<PolygonEdge> splitPoly, PolygonEdge splittingEdge, int z){
+      startPoly.Add(new PolygonEdge(edge));
+      splitPoly.Add(new PolygonEdge(edge));
       if(z<3)
         splittingEdge = addMarkersToSplittingEdge(splittingEdge, edge);
     }
@@ -162,9 +169,18 @@ namespace inClassHacking{
             if(!(edge.markers[k] == null)){
               if(k>initialEdges[l].markers.Count-1)continue;
               creases.Add(new Crease(initialEdges[l].markers[k], edge.markers[k], riverColor));
+              //creases.Add(newCrease); //TODO detect that a crease is colinear and remove the old one
+              /*List<Crease> colinear = creases.FindAll(
+              delegate(Crease x){
+                return x.isColinearWith(newCrease);
+              });
+              Console.WriteLine("found {0} colinear creases", colinear.Count);
+
+              foreach (var cr in colinear)
+                creases.Remove(cr);*/
             }
           }
-          creases.Add(new Crease(edge.p1, initialEdges[l].p1, creaseColor));
+          creases.Add(new Crease(edge.p1, initialEdges[l].p1, creaseColor)); //TODO detect that a crease is colinear and remove the old one
       }
     }
 
@@ -192,8 +208,8 @@ namespace inClassHacking{
         (e1.vec == e2.vec));
     }
     (List<PolygonEdge> p1, List<PolygonEdge> p2) insertSplitEdge(int index, List<PolygonEdge> polygon, List<PolygonEdge> splitPolygon, PolygonEdge splitEdge){
-      polygon.Insert(index,new PolygonEdge(splitEdge));
-      splitPolygon.Insert(index,splitEdge);
+      polygon.Insert(index,new PolygonEdge(splitEdge)); // insert a copy of the splitEdge into the polygon
+      splitPolygon.Insert(index,splitEdge);             // add the original splitEdge to the other polygon
       return (polygon, splitPolygon);
     }
     void cloneMarkers (PolygonEdge edge1, PolygonEdge edge2){
@@ -213,7 +229,7 @@ namespace inClassHacking{
       return true;
     }
 
-    List<PolygonEdge> updateVerticesandMarkers(List<PolygonEdge> edges){
+    void updateVerticesandMarkers(List<PolygonEdge> edges){
       edges[0].updateVertices(edges.Last(), edges[1]);
       edges[0].updateMarkers();
       for(int i = 1; i<edges.Count-1; i++){
@@ -222,7 +238,7 @@ namespace inClassHacking{
       }
       edges.Last().updateVertices(edges[edges.Count-2], edges[0]);
       edges.Last().updateMarkers();
-      return edges;
+      //return edges;
     }
 
 
