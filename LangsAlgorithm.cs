@@ -113,25 +113,25 @@ namespace inClassHacking{
     (List<PolygonEdge> a, List<PolygonEdge> b) splitOffPolygon(List<PolygonEdge> polygon, int indexFrom, int indexTo){
       PolygonEdge edge = polygon[indexFrom];
       PolygonEdge secondEdge = polygon[indexTo];
-      List<PolygonEdge> splitOffPoly = new List<PolygonEdge>();
-      List<PolygonEdge> otherPoly = new List<PolygonEdge>();
+      List<PolygonEdge> splitOffPoly = new List<PolygonEdge>(), otherPoly = new List<PolygonEdge>();
       PolygonEdge splittingEdge = new PolygonEdge(secondEdge.p1, secondEdge.index1, edge.p1, edge.index1);  // define the splitting edge for the A side
       PolygonEdge splittingEdgeOther = new PolygonEdge(edge.p1, edge.index1, secondEdge.p1, secondEdge.index1); // same but reversed splitting edge for the B side
       for (int k =0; k<polygon.Count;k++){  //loop through all edges on the polygon
+        PolygonEdge currentEdge = polygon[k];
         if (k < indexFrom){                         // copy edges from 0 to the split polygon
-          otherPoly.Add(new PolygonEdge(polygon[k]));
-          addMarkersToSplittingEdge(splittingEdgeOther, polygon[k],(indexFrom+polygon.Count-indexTo <3));
+          otherPoly.Add(currentEdge);
+          addMarkersToSplittingEdge(splittingEdgeOther, currentEdge,(indexFrom+polygon.Count-indexTo <3));
         }else if (k < indexTo) {                  // copy edges of i until j (the split-off polygon)
-          splitOffPoly.Add(new PolygonEdge(polygon[k]));
-          addMarkersToSplittingEdge(splittingEdge, polygon[k],(indexTo-indexFrom <3));
+          splitOffPoly.Add(currentEdge);
+          addMarkersToSplittingEdge(splittingEdge, currentEdge,(indexTo-indexFrom <3));
         }else{                              //copy all other edges (before the split) into the other polygon
-          otherPoly.Add(new PolygonEdge(polygon[k]));
-          addMarkersToSplittingEdge(splittingEdgeOther, polygon[k],(polygon.Count-indexTo <3));
+          otherPoly.Add(currentEdge);
+          addMarkersToSplittingEdge(splittingEdgeOther, currentEdge,(polygon.Count-indexTo <3));
         }
       }
       cloneMarkers(splittingEdge,splittingEdgeOther);
-      splitOffPoly.Insert(splitOffPoly.Count,new PolygonEdge(splittingEdge));
-      otherPoly.Insert(indexFrom,new PolygonEdge(splittingEdgeOther));
+      splitOffPoly.Insert(splitOffPoly.Count,new PolygonEdge(splittingEdge)); //insert the splitting edge into the split off polygon
+      otherPoly.Insert(indexFrom,new PolygonEdge(splittingEdgeOther));        // insert the copy of the splitting edge into the old polygon
       return (splitOffPoly, otherPoly);
     }
     bool isSplitEvent(Tree tree, PolygonEdge edge, PolygonEdge secondEdge, List<PolygonEdge> input, List<PolygonEdge> es){
