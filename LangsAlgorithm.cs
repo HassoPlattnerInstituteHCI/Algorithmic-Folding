@@ -100,37 +100,39 @@ namespace inClassHacking{
                   again = false;
                   if (DEBUG) Console.WriteLine("split between " + edge.index1 + " and " + secondEdge.index1 + " with length: \r\n" + edge.p1.getDistance(secondEdge.p1));
                   tree.removeFromDistancesMatrix(edge,secondEdge);                        //avoid splitting same edges twice
-                  creases.Add(new Crease(edge.p1, secondEdge.p1, internalCreaseColor));   // make the internal crease before splitting the actual polygon in A and B
-
-                  List<PolygonEdge> startPolygonA = new List<PolygonEdge>(),              // like we started out, we define two new polygons A and B which have
-                    startPolygonB= new List<PolygonEdge>(),
-                    splitPolygonA= new List<PolygonEdge>(),
-                    splitPolygonB= new List<PolygonEdge>();
-                  PolygonEdge splittingEdge = new PolygonEdge(secondEdge.p1, secondEdge.index1, edge.p1, edge.index1);  // define the splitting edge for the A side
-                  PolygonEdge splittingEdge2 = new PolygonEdge(edge.p1, edge.index1, secondEdge.p1, secondEdge.index1); // same but reversed splitting edge for the B side
-
-                  for (int k =0; k<polygon.Count;k++){
-                    if (k < i){           // copy edges from 0 to the split polygon
-                      insertEdge(polygon[k], startPolygonB, splitPolygonB, splittingEdge2, i+polygon.Count-j);
-                    }else if (k < j) {    // copy edges of i until j (the split-off polygon) into polygonA
-                      insertEdge(polygon[k], startPolygonA, splitPolygonA, splittingEdge, j-i);
-                    }else{                //copy all other edges (before the split) into polygon B as well
-                      insertEdge(polygon[k], startPolygonB, splitPolygonB, splittingEdge2, polygon.Count-j);
-                    }
-                  }
-
-                  cloneMarkers(splittingEdge,splittingEdge2);
-                  (startPolygonA,splitPolygonA) = insertSplitEdge(startPolygonA.Count,startPolygonA,splitPolygonA,splittingEdge); //insert the splitting edge into the A polygon
-                  (startPolygonB,splitPolygonB) = insertSplitEdge(i,startPolygonB,splitPolygonB,splittingEdge2);  //repeat for B
-
-                  
-                  sweep(tree, creases, splitPolygonA, startPolygonA); //recursively call the main algorithm to sweep the new spin-offs for the A side
-                  sweep(tree, creases, splitPolygonB, startPolygonB); // and the same for the B side
+                  creases.Add(new Crease(edge.p1, secondEdge.p1, internalCreaseColor));   // make the internal crease before splitting the actual polygon
+                  (List<PolygonEdge> splitOffPoly, List<PolygonEdge> otherPoly) = splitOffPolygon(polygon, i, j);
+                  sweep(tree, creases, splitOffPoly.ConvertAll(x => new PolygonEdge(x)), splitOffPoly); //recursively call the main algorithm to sweep the new spin-offs for cut off
+                  sweep(tree, creases, otherPoly.ConvertAll(x => new PolygonEdge(x)), otherPoly); // and the same for the other side
               }
             }
           }
         }
       }
+    }
+    (List<PolygonEdge> a, List<PolygonEdge> b) splitOffPolygon(List<PolygonEdge> polygon, int indexFrom, int indexTo){
+      PolygonEdge edge = polygon[indexFrom];
+      PolygonEdge secondEdge = polygon[indexTo];
+      List<PolygonEdge> splitOffPoly = new List<PolygonEdge>();
+      List<PolygonEdge> otherPoly = new List<PolygonEdge>();
+      PolygonEdge splittingEdge = new PolygonEdge(secondEdge.p1, secondEdge.index1, edge.p1, edge.index1);  // define the splitting edge for the A side
+      PolygonEdge splittingEdgeOther = new PolygonEdge(edge.p1, edge.index1, secondEdge.p1, secondEdge.index1); // same but reversed splitting edge for the B side
+      for (int k =0; k<polygon.Count;k++){  //loop through all edges on the polygon
+        if (k < indexFrom){                         // copy edges from 0 to the split polygon
+          otherPoly.Add(new PolygonEdge(polygon[k]));
+          addMarkersToSplittingEdge(splittingEdgeOther, polygon[k],(indexFrom+polygon.Count-indexTo <3));
+        }else if (k < indexTo) {                  // copy edges of i until j (the split-off polygon)
+          splitOffPoly.Add(new PolygonEdge(polygon[k]));
+          addMarkersToSplittingEdge(splittingEdge, polygon[k],(indexTo-indexFrom <3));
+        }else{                              //copy all other edges (before the split) into the other polygon
+          otherPoly.Add(new PolygonEdge(polygon[k]));
+          addMarkersToSplittingEdge(splittingEdgeOther, polygon[k],(polygon.Count-indexTo <3));
+        }
+      }
+      cloneMarkers(splittingEdge,splittingEdgeOther);
+      splitOffPoly.Insert(splitOffPoly.Count,new PolygonEdge(splittingEdge));
+      otherPoly.Insert(indexFrom,new PolygonEdge(splittingEdgeOther));
+      return (splitOffPoly, otherPoly);
     }
     bool isSplitEvent(Tree tree, PolygonEdge edge, PolygonEdge secondEdge, List<PolygonEdge> input, List<PolygonEdge> es){
       double equationSolution = Int64.MaxValue;
@@ -151,12 +153,6 @@ namespace inClassHacking{
       A_ = Geometry.findIntersection(inputEdges[edge.index1].vec, inputEdges[edge.index1].p1, edge.vec.getNormalRight(), edge.p1);
       AA_ = inputEdges[edge.index1].p1.getDistance(A_);
       return Math.Round(edge.p1.getDistance(p3) + AA_ + CC_, 2);
-    }
-    void insertEdge(PolygonEdge edge, List<PolygonEdge> startPoly, List<PolygonEdge> splitPoly, PolygonEdge splittingEdge, int z){
-      startPoly.Add(new PolygonEdge(edge));
-      splitPoly.Add(new PolygonEdge(edge));
-      if(z<3)
-        splittingEdge = addMarkersToSplittingEdge(splittingEdge, edge);
     }
     void sweepEdges(List<PolygonEdge> edges, double sweepingLength){
       foreach(var edge in edges)
@@ -184,22 +180,22 @@ namespace inClassHacking{
       }
     }
 
-    PolygonEdge addMarkersToSplittingEdge(PolygonEdge splittingEdge, PolygonEdge edge){
-      Vector splitVector = new Vector(splittingEdge.p2, splittingEdge.p1).normalized();
-      foreach(var marker in edge.markers){
-        if(!(marker == null)){
-          if(edge.p2 == splittingEdge.p1){
-            double d = edge.p2.getDistance(marker);
-            splittingEdge.setMarker(splittingEdge.p1+splitVector.getReverse()*d);
-          }else{
-            double d = edge.p1.getDistance(marker);
-            splittingEdge.setMarker(splittingEdge.p2-splitVector.getReverse()*d);
+    void addMarkersToSplittingEdge(PolygonEdge splittingEdge, PolygonEdge edge, bool condition){
+      if (condition){
+        Vector splitVector = new Vector(splittingEdge.p2, splittingEdge.p1).normalized();
+        foreach(var marker in edge.markers){
+          if(!(marker == null)){
+            if(edge.p2 == splittingEdge.p1){
+              double d = edge.p2.getDistance(marker);
+              splittingEdge.setMarker(splittingEdge.p1+splitVector.getReverse()*d);
+            }else{
+              double d = edge.p1.getDistance(marker);
+              splittingEdge.setMarker(splittingEdge.p2-splitVector.getReverse()*d);
+            }
           }
         }
       }
-      return splittingEdge;
     }
-
     //less exciting helper methods
     bool skipOddCases(List<PolygonEdge> p, PolygonEdge e1, PolygonEdge e2){
       return ((e2==null) ||
@@ -207,10 +203,9 @@ namespace inClassHacking{
         (e1.index1 - e2.index1 == p.Count) ||
         (e1.vec == e2.vec));
     }
-    (List<PolygonEdge> p1, List<PolygonEdge> p2) insertSplitEdge(int index, List<PolygonEdge> polygon, List<PolygonEdge> splitPolygon, PolygonEdge splitEdge){
+    void insertSplitEdge(int index, List<PolygonEdge> polygon, List<PolygonEdge> splitPolygon, PolygonEdge splitEdge){
       polygon.Insert(index,new PolygonEdge(splitEdge)); // insert a copy of the splitEdge into the polygon
-      splitPolygon.Insert(index,splitEdge);             // add the original splitEdge to the other polygon
-      return (polygon, splitPolygon);
+      splitPolygon.Insert(index,new PolygonEdge(splitEdge));             // add the original splitEdge to the other polygon
     }
     void cloneMarkers (PolygonEdge edge1, PolygonEdge edge2){
       foreach(var marker in edge1.markers)
