@@ -12,6 +12,7 @@ export default class Unfolding {
   private placements: Map<Plate, THREE.Matrix4> = new Map();
   private placementPolygons: Map<Plate, Polygon> = new Map();
   private joints: Map<Plate, Joint> = new Map();
+  private svgPolygons: Polygon[] = [];
 
   // placement info
   private center: THREE.Vector2;
@@ -87,9 +88,15 @@ export default class Unfolding {
   public saveSvg(fileName: string) {
 
     const polygons = Array.from(this.placementPolygons.values());
+    polygons.push(...this.svgPolygons);
     const svgText = SvgCreator.getSvg(polygons, this.getWidth(), this.getHeight());
 
     fs.writeFileSync(fileName, svgText);
+  }
+
+  // saves some polygons that will also come up in the svg but will be ignored otherwise
+  public addSvgPolygons(polygons: Polygon[]): void {
+    this.svgPolygons = polygons;
   }
 
   // takes a 3d position on a plate and returns the 2d position of that point in the Unfolding

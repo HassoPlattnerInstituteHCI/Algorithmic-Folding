@@ -52,7 +52,7 @@ export class StarUnfolder extends Unfolder {
       cutPaths.push(cuts);
     }
 
-    // split the model
+    /* // split the model
     const cutPlates = this.executeAllCutsOnModel(cutPaths, plates);
     const allowedJoints = new Set<Joint>();
     cutPlates.forEach(p => p.getJoints().forEach(j => allowedJoints.add(j)));
@@ -62,7 +62,10 @@ export class StarUnfolder extends Unfolder {
     plateSet.delete(cutPlates[0]);
 
     this.finishNesting(unfolding, cutPlates[0], plateSet, allowedJoints);
-    return unfolding;
+    return unfolding; */
+
+    // create an intermediate result, probably only working for a boxel
+    return this.getIntermediateResult(plates, cutPaths);
   }
 
 
@@ -384,5 +387,74 @@ export class StarUnfolder extends Unfolder {
         this.finishNesting(unfolding, otherPlate, remainingPlates, allowedJoints);
       }
     }
+  }
+
+
+  private getIntermediateResult(plates: Plate[], cutPaths: CutPath[]): Unfolding {
+
+    const cutJoints = new Set<Joint>();
+    for (const cutPath of cutPaths) {
+      cutPath.jointCuts.map(jc => jc[1]).forEach(j => cutJoints.add(j));
+    }
+
+    const plateSet = new Set<Plate>(plates);
+    plateSet.delete(plates[0]);
+
+    const unfolding = new Unfolding(plates[0]);
+    this.finishNesting(unfolding, plates[0], plateSet, cutJoints);
+
+    // add all cuts
+    const cuts = new Array<[THREE.Vector3, THREE.Vector3, Plate]>();
+    for (const cutPath of cutPaths) {
+      // uses the cutpaths
+      if (cutPath.jointCuts.length > 0) {
+        cuts.push([cutPath.start, cutPath.jointCuts[0][0], this.decideCommonPlate(cutPath.start, cutPath.jointCuts[0][0], cutPath.jointCuts[0][1])]);
+        for (let i = 1; i < cutPath.jointCuts.length; i++) {
+          const jointPlates = new Set(cutPath.jointCuts[i-1][1].getPlates());
+          const joint2Plates = cutPath.jointCuts[i][1].getPlates();
+          const commonPlate = (jointPlates.has(joint2Plates[0]))? joint2Plates[0] : joint2Plates[1];
+          cuts.push([cutPath.jointCuts[i-1][0], cutPath.jointCuts[i][0], commonPlate]);
+        }
+        cuts.push([cutPath.jointCuts[cutPath.jointCuts.length-1][0], cutPath.end, this.decideCommonPlate(cutPath.end, cutPath.jointCuts[cutPath.jointCuts.length-1][0], cutPath.jointCuts[cutPath.jointCuts.length-1][1])]);
+      }
+      else {
+        try {
+          cuts.push([cutPath.start, cutPath.end, Util.findPlateWithPoints(cutPath.start, cutPath.end, plates)]);
+        }
+        catch (e) { // this might be the very first plate, i.e. the start is not a cornerpoint of any plate yet
+          const commonPlate = plates.find(p => Util.eq(p.getCenter().distanceTo(cutPath.start), 0));
+          if (commonPlate === undefined) throw e;
+          if (commonPlate.getPoints().findIndex(p => Util.eq(p.distanceTo(cutPath.end), 0)) === -1) throw e;
+
+          cuts.push([cutPath.start, cutPath.end, commonPlate]);
+        }
+      }
+    }
+
+    // create infinitely thin Polygons for each
+    const cutLinePolygons: Polygon[] = [];
+    for (const cut of cuts) {
+      const points = [cut[0], cut[1], cut[0]];
+      const points2d = points.map(p => unfolding.map3dToUnfolding(p, cut[2]));
+      const poly = new Polygon(points2d, []);
+      cutLinePolygons.push(poly);
+    }
+
+    unfolding.addSvgPolygons(cutLinePolygons);
+    return unfolding;
+  }
+
+  // takes a joint and 2 points and just returns the better fitting plate of the joint-neighbouring plates
+  private decideCommonPlate(point1: THREE.Vector3, point2: THREE.Vector3, joint: Joint): Plate {
+
+    const [plate1, plate2] = joint.getPlates();
+    const vec = point1.clone().sub(point2);
+
+    const orthogonalToNormalOf1 = Util.eq(plate1.getNormal().dot(vec), 0);
+    const orthogonalToNormalOf2 = Util.eq(plate2.getNormal().dot(vec), 0);
+
+    if (orthogonalToNormalOf1 && !orthogonalToNormalOf2) return plate1;
+    else if (orthogonalToNormalOf2 && !orthogonalToNormalOf1) return plate2;
+    else throw new Error("Couldn't decide on plate, maybe candidates are coplanar or none of the candidates match");
   }
 }
