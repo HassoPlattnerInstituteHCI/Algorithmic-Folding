@@ -2,12 +2,10 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using SparseCollections;
-//using Mathematics;
 
 namespace inClassHacking{
 
   public class LangsAlgorithm{
-    public double sweepingLength = 0.05;
     public bool DEBUG;
     public bool VISUAL;
     public int zoom;
@@ -18,19 +16,17 @@ namespace inClassHacking{
     int counter=0;
     List<PolygonEdge> inputEdges = new List<PolygonEdge>();
 
-    public LangsAlgorithm(Tree tree, bool debug=false, bool visual=false, int zoomFactor=90, double sweepingLength = 0.05){
+    public LangsAlgorithm(Tree tree, bool debug=false, bool visual=false, int zoomFactor=90){
       tree.setLeafNodes();
       this.DEBUG=debug;
       this.VISUAL=visual;
       this.zoom = zoomFactor;
-      this.sweepingLength = 0.05;
     }
-    public List<Crease> sweepingProcess(Tree tree){
+    public List<Crease> sweepingProcess(Tree tree, double sweepingLength){
       (List<Crease> creases, List<PolygonEdge> edges)= axialCreasesAndMarkers(tree);  // create creases and edges between the circles
-      foreach(var e in edges)                                                  // copy edges to inputEdges
-        inputEdges.Add(new PolygonEdge(e));
+      inputEdges = edges.ConvertAll(x => new PolygonEdge(x));                  // copy edges to inputEdges (without markers)
       tree.calculateTreeDistances();                                           // builds a matrix of all distances in the tree
-      sweep(tree, creases, edges, inputEdges);                                 // the actual sweeping of the polygon
+      sweep(tree, creases, edges, inputEdges, sweepingLength);                                 // the actual sweeping of the polygon
       return creases;
     }
     (List<Crease> cr, List<PolygonEdge> e) axialCreasesAndMarkers(Tree tree){         // create edges and creases that connect the circles
@@ -72,8 +68,9 @@ namespace inClassHacking{
       return false;
     }
 
-    public void sweep(Tree tree, List<Crease> creases, List<PolygonEdge> polygon, List<PolygonEdge> initialEdges){
+    public void sweep(Tree tree, List<Crease> creases, List<PolygonEdge> polygon, List<PolygonEdge> initialEdges, double sweepingLength){
       bool again = true;
+
       while(again){
         sweepEdges(polygon, sweepingLength);          // sweep every edge by sweepingLength
         updateVerticesandMarkers(polygon);            // update vertices of polygon
@@ -85,9 +82,7 @@ namespace inClassHacking{
             polygon.Remove(edge);
           }
           if(polygon.Count<3){                        // rabit ear molecule, close in with triangular crease
-            for(int z=0; z<polygon.Count-1; z++)
-              if(polygon[z].getLength() > 2*sweepingLength)
-                creases.Add(new Crease(polygon[z].p1, polygon[z].p2, creaseColor));
+            rabitear(creases,polygon,sweepingLength);
             return;
           }
           if(linedUp(polygon)) return;                  // colinear edges make no sense--polygon is death now stop sweeping this polygon
@@ -96,14 +91,14 @@ namespace inClassHacking{
               if(i==0 && j==polygon.Count-1) continue;  // cannot split the first with the last edge
               PolygonEdge secondEdge = polygon[j];      // the other edge to check for splitting
               if(skipOddCases(polygon,edge,secondEdge)) continue; // check for odd cases
-              if(isSplitEvent(tree, edge,secondEdge,inputEdges,polygon)){
+              if(isSplitEvent(tree, edge,secondEdge,inputEdges,polygon)){ // was inputedges
                   again = false;
                   if (DEBUG) Console.WriteLine("split between " + edge.index1 + " and " + secondEdge.index1 + " with length: \r\n" + edge.p1.getDistance(secondEdge.p1));
                   tree.removeFromDistancesMatrix(edge,secondEdge);                        //avoid splitting same edges twice
                   creases.Add(new Crease(edge.p1, secondEdge.p1, internalCreaseColor));   // make the internal crease before splitting the actual polygon
                   (List<PolygonEdge> splitOffPoly, List<PolygonEdge> otherPoly) = splitOffPolygon(polygon, i, j);
-                  sweep(tree, creases, splitOffPoly.ConvertAll(x => new PolygonEdge(x)), splitOffPoly); //recursively call the main algorithm to sweep the new spin-offs for cut off
-                  sweep(tree, creases, otherPoly.ConvertAll(x => new PolygonEdge(x)), otherPoly); // and the same for the other side
+                  sweep(tree, creases, splitOffPoly.ConvertAll(x => new PolygonEdge(x)), splitOffPoly, sweepingLength); //recursively call the main algorithm to sweep the new spin-offs for cut off
+                  sweep(tree, creases, otherPoly.ConvertAll(x => new PolygonEdge(x)), otherPoly, sweepingLength); // and the same for the other side
               }
             }
           }
@@ -116,43 +111,53 @@ namespace inClassHacking{
       List<PolygonEdge> splitOffPoly = new List<PolygonEdge>(), otherPoly = new List<PolygonEdge>();
       PolygonEdge splittingEdge = new PolygonEdge(secondEdge.p1, secondEdge.index1, edge.p1, edge.index1);  // define the splitting edge for the A side
       PolygonEdge splittingEdgeOther = new PolygonEdge(edge.p1, edge.index1, secondEdge.p1, secondEdge.index1); // same but reversed splitting edge for the B side
-      for (int k =0; k<polygon.Count;k++){  //loop through all edges on the polygon
-        PolygonEdge currentEdge = polygon[k];
-        if (k < indexFrom){                         // copy edges from 0 to the split polygon
-          otherPoly.Add(currentEdge);
+      for (int k =0; k<polygon.Count;k++){                  //loop through all edges on the polygon
+        PolygonEdge currentEdge = polygon[k];               // the currently selected edge
+        if (k < indexFrom){                                 // copy edges from 0 to the split polygon
           addMarkersToSplittingEdge(splittingEdgeOther, currentEdge,(indexFrom+polygon.Count-indexTo <3));
-        }else if (k < indexTo) {                  // copy edges of i until j (the split-off polygon)
-          splitOffPoly.Add(currentEdge);
+          otherPoly.Add(currentEdge);                       // assign the selected edge the other polygon
+        }else if (k < indexTo) {                            // copy edges of i until j (the split-off polygon)
           addMarkersToSplittingEdge(splittingEdge, currentEdge,(indexTo-indexFrom <3));
-        }else{                              //copy all other edges (before the split) into the other polygon
-          otherPoly.Add(currentEdge);
+          splitOffPoly.Add(currentEdge);                    // assign the selected edge to the split-off polygon
+        }else{                                              //copy all other edges (before the split) into the other polygon as well
           addMarkersToSplittingEdge(splittingEdgeOther, currentEdge,(polygon.Count-indexTo <3));
+          otherPoly.Add(currentEdge);                       // assign the selected edge to the other polgon
         }
       }
       cloneMarkers(splittingEdge,splittingEdgeOther);
-      splitOffPoly.Insert(splitOffPoly.Count,new PolygonEdge(splittingEdge)); //insert the splitting edge into the split off polygon
-      otherPoly.Insert(indexFrom,new PolygonEdge(splittingEdgeOther));        // insert the copy of the splitting edge into the old polygon
+      splitOffPoly.Insert(splitOffPoly.Count,splittingEdge);
+      otherPoly.Insert(indexFrom,splittingEdgeOther);
       return (splitOffPoly, otherPoly);
     }
-    bool isSplitEvent(Tree tree, PolygonEdge edge, PolygonEdge secondEdge, List<PolygonEdge> input, List<PolygonEdge> es){
-      double equationSolution = Int64.MaxValue;
-      if(secondEdge.vec == input[secondEdge.index1].vec && edge.vec == input[edge.index1].vec){
-        equationSolution = solveEquation(edge, input[secondEdge.index1],input[secondEdge.index1].p1,secondEdge, secondEdge.p1, secondEdge.p1);
-      }else{ //the according edge was already splitted so we try the other edge of this vertex
-        PolygonEdge altSecondEdge = (secondEdge.index1!=0) ? es[secondEdge.index1-1] : es.Last();
-        PolygonEdge altInputEdge = (secondEdge.index1!=0) ? inputEdges[secondEdge.index1-1] : inputEdges.Last();
-        equationSolution = solveEquation(edge, altInputEdge,altInputEdge.p2,altSecondEdge, altSecondEdge.p2, secondEdge.p1);
-      }
-      return (equationSolution < tree.distances[edge.index1, secondEdge.index1]);
+    void rabitear(List<Crease> creases, List<PolygonEdge> polygon,double sweepingLength){
+      for(int z=0; z<polygon.Count-1; z++)
+        if(polygon[z].getLength() > 2*sweepingLength)
+          creases.Add(new Crease(polygon[z].p1, polygon[z].p2, creaseColor));
     }
-    double solveEquation(PolygonEdge edge, PolygonEdge firstEdge, Point2D p1, PolygonEdge secondEdge, Point2D p2, Point2D p3){
+    bool isSplitEvent(Tree tree, PolygonEdge edge, PolygonEdge secondEdge, List<PolygonEdge> input, List<PolygonEdge> poly){
+      double equationSolution = Int64.MaxValue;
+      if(secondEdge.vec == input[secondEdge.index1].vec && edge.vec == input[edge.index1].vec){ //vectors are still the same as originally
+        equationSolution = solveEquation(poly,input,edge,secondEdge);
+      }else{ //the according edge was already splitted so we try the other edge of this vertex
+        PolygonEdge altSecondEdge = (secondEdge.index1!=0) ? poly[secondEdge.index1-1] : poly.Last();
+        PolygonEdge altInputEdge = (secondEdge.index1!=0) ? input[secondEdge.index1-1] : input.Last();
+        equationSolution = solveEquation(poly,input,edge,secondEdge,altInputEdge,altSecondEdge);
+        }
+      return (equationSolution <= tree.distances[edge.index1, secondEdge.index1]); // if the distance on paper is smaller than the distance in the tree we need to split
+    }
+    double solveEquation(List<PolygonEdge> poly, List<PolygonEdge> input, PolygonEdge a_, PolygonEdge c_, PolygonEdge b = null, PolygonEdge b_ = null){
       double AA_, CC_;
-      Point2D A_, C_;
-      C_ = Geometry.findIntersection(firstEdge.vec, p1, secondEdge.vec.getNormalRight(), p2);
-      CC_ = p1.getDistance(C_);
-      A_ = Geometry.findIntersection(inputEdges[edge.index1].vec, inputEdges[edge.index1].p1, edge.vec.getNormalRight(), edge.p1);
-      AA_ = inputEdges[edge.index1].p1.getDistance(A_);
-      return Math.Round(edge.p1.getDistance(p3) + AA_ + CC_, 2);
+      Point2D A,C,A_, C_;
+      PolygonEdge a, c;
+      a = input[a_.index1]; // find reference edge for a' in the original polygon
+      c = input[c_.index1]; // find reference edge for c' in the original polygon
+      A = a.p1;             // A and C are the opposite corners in the original polygon
+      C = c.p1;
+      A_ = Geometry.findIntersection(a.vec, A, a_.vec.perpendicular(),a_.p1);   // projection of the corner of a_ on the original edge a
+      AA_ = A.getDistance(A_);                                                  // distance between the projected point A_ and A
+      C_ =  (b!=null)?Geometry.findIntersection(b.vec,C, b_.vec.perpendicular(),b_.p2):Geometry.findIntersection(c.vec,C, c_.vec.perpendicular(),c_.p1); // similar projection on either c or b (if defined)
+      CC_ = C.getDistance(C_);                                                  // distance between the projected point C_ and C
+      return a_.p1.getDistance(c_.p1) + AA_ + CC_;                              // the distance we need to check for splitting
     }
     void sweepEdges(List<PolygonEdge> edges, double sweepingLength){
       foreach(var edge in edges)
@@ -161,25 +166,49 @@ namespace inClassHacking{
     void addCreases(List<Crease> creases, List<PolygonEdge> edges, List<PolygonEdge> initialEdges){
       for(int l=0; l<edges.Count; l++){
           PolygonEdge edge = edges[l];
-          for(int k=0; k<edge.markers.Count; k++){
-            if(!(edge.markers[k] == null)){
-              if(k>initialEdges[l].markers.Count-1)continue;
+          for(int k=0; k<edge.markers.Count; k++)
+            if(!(edge.markers[k] == null))
               creases.Add(new Crease(initialEdges[l].markers[k], edge.markers[k], riverColor));
-              //creases.Add(newCrease); //TODO detect that a crease is colinear and remove the old one
-              /*List<Crease> colinear = creases.FindAll(
-              delegate(Crease x){
-                return x.isColinearWith(newCrease);
-              });
-              Console.WriteLine("found {0} colinear creases", colinear.Count);
-
-              foreach (var cr in colinear)
-                creases.Remove(cr);*/
-            }
-          }
-          creases.Add(new Crease(edge.p1, initialEdges[l].p1, creaseColor)); //TODO detect that a crease is colinear and remove the old one
+              //insertOrExtendCrease(creases, new Crease(initialEdges[l].markers[k], edge.markers[k], riverColor));
+          //insertOrExtendCrease(creases,new Crease(edge.p1, initialEdges[l].p1, creaseColor));
+          creases.Add(new Crease(edge.p1, initialEdges[l].p1, creaseColor));
       }
     }
+    void insertOrExtendCrease(List<Crease> creases, Crease c){
+      List<Crease> colinear = creases.FindAll(  //see if we already have a marker on the original position
+        delegate(Crease x){
+          //return x.isColinearWith(c);}
+          return ((x.color == c.color) && (x.containsPoint(c.p1) || (x.containsPoint(c.p2))));}//&&(x.similarDirection(c))
+          );
+      if (colinear.Count == 0)
+        creases.Add(c);
+      else{
+        if (colinear.Count > 1)
+          {Console.WriteLine("{0} colinear creases at {1}", colinear.Count, counter);
+          return;
+        }
+        if (colinear.First().direction.getLength() > c.direction.getLength()){
+          creases.Add(c);
+          return;
+        }
+        if (colinear.First().p1 == c.p1)
+          colinear.First().p2 = c.p2; //colinear.First().elongate(c.p1, c.direction);
+        else if (colinear.First().p1 == c.p2)
+          colinear.First().p2 = c.p1;//colinear.First().elongate(c.p2, c.direction);//
+        else if (colinear.First().p2 == c.p1)
+          colinear.First().p1 = c.p2;//colinear.First().elongate(c.p1, c.direction);//colinear.First().p1 = c.p2;
+        else if (colinear.First().p2 == c.p2)
+          colinear.First().p1 = c.p1;//colinear.First().elongate(c.p2, c.direction);//colinear.First().p1 = c.p1;
+        else
+          Console.WriteLine("other case?!");
 
+        /*if (colinear.First().sharedPoint(c) == c.p1){
+          colinear.First().p2 = c.p2;
+        }else{
+          colinear.First().p1 = c.p1;
+        }*/
+      }
+  }
     void addMarkersToSplittingEdge(PolygonEdge splittingEdge, PolygonEdge edge, bool condition){
       if (condition){
         Vector splitVector = new Vector(splittingEdge.p2, splittingEdge.p1).normalized();
@@ -208,9 +237,10 @@ namespace inClassHacking{
       splitPolygon.Insert(index,new PolygonEdge(splitEdge));             // add the original splitEdge to the other polygon
     }
     void cloneMarkers (PolygonEdge edge1, PolygonEdge edge2){
+      List<Point2D> temp = new List<Point2D>(edge2.markers);
       foreach(var marker in edge1.markers)
         edge2.setMarker(marker);
-      foreach(var marker in edge2.markers)
+      foreach(var marker in temp)
         edge1.setMarker(marker);
     }
     void debugExport(Tree t, List<Crease> cr, string s){

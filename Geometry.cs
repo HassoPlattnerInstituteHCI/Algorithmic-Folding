@@ -11,6 +11,7 @@ namespace inClassHacking
   public class Point2D
     {
         public double x, y;
+        static int precision= 5;
         public Point2D(double x,double y)
         {
             this.x = x;
@@ -49,7 +50,7 @@ namespace inClassHacking
           if(object.ReferenceEquals(p2, null) && object.ReferenceEquals(p1, null))return true;
           if(object.ReferenceEquals(p1, null))return false;
           if(object.ReferenceEquals(p2, null))return false;
-          return (Math.Round(p1.x, 3) == Math.Round(p2.x,3) & Math.Round(p1.y, 3) == Math.Round(p2.y, 3));
+          return (Math.Round(p1.x, precision) == Math.Round(p2.x,precision) & Math.Round(p1.y, precision) == Math.Round(p2.y, precision));
         }
 
         public static bool operator!=(Point2D p1, Point2D p2){
@@ -102,7 +103,9 @@ namespace inClassHacking
     public Vector normalized(){
       return this/this.getLength();
     }
-
+    public Vector perpendicular(){
+      return new Vector(this.y, -this.x);
+    }
     public Vector getNormalRight(){
       return new Vector(-this.y, this.x);
     }
@@ -132,7 +135,6 @@ namespace inClassHacking
     public static Vector operator*(Vector v, double d){
       return new Vector(v.x*d, v.y*d);
     }
-
     public static bool operator==(Vector v1, Vector v2){
       return (v1.x==v2.x && v1.y==v2.y);
     }
@@ -161,7 +163,12 @@ namespace inClassHacking
     this.markers = new List<Point2D>();
     this.vec = new Vector(p1, p2).normalized();
   }
-
+  public PolygonEdge flipped(){
+    PolygonEdge e = new PolygonEdge(p2,index2,p1,index1);
+    e.markers = this.markers;
+    e.vec = new Vector(p2, p1).normalized();
+    return e;
+  }
   public PolygonEdge(Circle circle1, Circle circle2){ //Edge from p1 to p2, which are positions of two leaf nodes (circle's center)
     this.p1 = circle1.getCenter();
     this.p2 = circle2.getCenter();
@@ -193,12 +200,9 @@ namespace inClassHacking
   public void parallelSweep(double length){
     p1 += vec.getNormalLeft()*length;
     p2 += vec.getNormalLeft()*length;
-
-    for(int i = 0; i<markers.Count; i++){
-      if(!(markers[i] == null)){
+    for(int i = 0; i<markers.Count; i++)
+      if(!(markers[i] == null))
         markers[i] += vec.getNormalLeft()*length;
-      }
-    }
   }
 
   public void updateVertices(PolygonEdge left, PolygonEdge right){
@@ -215,21 +219,16 @@ namespace inClassHacking
   public void updateMarkers(){
     double epsilon = 0.2;
     for(int i=0; i<this.markers.Count; i++){
-
       if(!(this.markers[i] == null)){
         Point2D marker = this.markers[i];
-        if(marker.x < this.p1.x-epsilon && marker.x < this.p2.x-epsilon){
+        if(marker.x < this.p1.x-epsilon && marker.x < this.p2.x-epsilon)
           this.markers[i] = null;
-        }
-        else if(marker.x > this.p1.x+epsilon && marker.x > this.p2.x+epsilon){
+        else if(marker.x > this.p1.x+epsilon && marker.x > this.p2.x+epsilon)
           this.markers[i] = null;
-        }
-        else if(marker.y < this.p1.y-epsilon && marker.y < this.p2.y-epsilon){
+        else if(marker.y < this.p1.y-epsilon && marker.y < this.p2.y-epsilon)
           this.markers[i] = null;
-        }
-        else if(marker.y > this.p1.y+epsilon && marker.y > this.p2.y+epsilon){
+        else if(marker.y > this.p1.y+epsilon && marker.y > this.p2.y+epsilon)
           this.markers[i] = null;
-        }
       }
     }
   }
@@ -279,14 +278,41 @@ namespace inClassHacking
       this.color = c;
       this.direction = new Vector (p1,p2);
     }
+
+    public void update(Crease c){
+      this.p1 = c.p1;
+      this.p2 = c.p2;
+      this.color = c.color;
+      this.direction = c.direction;
+    }
+    public void elongate(Point2D fromPoint, Vector v){
+      p1 = (fromPoint != p1) ? p1-direction+v : p1;
+      p2 = (fromPoint != p2) ? p2-direction+v : p2;
+      direction = new Vector (p1,p2);
+    }
+
+    public Point2D sharedPoint(Crease c){
+      if (containsPoint(c.p1))
+        return c.p1;
+      if (containsPoint(c.p2))
+        return c.p2;
+      return null;
+    }
+    public bool similarDirection(Crease cr){
+      if ((cr.direction.normalized() == this.direction.normalized()) ){//||(cr.direction.normalized().getReverse() == this.direction.normalized())
+        return true;
+      }else{
+        return false;
+
+      }
+    }
     public bool containsPoint(Point2D p){
       return (p == p1 || p==p2);
     }
     public bool isColinearWith(Crease cr){
-      return (((this.direction == cr.direction || this.direction.getReverse() == cr.direction)) && ((containsPoint(cr.p1) || containsPoint(cr.p2))) && (cr.color == this.color));
+      return (((this.direction.normalized() == cr.direction.normalized() || this.direction.normalized().getReverse() == cr.direction.normalized())) && ((containsPoint(cr.p1) || containsPoint(cr.p2))) && (cr.color == this.color));
     }
   }
-
   public class Geometry{
 
    public static Point2D findIntersection(Vector v1, Point2D p1, Vector v2, Point2D p2){

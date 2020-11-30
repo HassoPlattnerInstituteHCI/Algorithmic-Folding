@@ -22,8 +22,8 @@ namespace inClassHacking{
         case 2:{  tree = Tree.exampleLizardTree();break;}         // lizard
         default:{Console.WriteLine("undefined model"); return;}
       }
-      LangsAlgorithm lang = new LangsAlgorithm(tree,DEBUG, VISUAL,zoomFactor, sweepingLength);
-      List<Crease> creases = lang.sweepingProcess(tree);
+      LangsAlgorithm lang = new LangsAlgorithm(tree,DEBUG, VISUAL,zoomFactor);
+      List<Crease> creases = lang.sweepingProcess(tree, sweepingLength);
       FileHandler f = new FileHandler(DEBUG, tree.getPaperSizeX(), zoomFactor);
       if (f.exportSVG("export.svg", tree, creases))
         Console.WriteLine("exported SVG");
