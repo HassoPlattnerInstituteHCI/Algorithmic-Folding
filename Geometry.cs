@@ -309,14 +309,13 @@ namespace inClassHacking
       return null;
     }
     public bool similarDirection(Crease cr){
-      //return false;
       return ((cr.direction.normalized() == this.direction.normalized()));
     }
     public bool containsPoint(Point2D p){
       return (p == p1 || p==p2);
     }
     public bool isColinearWith(Crease cr){
-      return (((this.direction.normalized() == cr.direction.normalized() || this.direction.normalized().getReverse() == cr.direction.normalized())) && ((containsPoint(cr.p1) || containsPoint(cr.p2))) && (cr.color == this.color));
+      return ((cr.color == this.color) && (cr.containsPoint(this.p1) || (cr.containsPoint(this.p2)))&& cr.similarDirection(this));
     }
   }
   public class Geometry{

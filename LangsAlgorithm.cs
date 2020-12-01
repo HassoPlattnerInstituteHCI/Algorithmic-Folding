@@ -73,7 +73,6 @@ namespace inClassHacking{
       bool again = true;
       while(again){
         sweepEdges(polygon, sweepingLength);          // sweep every edge by sweepingLength
-        updateVerticesandMarkers(polygon);            // update vertices of polygon
         addCreases(creases, polygon, initialEdges);   // add all new creases
         if (VISUAL) debugExport(tree,creases,"snapshot"+counter+".svg");counter++;  // take a visual snapshot
         for(int i=0; i<polygon.Count; i++){
@@ -159,13 +158,14 @@ namespace inClassHacking{
       CC_ = C.getDistance(C_);                                                  // distance between the projected point C_ and C
       return a_.p1.getDistance(c_.p1) + AA_ + CC_;                              // the distance we need to check for splitting
     }
-    void sweepEdges(List<PolygonEdge> edges, double sweepingLength){
-      foreach(var edge in edges)
+    void sweepEdges(List<PolygonEdge> polygon, double sweepingLength){
+      foreach(var edge in polygon)
         edge.parallelSweep(sweepingLength);
+      updateVerticesandMarkers(polygon);            // update vertices of polygon
     }
-    void addCreases(List<Crease> creases, List<PolygonEdge> edges, List<PolygonEdge> initialEdges){
-      for(int l=0; l<edges.Count; l++){
-          PolygonEdge edge = edges[l];
+    void addCreases(List<Crease> creases, List<PolygonEdge> polygon, List<PolygonEdge> initialEdges){
+      for(int l=0; l<polygon.Count; l++){
+          PolygonEdge edge = polygon[l];
           for(int k=0; k<edge.markers.Count; k++)
             if(!(edge.markers[k] == null))
               insertOrExtendCrease(creases, new Crease(initialEdges[l].markers[k], edge.markers[k], riverColor));
@@ -175,28 +175,16 @@ namespace inClassHacking{
     void insertOrExtendCrease(List<Crease> creases, Crease c){
       List<Crease> colinear = creases.FindAll(  //see if we already have a marker on the original position
         delegate(Crease x){
-          return ((x.color == c.color) && (x.containsPoint(c.p1) || (x.containsPoint(c.p2)))&& x.similarDirection(c));}
+          return x.isColinearWith(c);}
           );
-      if (colinear.Count == 0)
+      if (colinear.Count == 0)                  // there was no colinear crease yet, we add c to the crease list
         creases.Add(c);
       else{
-        if (colinear.Count > 1)
-          {Console.WriteLine("[{0}] {1} colinear creases", counter, colinear.Count);
-          return;
-        }
-        foreach (var crease in colinear){
-          Crease colCrease = new Crease(crease);
-          if (crease.p1 == c.p1)
-            colCrease.p2 = c.p2;
-          if (crease.p1 == c.p2)
-            colCrease.p1 = c.p1;
-          if (crease.p2 == c.p1)
-            colCrease.p2 = c.p2;
-          if (crease.p2 == c.p2)
-            colCrease.p1 = c.p1;
-          crease.p1 = colCrease.p1;
-          crease.p2 = colCrease.p2;
-          crease.direction = colCrease.direction;
+        foreach (var crease in colinear){       // this should just be a single colinear crease
+          Point2D p2 = (crease.p1 == c.p1 || crease.p2 == c.p1)?c.p2:new Point2D(crease.p2);
+          Point2D p1 = (crease.p1 == c.p2 || crease.p2 == c.p2)?c.p1:new Point2D(crease.p1);
+          crease.p1 = p1;
+          crease.p2 = p2;
         }
       }
     }
