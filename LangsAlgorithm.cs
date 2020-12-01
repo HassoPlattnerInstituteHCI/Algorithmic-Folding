@@ -24,15 +24,16 @@ namespace inClassHacking{
     }
     public List<Crease> sweepingProcess(Tree tree, double sweepingLength){
       (List<Crease> creases, List<PolygonEdge> edges)= axialCreasesAndMarkers(tree);  // create creases and edges between the circles
-      inputEdges = edges.ConvertAll(x => new PolygonEdge(x));                  // copy edges to inputEdges (without markers)
-      tree.calculateTreeDistances();                                           // builds a matrix of all distances in the tree
-      sweep(tree, creases, edges, inputEdges, sweepingLength);                                 // the actual sweeping of the polygon
+      inputEdges = edges.ConvertAll(x => new PolygonEdge(x));                         // copy edges to inputEdges (without markers)
+      tree.calculateTreeDistances();                                                  // builds a matrix of all distances in the tree
+      sweep(tree, creases, edges, inputEdges, sweepingLength);                        // the actual sweeping of the polygon
       return creases;
     }
     (List<Crease> cr, List<PolygonEdge> e) axialCreasesAndMarkers(Tree tree){         // create edges and creases that connect the circles
     List<Crease> creases = new List<Crease>();
     List<PolygonEdge> edges = new List<PolygonEdge>();
     PolygonEdge newEdge;
+
       for(int i=0; i<tree.circles.Count-1; i++){                               // add a crease and edge between all circles on the outside
         creases.Add(new Crease(tree.circles[i].getCenter(), tree.circles[i+1].getCenter(), axialCreaseColor));
         newEdge = new PolygonEdge(tree.circles[i].getCenter(), i, tree.circles[i+1].getCenter(), i+1);
@@ -70,7 +71,6 @@ namespace inClassHacking{
 
     public void sweep(Tree tree, List<Crease> creases, List<PolygonEdge> polygon, List<PolygonEdge> initialEdges, double sweepingLength){
       bool again = true;
-
       while(again){
         sweepEdges(polygon, sweepingLength);          // sweep every edge by sweepingLength
         updateVerticesandMarkers(polygon);            // update vertices of polygon
@@ -168,47 +168,38 @@ namespace inClassHacking{
           PolygonEdge edge = edges[l];
           for(int k=0; k<edge.markers.Count; k++)
             if(!(edge.markers[k] == null))
-              creases.Add(new Crease(initialEdges[l].markers[k], edge.markers[k], riverColor));
-              //insertOrExtendCrease(creases, new Crease(initialEdges[l].markers[k], edge.markers[k], riverColor));
-          //insertOrExtendCrease(creases,new Crease(edge.p1, initialEdges[l].p1, creaseColor));
-          creases.Add(new Crease(edge.p1, initialEdges[l].p1, creaseColor));
+              insertOrExtendCrease(creases, new Crease(initialEdges[l].markers[k], edge.markers[k], riverColor));
+          insertOrExtendCrease(creases,new Crease(edge.p1, initialEdges[l].p1, creaseColor));
       }
     }
     void insertOrExtendCrease(List<Crease> creases, Crease c){
       List<Crease> colinear = creases.FindAll(  //see if we already have a marker on the original position
         delegate(Crease x){
-          //return x.isColinearWith(c);}
-          return ((x.color == c.color) && (x.containsPoint(c.p1) || (x.containsPoint(c.p2))));}//&&(x.similarDirection(c))
+          return ((x.color == c.color) && (x.containsPoint(c.p1) || (x.containsPoint(c.p2)))&& x.similarDirection(c));}
           );
       if (colinear.Count == 0)
         creases.Add(c);
       else{
         if (colinear.Count > 1)
-          {Console.WriteLine("{0} colinear creases at {1}", colinear.Count, counter);
+          {Console.WriteLine("[{0}] {1} colinear creases", counter, colinear.Count);
           return;
         }
-        if (colinear.First().direction.getLength() > c.direction.getLength()){
-          creases.Add(c);
-          return;
+        foreach (var crease in colinear){
+          Crease colCrease = new Crease(crease);
+          if (crease.p1 == c.p1)
+            colCrease.p2 = c.p2;
+          if (crease.p1 == c.p2)
+            colCrease.p1 = c.p1;
+          if (crease.p2 == c.p1)
+            colCrease.p2 = c.p2;
+          if (crease.p2 == c.p2)
+            colCrease.p1 = c.p1;
+          crease.p1 = colCrease.p1;
+          crease.p2 = colCrease.p2;
+          crease.direction = colCrease.direction;
         }
-        if (colinear.First().p1 == c.p1)
-          colinear.First().p2 = c.p2; //colinear.First().elongate(c.p1, c.direction);
-        else if (colinear.First().p1 == c.p2)
-          colinear.First().p2 = c.p1;//colinear.First().elongate(c.p2, c.direction);//
-        else if (colinear.First().p2 == c.p1)
-          colinear.First().p1 = c.p2;//colinear.First().elongate(c.p1, c.direction);//colinear.First().p1 = c.p2;
-        else if (colinear.First().p2 == c.p2)
-          colinear.First().p1 = c.p1;//colinear.First().elongate(c.p2, c.direction);//colinear.First().p1 = c.p1;
-        else
-          Console.WriteLine("other case?!");
-
-        /*if (colinear.First().sharedPoint(c) == c.p1){
-          colinear.First().p2 = c.p2;
-        }else{
-          colinear.First().p1 = c.p1;
-        }*/
       }
-  }
+    }
     void addMarkersToSplittingEdge(PolygonEdge splittingEdge, PolygonEdge edge, bool condition){
       if (condition){
         Vector splitVector = new Vector(splittingEdge.p2, splittingEdge.p1).normalized();

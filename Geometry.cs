@@ -11,7 +11,7 @@ namespace inClassHacking
   public class Point2D
     {
         public double x, y;
-        static int precision= 5;
+        static int PRECISION= 5;
         public Point2D(double x,double y)
         {
             this.x = x;
@@ -23,12 +23,10 @@ namespace inClassHacking
         }
         public double getDistance(Point2D target)
         {
-            double dist;
-            dist = Math.Sqrt(
+            return Math.Sqrt(
                 Math.Pow(Math.Abs(x - target.x), 2) +
                 Math.Pow(Math.Abs(y - target.y), 2)
             );
-            return dist;
         }
 
         public Point2D mirrored(double paperSize){
@@ -50,7 +48,7 @@ namespace inClassHacking
           if(object.ReferenceEquals(p2, null) && object.ReferenceEquals(p1, null))return true;
           if(object.ReferenceEquals(p1, null))return false;
           if(object.ReferenceEquals(p2, null))return false;
-          return (Math.Round(p1.x, precision) == Math.Round(p2.x,precision) & Math.Round(p1.y, precision) == Math.Round(p2.y, precision));
+          return (Math.Round(p1.x, PRECISION) == Math.Round(p2.x,PRECISION) & Math.Round(p1.y, PRECISION) == Math.Round(p2.y, PRECISION));
         }
 
         public static bool operator!=(Point2D p1, Point2D p2){
@@ -85,7 +83,7 @@ namespace inClassHacking
 
   public class Vector{
     public double x, y;
-
+    static int PRECISION= 5;
     public Vector(double x, double y){
       this.x = x;
       this.y = y;
@@ -136,7 +134,10 @@ namespace inClassHacking
       return new Vector(v.x*d, v.y*d);
     }
     public static bool operator==(Vector v1, Vector v2){
-      return (v1.x==v2.x && v1.y==v2.y);
+      if(object.ReferenceEquals(v2, null) && object.ReferenceEquals(v1, null))return true;
+      if(object.ReferenceEquals(v1, null))return false;
+      if(object.ReferenceEquals(v2, null))return false;
+      return (Math.Round(v1.x, PRECISION) == Math.Round(v2.x,PRECISION) & Math.Round(v1.y, PRECISION) == Math.Round(v2.y, PRECISION));
     }
 
     public static bool operator!=(Vector v1, Vector v2){
@@ -207,11 +208,11 @@ namespace inClassHacking
 
   public void updateVertices(PolygonEdge left, PolygonEdge right){
 
-    if( (right.vec.x != this.vec.x) && (right.vec.x != this.vec.getReverse().x)){
+    if( (right.vec != this.vec) && (right.vec!= this.vec.getReverse())){
       this.p2 = Geometry.findIntersection(right.vec.getReverse(), right.p2, this.vec, this.p1);
     }
 
-    if( (left.vec.x != this.vec.x) && (left.vec.x != this.vec.getReverse().x)){
+    if( (left.vec != this.vec) && (left.vec != this.vec.getReverse())){
       this.p1 = Geometry.findIntersection(left.vec, left.p1, this.vec.getReverse(), this.p2);
     }
   }
@@ -248,7 +249,10 @@ namespace inClassHacking
       this.radius = c.radius;
       this.center = c.center;
     }
-
+    public Circle (double x, double y, double r){
+      this.center = new Point2D(x,y);
+      this.radius = r;
+    }
     public int getIndex(){return index;}
     public void setIndex(int i){this.index=i;}
 
@@ -278,6 +282,12 @@ namespace inClassHacking
       this.color = c;
       this.direction = new Vector (p1,p2);
     }
+    public Crease(Crease c){
+      this.p1 = c.p1;
+      this.p2 = c.p2;
+      this.color = c.color;
+      this.direction = new Vector (p1,p2);
+    }
 
     public void update(Crease c){
       this.p1 = c.p1;
@@ -299,12 +309,8 @@ namespace inClassHacking
       return null;
     }
     public bool similarDirection(Crease cr){
-      if ((cr.direction.normalized() == this.direction.normalized()) ){//||(cr.direction.normalized().getReverse() == this.direction.normalized())
-        return true;
-      }else{
-        return false;
-
-      }
+      //return false;
+      return ((cr.direction.normalized() == this.direction.normalized()));
     }
     public bool containsPoint(Point2D p){
       return (p == p1 || p==p2);

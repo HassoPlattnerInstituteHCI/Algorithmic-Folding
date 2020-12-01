@@ -8,9 +8,9 @@ namespace inClassHacking{
   class MainClass {
     public static bool DEBUG = false;
     public static bool VISUAL = false;
-    public static int demoModel = 0;
+    public static int demoModel = 3;
     public static int zoomFactor = 100;
-    public static double sweepingLength = 0.05;
+    public static double sweepingLength = 0.01;
     public static void Main (string[] args) {
       clearExportFolder();
       Tree tree = new Tree();
@@ -20,6 +20,7 @@ namespace inClassHacking{
         case 0:{  tree = Tree.exampleBeetleTree();break;}         // beetle
         case 1:{  tree = Tree.exampleLongAntennaTree();break;}    // antenna beetle
         case 2:{  tree = Tree.exampleLizardTree();break;}         // lizard
+        case 3:{  tree = Tree.simpleThreeNodes();break;}
         default:{Console.WriteLine("undefined model"); return;}
       }
       LangsAlgorithm lang = new LangsAlgorithm(tree,DEBUG, VISUAL,zoomFactor);
@@ -46,7 +47,7 @@ namespace inClassHacking{
           VISUAL = true;
         if (String.Equals(args[c], "-debug",StringComparison.OrdinalIgnoreCase))
           DEBUG = true;
-          if (String.Equals(args[c], "-p",StringComparison.OrdinalIgnoreCase))
+        if (String.Equals(args[c], "-p",StringComparison.OrdinalIgnoreCase))
             if (++c < args.Length){
               sweepingLength = double.Parse(args[c]);
             }else{
@@ -64,7 +65,7 @@ namespace inClassHacking{
           if (++c < args.Length){
             demoModel = int.Parse(args[c]);
           }else{
-            Console.WriteLine("provide index of model, 0=beetle, 1=antenna beetle, 2=lizard");
+            Console.WriteLine("provide index of model, 0=beetle, 1=antenna beetle, 2=lizard 3= threenodes");
             return false;
           }
         c++;
