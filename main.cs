@@ -25,7 +25,7 @@ namespace inClassHacking{
       }
       LangsAlgorithm lang = new LangsAlgorithm(tree,DEBUG, VISUAL,zoomFactor);
       List<Crease> creases = lang.sweepingProcess(tree, sweepingLength);
-      FileHandler f = new FileHandler(DEBUG, tree.getPaperSizeX(), zoomFactor);
+      FileHandler f = new FileHandler(DEBUG, tree.getPaperSize(), zoomFactor);
       if (f.exportSVG("export.svg", tree, creases))
         Console.WriteLine("exported SVG");
     }

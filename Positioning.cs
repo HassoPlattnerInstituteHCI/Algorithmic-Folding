@@ -5,13 +5,10 @@ namespace inClassHacking{
   class Positioning{
     double[] distances= new double[5];
     public bool DEBUG = false;
-    // static double[] input = {4,4, 6, 8, 1, 1, 1, 1, 1, 1, 1, 2, 4};
 
     public Positioning(double[] distances, double[] input, bool debug=false){
       this.distances = distances;
-      // this.input = input;
-      if (debug)
-        this.DEBUG=true;
+      this.DEBUG=debug;
     }
 
     public static List<Circle> calculateCirclePositioningBeetle(bool debug =false){
@@ -36,11 +33,6 @@ namespace inClassHacking{
       circles.Insert(4, new Circle(new Point2D(s/2, circles[4].getCenter().y+circles[4].getRadius()+input[7]+input[8]+input[9]), input[9]));
       double distanceAbove = input[10]+input[11];
       circles.Insert(4, Positioning.addLastCircleRigid(circles, distanceAbove, s,debug));
-
-      for(int i=0; i<circles.Count;i++){
-        circles[i].setIndex(i);
-      }
-
       return circles;
     }
 

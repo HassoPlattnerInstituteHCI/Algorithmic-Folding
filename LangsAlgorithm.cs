@@ -17,7 +17,7 @@ namespace inClassHacking{
     List<PolygonEdge> inputEdges = new List<PolygonEdge>();
 
     public LangsAlgorithm(Tree tree, bool debug=false, bool visual=false, int zoomFactor=90){
-      tree.setLeafNodes();
+      //tree.setLeafNodes();
       this.DEBUG=debug;
       this.VISUAL=visual;
       this.zoom = zoomFactor;
@@ -25,28 +25,25 @@ namespace inClassHacking{
     public List<Crease> sweepingProcess(Tree tree, double sweepingLength){
       (List<Crease> creases, List<PolygonEdge> edges)= axialCreasesAndMarkers(tree);  // create creases and edges between the circles
       inputEdges = edges.ConvertAll(x => new PolygonEdge(x));                         // copy edges to inputEdges (without markers)
-      tree.calculateTreeDistances();                                                  // builds a matrix of all distances in the tree
+      //tree.calculateTreeDistances();                                                  // builds a matrix of all distances in the tree
       sweep(tree, creases, edges, inputEdges, sweepingLength);                        // the actual sweeping of the polygon
       return creases;
     }
     (List<Crease> cr, List<PolygonEdge> e) axialCreasesAndMarkers(Tree tree){         // create edges and creases that connect the circles
     List<Crease> creases = new List<Crease>();
     List<PolygonEdge> edges = new List<PolygonEdge>();
-    PolygonEdge newEdge;
-
-      for(int i=0; i<tree.circles.Count-1; i++){                               // add a crease and edge between all circles on the outside
-        creases.Add(new Crease(tree.circles[i].getCenter(), tree.circles[i+1].getCenter(), axialCreaseColor));
-        newEdge = new PolygonEdge(tree.circles[i].getCenter(), i, tree.circles[i+1].getCenter(), i+1);
-        edges.Add(newEdge);
-        if(tree.leafNodes[i].relatedNode != tree.leafNodes[i+1].relatedNode)
-           addMarker(newEdge, tree.leafNodes[i], tree.leafNodes[i+1]);
-      }
-      creases.Add(new Crease(tree.circles[0].getCenter(), tree.circles.Last().getCenter(), axialCreaseColor)); //connect the last circle with an edge to the first one to close the polygon
-      newEdge = new PolygonEdge(tree.circles.Last().getCenter(), tree.circles.Count-1, tree.circles[0].getCenter(), 0);
+    LeafNode node = tree.getLeafNodes().First();
+    int i=0;
+    do {
+      creases.Add(new Crease(node.circle.getCenter(), node.circle.next.getCenter(), axialCreaseColor));
+      PolygonEdge newEdge = new PolygonEdge(node, node.circle.next.node, i);
       edges.Add(newEdge);
-      if(tree.leafNodes[0].relatedNode != tree.leafNodes.Last().relatedNode)
-        addMarker(newEdge, tree.leafNodes.Last(), tree.leafNodes[0]);
-      return (creases,edges);
+      if(newEdge.n1.relatedNode != newEdge.n2.relatedNode)
+         addMarker(newEdge, newEdge.n1, newEdge.n2);
+      node = node.circle.next.node;i++;
+    }
+    while (node != tree.getLeafNodes().First());
+    return (creases,edges);
     }
 
     void addMarker(PolygonEdge edge, LeafNode node1, LeafNode node2){
@@ -92,8 +89,7 @@ namespace inClassHacking{
               if(skipOddCases(polygon,edge,secondEdge)) continue; // check for odd cases
               if(isSplitEvent(tree, edge,secondEdge,inputEdges,polygon)){ // was inputedges
                   again = false;
-                  if (DEBUG) Console.WriteLine("split between " + edge.index1 + " and " + secondEdge.index1 + " with length: \r\n" + edge.p1.getDistance(secondEdge.p1));
-                  tree.removeFromDistancesMatrix(edge,secondEdge);                        //avoid splitting same edges twice
+                  if (DEBUG) Console.WriteLine("split between " + edge.index + " and " + secondEdge.index + " with length: \r\n" + edge.p1.getDistance(secondEdge.p1));
                   creases.Add(new Crease(edge.p1, secondEdge.p1, internalCreaseColor));   // make the internal crease before splitting the actual polygon
                   (List<PolygonEdge> splitOffPoly, List<PolygonEdge> otherPoly) = splitOffPolygon(polygon, i, j);
                   sweep(tree, creases, splitOffPoly.ConvertAll(x => new PolygonEdge(x)), splitOffPoly, sweepingLength); //recursively call the main algorithm to sweep the new spin-offs for cut off
@@ -108,8 +104,10 @@ namespace inClassHacking{
       PolygonEdge edge = polygon[indexFrom];
       PolygonEdge secondEdge = polygon[indexTo];
       List<PolygonEdge> splitOffPoly = new List<PolygonEdge>(), otherPoly = new List<PolygonEdge>();
-      PolygonEdge splittingEdge = new PolygonEdge(secondEdge.p1, secondEdge.index1, edge.p1, edge.index1);  // define the splitting edge for the A side
-      PolygonEdge splittingEdgeOther = new PolygonEdge(edge.p1, edge.index1, secondEdge.p1, secondEdge.index1); // same but reversed splitting edge for the B side
+      PolygonEdge splittingEdge = new PolygonEdge(secondEdge.p1, secondEdge.index, edge.p1);  // define the splitting edge for the A side
+      splittingEdge.n1 = secondEdge.n1;
+      PolygonEdge splittingEdgeOther = new PolygonEdge(edge.p1, edge.index, secondEdge.p1); // same but reversed splitting edge for the B side
+      splittingEdgeOther.n1 = edge.n1;
       for (int k =0; k<polygon.Count;k++){                  //loop through all edges on the polygon
         PolygonEdge currentEdge = polygon[k];               // the currently selected edge
         if (k < indexFrom){                                 // copy edges from 0 to the split polygon
@@ -135,21 +133,21 @@ namespace inClassHacking{
     }
     bool isSplitEvent(Tree tree, PolygonEdge edge, PolygonEdge secondEdge, List<PolygonEdge> input, List<PolygonEdge> poly){
       double equationSolution = Int64.MaxValue;
-      if(secondEdge.vec == input[secondEdge.index1].vec && edge.vec == input[edge.index1].vec){ //vectors are still the same as originally
+      if(secondEdge.vec == input.Find(x => x.index == secondEdge.index).vec && edge.vec == input.Find(x=>x.index==edge.index).vec){ //vectors are still the same as originally
         equationSolution = solveEquation(poly,input,edge,secondEdge);
       }else{                                                                                    //the according edge was already splitted so we try the other edge of this vertex
-        PolygonEdge altSecondEdge = (secondEdge.index1!=0) ? poly[secondEdge.index1-1] : poly.Last();
-        PolygonEdge altInputEdge = (secondEdge.index1!=0) ? input[secondEdge.index1-1] : input.Last();
+        PolygonEdge altSecondEdge = (secondEdge.index!=0) ? poly[secondEdge.index-1] : poly.Last();
+        PolygonEdge altInputEdge = (secondEdge.index!=0) ? input[secondEdge.index-1] : input.Last();
         equationSolution = solveEquation(poly,input,edge,secondEdge,altInputEdge,altSecondEdge);
         }
-      return (equationSolution <= tree.distances[edge.index1, secondEdge.index1]); // if the distance on paper is smaller than the distance in the tree we need to split
+      return (equationSolution <= edge.n1.getTreeDistanceTo(secondEdge.n1));//tree.distances[edge.index, secondEdge.index]); // if the distance on paper is smaller than the distance in the tree we need to split
     }
     double solveEquation(List<PolygonEdge> poly, List<PolygonEdge> input, PolygonEdge a_, PolygonEdge c_, PolygonEdge b = null, PolygonEdge b_ = null){
       double AA_, CC_;
       Point2D A,C,A_, C_;
       PolygonEdge a, c;
-      a = input[a_.index1]; // find reference edge for a' in the original polygon
-      c = input[c_.index1]; // find reference edge for c' in the original polygon
+      a = input.Find(x => x.index == a_.index); // find reference edge for a' in the original polygon
+      c = input.Find(x => x.index == c_.index); // find reference edge for c' in the original polygon
       A = a.p1;             // A and C are the opposite corners in the original polygon
       C = c.p1;
       A_ = Geometry.findIntersection(a.vec, A, a_.vec.perpendicular(),a_.p1);   // projection of the corner of a_ on the original edge a
@@ -161,7 +159,7 @@ namespace inClassHacking{
     void sweepEdges(List<PolygonEdge> polygon, double sweepingLength){
       foreach(var edge in polygon)
         edge.parallelSweep(sweepingLength);
-      updateVerticesandMarkers(polygon);            // update vertices of polygon
+      updateVerticesandMarkers(polygon, sweepingLength);            // update vertices of polygon
     }
     void addCreases(List<Crease> creases, List<PolygonEdge> polygon, List<PolygonEdge> initialEdges){
       for(int l=0; l<polygon.Count; l++){
@@ -204,17 +202,13 @@ namespace inClassHacking{
         }
       }
     }
-    //less exciting helper methods
     bool skipOddCases(List<PolygonEdge> p, PolygonEdge e1, PolygonEdge e2){
       return ((e2==null) ||
-        (Math.Abs(e1.index1 - e2.index1) <= 1) ||
-        (e1.index1 - e2.index1 == p.Count) ||
+        (Math.Abs(e1.index - e2.index) <= 1) ||
+        (e1.index - e2.index == p.Count) ||
         (e1.vec == e2.vec));
     }
-    void insertSplitEdge(int index, List<PolygonEdge> polygon, List<PolygonEdge> splitPolygon, PolygonEdge splitEdge){
-      polygon.Insert(index,new PolygonEdge(splitEdge)); // insert a copy of the splitEdge into the polygon
-      splitPolygon.Insert(index,new PolygonEdge(splitEdge));             // add the original splitEdge to the other polygon
-    }
+
     void cloneMarkers (PolygonEdge edge1, PolygonEdge edge2){
       List<Point2D> temp = new List<Point2D>(edge2.markers);
       foreach(var marker in edge1.markers)
@@ -223,7 +217,7 @@ namespace inClassHacking{
         edge1.setMarker(marker);
     }
     void debugExport(Tree t, List<Crease> cr, string s){
-      FileHandler f = new FileHandler(DEBUG, t.getPaperSizeX(), zoom);
+      FileHandler f = new FileHandler(DEBUG, t.getPaperSize(), zoom);
       f.exportSVG(s, t, cr);
     }
     bool linedUp(List<PolygonEdge> edges){
@@ -233,16 +227,15 @@ namespace inClassHacking{
       return true;
     }
 
-    void updateVerticesandMarkers(List<PolygonEdge> edges){
+    void updateVerticesandMarkers(List<PolygonEdge> edges, double sweepingLength){
       edges[0].updateVertices(edges.Last(), edges[1]);
-      edges[0].updateMarkers();
+      edges[0].updateMarkers(sweepingLength);
       for(int i = 1; i<edges.Count-1; i++){
         edges[i].updateVertices(edges[i-1], edges[i+1]);
-        edges[i].updateMarkers();
+        edges[i].updateMarkers(sweepingLength);
       }
       edges.Last().updateVertices(edges[edges.Count-2], edges[0]);
-      edges.Last().updateMarkers();
-      //return edges;
+      edges.Last().updateMarkers(sweepingLength);
     }
 
 

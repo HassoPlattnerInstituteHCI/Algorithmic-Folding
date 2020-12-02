@@ -7,11 +7,10 @@ namespace inClassHacking
 {
     public enum Color{Red, Green, Blue, Yellow, Grey, Black, Burlywood, BlanchedAlmond};
     class FileHandler{
-      double paperSizeX, paperSizeY;
+      double paperSize;
       private bool DEBUG;
       int zoomFactor;
-      double treeDrawingOffsetX = 0;
-      double treeDrawingOffsetY = 0;
+      double treeDrawingOffset =0;
       Color circleColor = Color.Burlywood;
       Color backgroundColor = Color.BlanchedAlmond;
       List<int> drawnNodes = new List<int>();
@@ -19,8 +18,7 @@ namespace inClassHacking
         public FileHandler(bool debug, double paperSize, int zoomFactor)
         {
             DEBUG = debug;
-            this.paperSizeX = paperSize;
-            this.paperSizeY = paperSize;
+            this.paperSize = paperSize;
             this.zoomFactor = zoomFactor;
         }
 
@@ -31,7 +29,7 @@ namespace inClassHacking
             List<string> svg = new List<string>();
             SVG_init(svg);
 
-            foreach(var circle in tree.circles){
+            foreach(var circle in tree.getCircles()){
               drawCircle(svg, circle);
             }
             foreach(var crease in creases){
@@ -79,8 +77,8 @@ namespace inClassHacking
                     "xmlns=\"http://www.w3.org/2000/svg\" " +
                     "xmlns:xlink=\"http://www.w3.org/1999/xlink\" " +
                     "x=\"0px\" y=\"0px\" " +
-                    "width=\""+paperSizeX*zoomFactor+ "px\" height=\"" + paperSizeY*zoomFactor + "px\" " +
-                    "viewBox=\"0 0 "+zoomFactor*paperSizeX+" "+zoomFactor*paperSizeY+"\" " +
+                    "width=\""+paperSize*zoomFactor+ "px\" height=\"" + paperSize*zoomFactor + "px\" " +
+                    "viewBox=\"0 0 "+zoomFactor*paperSize+" "+zoomFactor*paperSize+"\" " +
                     "enable-background=\"new 0 0 3456 6912\" " +
                     "style=\"background: "+colToHex(backgroundColor) + "\" " +
                     "xml:space = \"preserve\">"
@@ -89,7 +87,7 @@ namespace inClassHacking
         }
         public void drawCircle(List<string> svg, Circle circle){
           svg.Add("<circle cx=\"" + circle.getCenter().x*zoomFactor + "\" cy=\"" + circle.getCenter().y*zoomFactor + "\" r=\""+ zoomFactor*circle.getRadius()+ "\" stroke=\"black\" stroke-width=\"3\" fill=\""+colToHex(circleColor) + "\" />");
-          svg.Add("<circle cx=\"" + ((paperSizeX-circle.getCenter().x)*zoomFactor) + "\" cy=\"" + circle.getCenter().y*zoomFactor + "\" r=\""+ zoomFactor*circle.getRadius()+ "\" stroke=\"black\" stroke-width=\"3\" fill=\""+colToHex(circleColor) + "\" />");
+          svg.Add("<circle cx=\"" + ((paperSize-circle.getCenter().x)*zoomFactor) + "\" cy=\"" + circle.getCenter().y*zoomFactor + "\" r=\""+ zoomFactor*circle.getRadius()+ "\" stroke=\"black\" stroke-width=\"3\" fill=\""+colToHex(circleColor) + "\" />");
 
           if(DEBUG) Console.WriteLine("draw circle at " + circle.getCenter().x + ", " + circle.getCenter().y + " with radius " + circle.getRadius());
         }
@@ -97,7 +95,7 @@ namespace inClassHacking
         public void drawCrease(List<string> svg, Crease crease){
           svg.Add("<line x1=\""+ crease.p1.x*zoomFactor + "\" y1=\"" + crease.p1.y*zoomFactor + "\" x2=\"" + crease.p2.x*zoomFactor + "\" y2=\"" + crease.p2.y*zoomFactor + "\" stroke=\"" + colToHex(crease.color) +  "\" style=\"stroke-width:4\" />");
 
-          svg.Add("<line x1=\""+ ((paperSizeX-crease.p1.x)*zoomFactor) + "\" y1=\"" + crease.p1.y*zoomFactor + "\" x2=\"" + ((paperSizeX-crease.p2.x)*zoomFactor) + "\" y2=\"" + crease.p2.y*zoomFactor + "\" stroke=\"" + colToHex(crease.color) +  "\" style=\"stroke-width:4\" />");
+          svg.Add("<line x1=\""+ ((paperSize-crease.p1.x)*zoomFactor) + "\" y1=\"" + crease.p1.y*zoomFactor + "\" x2=\"" + ((paperSize-crease.p2.x)*zoomFactor) + "\" y2=\"" + crease.p2.y*zoomFactor + "\" stroke=\"" + colToHex(crease.color) +  "\" style=\"stroke-width:4\" />");
         }
 
         private string colToHex(Color c)
@@ -143,20 +141,19 @@ namespace inClassHacking
 
           addNodesToDrawing(drawing, lines, startingNode, firstPosition);
 
-          treeDrawingOffsetX = -treeDrawingOffsetX+2; //offset is negative
-          treeDrawingOffsetY = -treeDrawingOffsetY+2;
-          paperSizeX = (treeDrawingOffsetX)*2;
+          treeDrawingOffset = -treeDrawingOffset+2; //offset is negative
+          paperSize = (treeDrawingOffset)*2;
           for(int i=0; i<drawing.Count; i++){
-            drawing[i].setCenter(new Point2D(drawing[i].getCenter().x+treeDrawingOffsetX, drawing[i].getCenter().y+treeDrawingOffsetY));
+            drawing[i].setCenter(new Point2D(drawing[i].getCenter().x+treeDrawingOffset, drawing[i].getCenter().y+treeDrawingOffset));
             drawCircle(svg, drawing[i]);
           }
 
           for(int i=0; i<lines.Count; i++){
             Crease line = lines[i];
-            line.p1.x += treeDrawingOffsetX;
-            line.p1.y += treeDrawingOffsetY;
-            line.p2.x += treeDrawingOffsetX;
-            line.p2.y += treeDrawingOffsetY;
+            line.p1.x += treeDrawingOffset;
+            line.p1.y += treeDrawingOffset;
+            line.p2.x += treeDrawingOffset;
+            line.p2.y += treeDrawingOffset;
             drawCrease(svg, line);
           }
           return writeFile(file,svg);
@@ -215,8 +212,8 @@ namespace inClassHacking
               }
 
               leafNodeDrawing.setCenter(drawingCenter);
-              if(drawingCenter.x < treeDrawingOffsetX) treeDrawingOffsetX = drawingCenter.x;
-              if(drawingCenter.y < treeDrawingOffsetY) treeDrawingOffsetY = drawingCenter.y;
+              if(drawingCenter.x < treeDrawingOffset) treeDrawingOffset = drawingCenter.x;
+              if(drawingCenter.y < treeDrawingOffset) treeDrawingOffset = drawingCenter.y;
 
               drawing.Add(leafNodeDrawing);
               drawnNodes.Add(leafNode.index);
