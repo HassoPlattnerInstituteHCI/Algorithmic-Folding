@@ -11,7 +11,6 @@ namespace inClassHacking
   public class Point2D
     {
         public double x, y;
-        static int PRECISION= 5;
         public Point2D(double x,double y)
         {
             this.x = x;
@@ -44,7 +43,7 @@ namespace inClassHacking
           if(object.ReferenceEquals(p2, null) && object.ReferenceEquals(p1, null))return true;
           if(object.ReferenceEquals(p1, null))return false;
           if(object.ReferenceEquals(p2, null))return false;
-          return (Math.Round(p1.x, PRECISION) == Math.Round(p2.x,PRECISION) & Math.Round(p1.y, PRECISION) == Math.Round(p2.y, PRECISION));
+          return (Math.Round(p1.x, Defaults.precision) == Math.Round(p2.x,Defaults.precision) & Math.Round(p1.y, Defaults.precision) == Math.Round(p2.y, Defaults.precision));
         }
 
         public static bool operator!=(Point2D p1, Point2D p2){
@@ -79,7 +78,6 @@ namespace inClassHacking
 
   public class Vector{
     public double x, y;
-    static int PRECISION= 5;
     public Vector(double x, double y){
       this.x = x;
       this.y = y;
@@ -122,7 +120,7 @@ namespace inClassHacking
       if(object.ReferenceEquals(v2, null) && object.ReferenceEquals(v1, null))return true;
       if(object.ReferenceEquals(v1, null))return false;
       if(object.ReferenceEquals(v2, null))return false;
-      return (Math.Round(v1.x, PRECISION) == Math.Round(v2.x,PRECISION) & Math.Round(v1.y, PRECISION) == Math.Round(v2.y, PRECISION));
+      return (Math.Round(v1.x, Defaults.precision) == Math.Round(v2.x,Defaults.precision) & Math.Round(v1.y, Defaults.precision) == Math.Round(v2.y, Defaults.precision));
     }
     public static bool operator!=(Vector v1, Vector v2){
       return !(v1==v2);
@@ -230,7 +228,6 @@ namespace inClassHacking
       this.radius = c.radius;
     }
   }
-
   public class Crease{
     public Point2D p1,p2;
     public Color color;
@@ -274,7 +271,6 @@ namespace inClassHacking
                                       aMatrix,
                                       bVector,
                                       xVector);
-
       Point2D r = p1+v1*xVector[0];
       return r;
     }

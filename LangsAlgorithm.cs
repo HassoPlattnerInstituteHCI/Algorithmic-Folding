@@ -9,10 +9,7 @@ namespace inClassHacking{
     public bool DEBUG;
     public bool VISUAL;
     public int zoom;
-    public static Color axialCreaseColor = Color.Black;
-    public static Color riverColor = Color.Blue;
-    public static Color creaseColor = Color.Red;
-    public static Color internalCreaseColor = Color.Grey;
+
     int counter=0;
     List<PolygonEdge> inputEdges = new List<PolygonEdge>();
 
@@ -35,7 +32,7 @@ namespace inClassHacking{
     LeafNode node = tree.getLeafNodes().First();
     int i=0;
     do {
-      creases.Add(new Crease(node.circle.getCenter(), node.circle.next.getCenter(), axialCreaseColor));
+      creases.Add(new Crease(node.circle.getCenter(), node.circle.next.getCenter(), Defaults.axialCreaseColor));
       PolygonEdge newEdge = new PolygonEdge(node, node.circle.next.node, i);
       edges.Add(newEdge);
       if(newEdge.n1.relatedNode != newEdge.n2.relatedNode)
@@ -90,7 +87,7 @@ namespace inClassHacking{
               if(isSplitEvent(tree, edge,secondEdge,inputEdges,polygon)){ // was inputedges
                   again = false;
                   if (DEBUG) Console.WriteLine("split between " + edge.index + " and " + secondEdge.index + " with length: \r\n" + edge.p1.getDistance(secondEdge.p1));
-                  creases.Add(new Crease(edge.p1, secondEdge.p1, internalCreaseColor));   // make the internal crease before splitting the actual polygon
+                  creases.Add(new Crease(edge.p1, secondEdge.p1, Defaults.internalCreaseColor));   // make the internal crease before splitting the actual polygon
                   (List<PolygonEdge> splitOffPoly, List<PolygonEdge> otherPoly) = splitOffPolygon(polygon, i, j);
                   sweep(tree, creases, splitOffPoly.ConvertAll(x => new PolygonEdge(x)), splitOffPoly, sweepingLength); //recursively call the main algorithm to sweep the new spin-offs for cut off
                   sweep(tree, creases, otherPoly.ConvertAll(x => new PolygonEdge(x)), otherPoly, sweepingLength); // and the same for the other side
@@ -129,7 +126,7 @@ namespace inClassHacking{
     void rabitear(List<Crease> creases, List<PolygonEdge> polygon,double sweepingLength){
       for(int z=0; z<polygon.Count-1; z++)
         if(polygon[z].getLength() > 2*sweepingLength)
-          creases.Add(new Crease(polygon[z].p1, polygon[z].p2, creaseColor));
+          creases.Add(new Crease(polygon[z].p1, polygon[z].p2, Defaults.creaseColor));
     }
     bool isSplitEvent(Tree tree, PolygonEdge edge, PolygonEdge secondEdge, List<PolygonEdge> input, List<PolygonEdge> poly){
       double equationSolution = Int64.MaxValue;
@@ -166,8 +163,8 @@ namespace inClassHacking{
           PolygonEdge edge = polygon[l];
           for(int k=0; k<edge.markers.Count; k++)
             if(!(edge.markers[k] == null))
-              insertOrExtendCrease(creases, new Crease(initialEdges[l].markers[k], edge.markers[k], riverColor));
-          insertOrExtendCrease(creases,new Crease(edge.p1, initialEdges[l].p1, creaseColor));
+              insertOrExtendCrease(creases, new Crease(initialEdges[l].markers[k], edge.markers[k], Defaults.riverColor));
+          insertOrExtendCrease(creases,new Crease(edge.p1, initialEdges[l].p1, Defaults.creaseColor));
       }
     }
     void insertOrExtendCrease(List<Crease> creases, Crease c){
@@ -237,7 +234,5 @@ namespace inClassHacking{
       edges.Last().updateVertices(edges[edges.Count-2], edges[0]);
       edges.Last().updateMarkers(sweepingLength);
     }
-
-
-}
+  }
 }
