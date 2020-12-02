@@ -150,7 +150,7 @@ namespace inClassHacking
     this.n1 = node1;
     this.n2 = node2;
   }
-  public void copy(PolygonEdge e){
+  private void copy(PolygonEdge e){
     this.p1 = e.p1;
     this.p2 = e.p2;
     this.index = e.index;
@@ -217,14 +217,18 @@ namespace inClassHacking
       this.center = center;
     }
     public Circle(Circle c){
-      new Circle (c.center,c.radius);
+      this.copy(new Circle (c.center,c.radius));
     }
     public Circle (double x, double y, double r){
-      new Circle(new Point2D(x,y),r);
+      this.copy(new Circle(new Point2D(x,y),r));
     }
     public Point2D getCenter(){ return center;}
     public void setCenter(Point2D c){this.center = c;}
     public double getRadius(){return radius;}
+    private void copy (Circle c){
+      this.center = c.center;
+      this.radius = c.radius;
+    }
   }
 
   public class Crease{
@@ -238,7 +242,7 @@ namespace inClassHacking
       this.direction = new Vector (p1,p2);
     }
     public Crease(Crease c){
-      new Crease(c.p1,c.p2,c.color);
+      copy(new Crease(c.p1,c.p2,c.color));
     }
     public bool similarDirection(Crease cr){
       return ((cr.direction.normalized() == this.direction.normalized()));
@@ -248,6 +252,11 @@ namespace inClassHacking
     }
     public bool isColinearWith(Crease cr){
       return ((cr.color == this.color) && (cr.containsPoint(this.p1) || (cr.containsPoint(this.p2)))&& cr.similarDirection(this));
+    }
+    private void copy(Crease c){
+      this.p1 = c.p1;
+      this.p2 = c.p2;
+      this.color = c.color;
     }
   }
   public class Geometry{

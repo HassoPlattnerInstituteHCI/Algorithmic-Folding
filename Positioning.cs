@@ -24,10 +24,10 @@ namespace inClassHacking{
       List<Circle> circles = new List<Circle>();
 
       // circles.Add(new Circle(new Point2D(s/2, 0), input[4]));
-      circles.Add(new Circle(new Point2D(w, 0), input[0]));
-      circles.Add(new Circle(new Point2D(0, x), input[1]));
-      circles.Add(new Circle(new Point2D(0, s-y), input[2]));
-      circles.Add(new Circle(new Point2D(z, s), input[3]));
+      circles.Add(new Circle(w, 0, input[0]));
+      circles.Add(new Circle(0, x, input[1]));
+      circles.Add(new Circle(0, s-y, input[2]));
+      circles.Add(new Circle(z, s, input[3]));
 
       circles.Add(new Circle(new Point2D(s/2, Positioning.calculate6thCirclesY(circles)), input[6]));
       circles.Insert(4, new Circle(new Point2D(s/2, circles[4].getCenter().y+circles[4].getRadius()+input[7]+input[8]+input[9]), input[9]));
