@@ -14,6 +14,7 @@ namespace inClassHacking{
       this.index = index;
       this.middle = middle;
       tree.addNode(this);
+      this.circle = new Circle(new Point2D(0, 0), 0);
     }
 
     public Node(){}
@@ -32,7 +33,10 @@ namespace inClassHacking{
       this.relatedNode = l.relatedNode;
       this.size = l.size;
     }
-
+    public void assignCircle(Circle c){
+      this.circle = c;
+      c.node = this;
+    }
     public LeafNode():base(){}
 
     public double getSize(){ return size;}
@@ -116,7 +120,7 @@ namespace inClassHacking{
               d[i, j] = leafNodes[i].getTreeDistanceTo(leafNodes[j]);
           distances = d;
       }
-      public List<Circle> calculateCirclePositioning(){
+  /*    public List<Circle> calculateCirclePositioning(){
 
         List<Circle> ret = new List<Circle>();
         Point2D startPosition = new Point2D(0, 0);
@@ -210,7 +214,7 @@ namespace inClassHacking{
           if(ret[i].getCenter().y > maxY) maxY = ret[i].getCenter().y;
         }
         return ret;
-      }
+      }*/
 
       public double getPaperSizeX(){
         if (DEBUG)
@@ -225,18 +229,12 @@ namespace inClassHacking{
       public List<Circle> exampleBeetleCircles(){
 
         List<LeafNode> nodes = new List<LeafNode>();
-        // List<InteriorNode> inNodes = new List<InteriorNode>();
-        // int i=0;
 
         foreach(var n in this.treeNodes){
           if(n.GetType() == typeof(LeafNode)){
               LeafNode Lnode = (LeafNode) n;
-              // i++;
               nodes.Add(Lnode);
               Lnode.circle = new Circle(new Point2D(0, 0), 0);
-            }else{
-              // InteriorNode Inode = (InteriorNode) n;
-              // inNodes.Add(Inode);
             }
         }
 
@@ -284,6 +282,40 @@ namespace inClassHacking{
         tree.circles = tree.exampleBeetleCircles();
         return tree;
       }
+      public static Tree simpleThreeNodes(){
+        Console.WriteLine("loading the threenodes");
+        Tree tree = new Tree();
+        int id = 0;
+        InteriorNode inNode1 = new InteriorNode(id, tree);
+        LeafNode upperMid = new LeafNode(++id, 10, inNode1, tree, true);
+        LeafNode upperLeft = new LeafNode(++id, 10, inNode1, tree);
+        LeafNode lowerMid = new LeafNode(++id, 10, inNode1, tree, true);
+        tree.drawingOffsetX = 50;
+        tree.drawingOffsetY = 50;
+        tree.circles = tree.simpleThreeCircles();
+        FileHandler f = new FileHandler(true, tree.getPaperSizeX(), 30);
+        f.exportSVG("tree.svg", tree);
+        return tree;
+      }
+      public List<Circle> simpleThreeCircles(){
+        List<LeafNode> nodes = new List<LeafNode>();
+        foreach(var n in this.treeNodes){
+          if(n.GetType() == typeof(LeafNode)){
+              LeafNode Lnode = (LeafNode) n;
+              nodes.Add(Lnode);
+              Lnode.circle = new Circle(new Point2D(0, 0), 0);
+            }
+        }
+        List<Circle> threeCircles = new List<Circle>();
+        threeCircles.Add(new Circle(new Point2D(20,0), 10));
+        threeCircles.Add(new Circle(new Point2D(0,0), 10));
+        threeCircles.Add(new Circle(new Point2D(10,18), 10));
+
+        for(int i=0; i<threeCircles.Count(); i++)
+          threeCircles[i].node = nodes[i];
+        return threeCircles;
+      }
+
       public static Tree exampleLongAntennaTree(){
         Console.WriteLine("loading a beetle with long antennas");
         Tree tree = new Tree();

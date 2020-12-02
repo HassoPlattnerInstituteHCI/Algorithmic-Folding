@@ -137,7 +137,7 @@ namespace inClassHacking{
       double equationSolution = Int64.MaxValue;
       if(secondEdge.vec == input[secondEdge.index1].vec && edge.vec == input[edge.index1].vec){ //vectors are still the same as originally
         equationSolution = solveEquation(poly,input,edge,secondEdge);
-      }else{ //the according edge was already splitted so we try the other edge of this vertex
+      }else{                                                                                    //the according edge was already splitted so we try the other edge of this vertex
         PolygonEdge altSecondEdge = (secondEdge.index1!=0) ? poly[secondEdge.index1-1] : poly.Last();
         PolygonEdge altInputEdge = (secondEdge.index1!=0) ? input[secondEdge.index1-1] : input.Last();
         equationSolution = solveEquation(poly,input,edge,secondEdge,altInputEdge,altSecondEdge);
