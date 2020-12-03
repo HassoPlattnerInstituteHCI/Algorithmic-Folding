@@ -14,7 +14,6 @@ namespace inClassHacking{
     List<PolygonEdge> inputEdges = new List<PolygonEdge>();
 
     public LangsAlgorithm(Tree tree, bool debug=false, bool visual=false, int zoomFactor=90){
-      //tree.setLeafNodes();
       this.DEBUG=debug;
       this.VISUAL=visual;
       this.zoom = zoomFactor;
@@ -29,6 +28,7 @@ namespace inClassHacking{
     (List<Crease> cr, List<PolygonEdge> e) axialCreasesAndMarkers(Tree tree){         // create edges and creases that connect the circles
     List<Crease> creases = new List<Crease>();
     List<PolygonEdge> edges = new List<PolygonEdge>();
+
     LeafNode node = tree.getLeafNodes().First();
     int i=0;
     do {
@@ -40,6 +40,7 @@ namespace inClassHacking{
       node = node.circle.next.node;i++;
     }
     while (node != tree.getLeafNodes().First());
+    Console.WriteLine("edges.count = {0} and leafNodes.count = {1}",edges.Count,tree.getLeafNodes().Count);
     return (creases,edges);
     }
 

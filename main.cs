@@ -13,21 +13,23 @@ namespace inClassHacking{
     public static double sweepingLength = 0.01;
     public static void Main (string[] args) {
       clearExportFolder();
-      Tree tree = new Tree();
+      List<Tree> langPolygons = new List<Tree>();
       if (!parseArgs(args))
         return;                                                   // wrong arguments, close program
       switch (demoModel){
-        case 0:{  tree = Tree.exampleBeetleTree();break;}         // beetle
-        case 1:{  tree = Tree.exampleLongAntennaTree();break;}    // antenna beetle
-        case 2:{  tree = Tree.exampleLizardTree();break;}         // lizard
-        case 3:{  tree = Tree.simpleThreeNodes();break;}
+        case 0:{  langPolygons = Tree.exampleBeetleTree();break;}         // beetle
+        case 1:{  langPolygons = Tree.exampleLongAntennaTree();break;}    // antenna beetle
+        case 2:{  langPolygons = Tree.exampleLizardTree();break;}         // lizard
+        case 3:{  langPolygons = Tree.simpleThreeNodes();break;}
         default:{Console.WriteLine("undefined model"); return;}
       }
+      foreach(Tree tree in langPolygons){
       LangsAlgorithm lang = new LangsAlgorithm(tree,DEBUG, VISUAL,zoomFactor);
       List<Crease> creases = lang.sweepingProcess(tree, sweepingLength);
       FileHandler f = new FileHandler(DEBUG, tree.getPaperSize(), zoomFactor);
       if (f.exportSVG("export.svg", tree, creases))
         Console.WriteLine("exported SVG");
+      }
     }
     public static void clearExportFolder(){
       System.IO.DirectoryInfo di = new DirectoryInfo("export");
