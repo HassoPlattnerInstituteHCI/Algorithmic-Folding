@@ -134,6 +134,7 @@ namespace inClassHacking
   public int index;
   public Vector vec;
   public LeafNode n1, n2;
+  public PolygonEdge left,right;
   public List<Point2D> markers; //represent inner nodes of the tree on the polygon's edges
 
   public PolygonEdge(Point2D p1, int index, Point2D p2){ //Edge from p1 to p2, which are positions of two leaf nodes (circle's center)
@@ -142,6 +143,19 @@ namespace inClassHacking
     this.index = index;
     this.markers = new List<Point2D>();
     this.vec = new Vector(p1, p2).normalized();
+    this.left = null;
+    this.right = null;
+  }
+  public PolygonEdge(Point2D p1, PolygonEdge e, Point2D p2){ //Edge from p1 to p2, which are positions of two leaf nodes (circle's center)
+    this.p1 = p1;
+    this.p2 = p2;
+    this.index = e.index;
+    this.n1 = e.n1;
+    this.n2 = e.n2;
+    this.markers = new List<Point2D>();
+    this.vec = new Vector(p1, p2).normalized();
+    this.left = null;
+    this.right = null;
   }
   public PolygonEdge(LeafNode node1, LeafNode node2, int index){ //Edge from p1 to p2, which are positions of two leaf nodes (circle's center)
     copy(new PolygonEdge(node1.circle.getCenter(), index, node2.circle.getCenter()));
@@ -162,6 +176,8 @@ namespace inClassHacking
     this.vec = e.vec;
     this.n1 = e.n1;
     this.n2 = e.n2;
+    this.left = e.left;
+    this.right = e.right;
     this.markers = new List<Point2D>(e.markers);
   }
   public double getLength(){
@@ -180,14 +196,14 @@ namespace inClassHacking
       if(!(markers[i] == null))
         markers[i] += vec.perpendicular()*length;
   }
-
-  public void updateVertices(PolygonEdge left, PolygonEdge right){
+  public void removeOverlap(PolygonEdge left, PolygonEdge right, double sweepingLength){
     if( (right.vec != this.vec) && (right.vec!= this.vec.getReverse())){
       this.p2 = Geometry.findIntersection(right.vec.getReverse(), right.p2, this.vec, this.p1);
     }
     if( (left.vec != this.vec) && (left.vec != this.vec.getReverse())){
       this.p1 = Geometry.findIntersection(left.vec, left.p1, this.vec.getReverse(), this.p2);
     }
+    updateMarkers(sweepingLength);
   }
   public void updateMarkers(double epsilon){
     for(int i=0; i<this.markers.Count; i++){

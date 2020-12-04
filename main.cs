@@ -23,13 +23,14 @@ namespace inClassHacking{
         case 3:{  langPolygons = Tree.simpleThreeNodes();break;}
         default:{Console.WriteLine("undefined model"); return;}
       }
+      List<List<Crease>> creases = new List<List<Crease>>();
       foreach(Tree tree in langPolygons){
-      LangsAlgorithm lang = new LangsAlgorithm(tree,DEBUG, VISUAL,zoomFactor);
-      List<Crease> creases = lang.sweepingProcess(tree, sweepingLength);
-      FileHandler f = new FileHandler(DEBUG, tree.getPaperSize(), zoomFactor);
-      if (f.exportSVG("export.svg", tree, creases))
-        Console.WriteLine("exported SVG");
+        LangsAlgorithm lang = new LangsAlgorithm(tree,DEBUG, VISUAL,zoomFactor);
+        creases.Add(lang.sweepingProcess(tree, sweepingLength));
       }
+      FileHandler f = new FileHandler(DEBUG, langPolygons, zoomFactor);
+      if (f.exportSVG("export.svg", langPolygons, creases))
+        Console.WriteLine("exported SVG");
     }
     public static void clearExportFolder(){
       System.IO.DirectoryInfo di = new DirectoryInfo("export");

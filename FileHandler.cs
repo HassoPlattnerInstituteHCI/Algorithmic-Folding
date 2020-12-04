@@ -12,23 +12,32 @@ namespace inClassHacking
       int zoomFactor;
 
       List<int> drawnNodes = new List<int>();
-
+      public FileHandler(bool debug, List<Tree> trees, int zoomFactor)
+      {
+          DEBUG = debug;
+          this.paperSize = trees.First().getPaperSize();
+          //foreach(Tree tree in trees)
+          //  this.paperSize = (this.paperSize < tree.getPaperSize())?tree.getPaperSize():this.paperSize;
+          this.zoomFactor = zoomFactor;
+      }
         public FileHandler(bool debug, double paperSize, int zoomFactor)
         {
             DEBUG = debug;
             this.paperSize = paperSize;
             this.zoomFactor = zoomFactor;
         }
-
-        public bool exportSVG(string filename, Tree tree, List<Crease> creases = null)
+        public bool exportSVG(string filename, List<Tree> trees, List<List<Crease>> creases = null)
         {
-            creases = creases ?? new List<Crease>();
+            creases = creases ?? new List<List<Crease>>();
             List<string> svg = new List<string>();
             SVG_init(svg);
-            foreach(var circle in tree.getCircles())
-              drawCircle(svg, circle);
-            foreach(var crease in creases)
-              drawCrease(svg, crease);
+            int i =0;
+            foreach (Tree tree in trees)
+              foreach(var circle in tree.getCircles())
+                drawCircle(svg, circle, tree.mirrored);
+            foreach (Tree tree in trees)
+              foreach(var crease in creases[i++])
+                drawCrease(svg, crease, tree.mirrored);
             return writeFile(filename,svg);
         }
         public void SVG_ending (List<string> svg)
@@ -57,14 +66,14 @@ namespace inClassHacking
                    );
             return svg;
         }
-        public void drawCircle(List<string> svg, Circle circle){
+        public void drawCircle(List<string> svg, Circle circle, bool mirrored=false){
           svg.Add("<circle cx=\"" + circle.getCenter().x*zoomFactor + "\" cy=\"" + circle.getCenter().y*zoomFactor + "\" r=\""+ zoomFactor*circle.node.size+ "\" stroke=\"black\" stroke-width=\"3\" fill=\""+colToHex(Defaults.circleColor) + "\" />");
-          //svg.Add("<circle cx=\"" + ((paperSize-circle.getCenter().x)*zoomFactor) + "\" cy=\"" + circle.getCenter().y*zoomFactor + "\" r=\""+ zoomFactor*circle.getRadius()+ "\" stroke=\"black\" stroke-width=\"3\" fill=\""+colToHex(Defaults.circleColor) + "\" />");
+          if(mirrored) svg.Add("<circle cx=\"" + ((paperSize-circle.getCenter().x)*zoomFactor) + "\" cy=\"" + circle.getCenter().y*zoomFactor + "\" r=\""+ zoomFactor*circle.getRadius()+ "\" stroke=\"black\" stroke-width=\"3\" fill=\""+colToHex(Defaults.circleColor) + "\" />");
           if(DEBUG) Console.WriteLine("draw circle at " + circle.getCenter().x + ", " + circle.getCenter().y + " with radius " + circle.node.size);
         }
-        public void drawCrease(List<string> svg, Crease crease){
+        public void drawCrease(List<string> svg, Crease crease, bool mirrored=false){
           svg.Add("<line x1=\""+ crease.p1.x*zoomFactor + "\" y1=\"" + crease.p1.y*zoomFactor + "\" x2=\"" + crease.p2.x*zoomFactor + "\" y2=\"" + crease.p2.y*zoomFactor + "\" stroke=\"" + colToHex(crease.color) +  "\" style=\"stroke-width:4\" />");
-          //svg.Add("<line x1=\""+ ((paperSize-crease.p1.x)*zoomFactor) + "\" y1=\"" + crease.p1.y*zoomFactor + "\" x2=\"" + ((paperSize-crease.p2.x)*zoomFactor) + "\" y2=\"" + crease.p2.y*zoomFactor + "\" stroke=\"" + colToHex(crease.color) +  "\" style=\"stroke-width:4\" />");
+          if(mirrored)svg.Add("<line x1=\""+ ((paperSize-crease.p1.x)*zoomFactor) + "\" y1=\"" + crease.p1.y*zoomFactor + "\" x2=\"" + ((paperSize-crease.p2.x)*zoomFactor) + "\" y2=\"" + crease.p2.y*zoomFactor + "\" stroke=\"" + colToHex(crease.color) +  "\" style=\"stroke-width:4\" />");
         }
         private string colToHex(Color c)
         {   string hex = "";
