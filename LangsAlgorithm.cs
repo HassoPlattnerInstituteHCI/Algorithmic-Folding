@@ -72,32 +72,27 @@ namespace inClassHacking{
     }
 
     public void sweep(Tree tree, List<Crease> creases, List<PolygonEdge> polygon, List<PolygonEdge> initialEdges, double sweepingLength){
-      bool again = true;
-      while(again){
-        sweepEdges(polygon.First(), sweepingLength);                      // sweep every edge by sweepingLength
-        addCreases(creases, polygon, initialEdges);                       // add all new creases
+      while(true){
+        shrinkPolygon(polygon.First(), sweepingLength);                      // sweep every edge by sweepingLength
+        addCreases(creases, polygon, initialEdges);                          // add all new creases
         if (VISUAL) debugExport(tree,creases,"snapshot"+counter+".svg");counter++;
         for(int i=0; i<polygon.Count; i++){                               // iterate over all edges in the polygon
           PolygonEdge edge = polygon[i];                                  // take the current edge
           if(edge.getLength() < 2*sweepingLength)                         // contraction event (next iteration we would have 0 length)
-            { polygon.Remove(edge);                                         // take the edge out of the polygon
-              removeEdge(edge);
-            }
+            { polygon.Remove(edge); removeEdge(edge); }                   // take the edge out of the polygon
           if(polygon.Count< 3){                                            // rabit ear molecule, close in with triangular crease
-            rabitear(creases,polygon,sweepingLength);
-            return;
-          }
+            rabitear(creases,polygon,sweepingLength); return;}
           if(polygon.Count > 3){                                          // no contractions found, check for splitting events
             for(int j=i; j<polygon.Count; j++){                           // compare to all other edges in the polygon
               PolygonEdge secondEdge = polygon[j];                        // the other edge to check for splitting
-              if(skipOddCases(polygon,edge,secondEdge,i,j)) continue;     // check for odd cases
+              if(skipOddCases(polygon,edge,secondEdge)) continue;     // check for odd cases
               if(isSplitEvent(tree, edge,secondEdge,inputEdges,polygon)){ // was inputedges
-                  again = false;
                   if (DEBUG) Console.WriteLine("split between " + edge.index + " and " + secondEdge.index + " with length: \r\n" + edge.p1.getDistance(secondEdge.p1));
                   creases.Add(new Crease(edge.p1, secondEdge.p1, Defaults.internalCreaseColor));   // make the internal crease before splitting the actual polygon
                   (List<PolygonEdge> splitOffPoly, List<PolygonEdge> otherPoly) = splitOffPolygon(polygon, i, j);
                   sweep(tree, creases, splitOffPoly,splitOffPoly.ConvertAll(x => new PolygonEdge(x)), sweepingLength); //recursively call the main algorithm to sweep the new spin-offs for cut off
                   sweep(tree, creases, otherPoly, otherPoly.ConvertAll(x => new PolygonEdge(x)), sweepingLength); // and the same for the other side
+                  return;
               }
             }
           }
@@ -236,12 +231,12 @@ namespace inClassHacking{
         }
       }
     }
-    bool skipOddCases(List<PolygonEdge> p, PolygonEdge e1, PolygonEdge e2, int i, int j){
+    bool skipOddCases(List<PolygonEdge> p, PolygonEdge e1, PolygonEdge e2){
       return ((e2==null) ||
         (Math.Abs(e1.index - e2.index) <= 1) ||
         (e1.index - e2.index == p.Count) ||
         (e1.vec == e2.vec)||
-        (i==0 && j==p.Count-1));
+        (p.First()==e1 && p.Last()==e2));
     }
 
     void cloneMarkers (PolygonEdge edge1, PolygonEdge edge2){
@@ -255,7 +250,7 @@ namespace inClassHacking{
       FileHandler f = new FileHandler(DEBUG, t.getPaperSize(), zoom);
       f.exportSVG(s, new List<Tree>(){t}, new List<List<Crease>>(){cr});
     }
-    void sweepEdges(PolygonEdge current, double sweepingLength){
+    void shrinkPolygon(PolygonEdge current, double sweepingLength){
       int index = current.index;
       do{
         current.parallelSweep(sweepingLength);                            // sweep the edges parallel inwards

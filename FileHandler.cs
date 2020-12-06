@@ -16,8 +16,6 @@ namespace inClassHacking
       {
           DEBUG = debug;
           this.paperSize = trees.First().getPaperSize();
-          //foreach(Tree tree in trees)
-          //  this.paperSize = (this.paperSize < tree.getPaperSize())?tree.getPaperSize():this.paperSize;
           this.zoomFactor = zoomFactor;
       }
         public FileHandler(bool debug, double paperSize, int zoomFactor)

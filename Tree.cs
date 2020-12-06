@@ -238,7 +238,7 @@ namespace inClassHacking{
         Console.WriteLine("loading a lizard");
         List<Tree> langPolygons = new List<Tree>();
         langPolygons.Add(parallelogramLizard());
-        langPolygons.Add(parallelogramLizard(true));
+        //langPolygons.Add(parallelogramLizard(true));
         return langPolygons;
       }
       public static List<double> shiftX(List<double> data, double x){
@@ -276,6 +276,7 @@ namespace inClassHacking{
         iNodes[0].addInteriorNode(iNodes[1],scaled);
         tree.setDrawingOffset(circles);
         tree.assignCircleOrder(circles);
+        tree.mirrored=true;
         return tree;
       }
     }

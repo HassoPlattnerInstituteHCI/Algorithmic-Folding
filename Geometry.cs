@@ -1,5 +1,4 @@
 using System;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
@@ -282,8 +281,7 @@ namespace inClassHacking
       SparseArray<int, double> xVector = new SparseArray<int, double>();
       int numberOfEquations = 2;
       // Solve the simultaneous equations.
-      LinearEquationSolverStatus solverStatus =
-          LinearEquationSolver.Solve(numberOfEquations,
+      LinearEquationSolver.Solve(numberOfEquations,
                                       aMatrix,
                                       bVector,
                                       xVector);
