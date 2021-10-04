@@ -92,7 +92,7 @@ class SteepestEdgeUnfolder:
 
 #     const startPlate = plates[0];
 #     for (let i = 1; i < plates.length; i++) remainingPlates.add(plates[i]);
-    remaining_plates.update(set(plates[1:]))
+    remaining_plates.update(plates[1:])
 
     # start at one plate and try to create an unfolding based on the remaining joints by doing something like DFS
 
