@@ -69,6 +69,15 @@ def bfs(mesh, start_face):
 
 
 bfs(mesh, fh0)
-# for fh in get_adjacent_faces(fh0):
-#     print(fh.idx())
 
+# TODO model polygon cube
+
+# TODO dfs
+# TODO steepest edge
+# TODO overlap checking
+# TODO polygon 3D to local 2D coordinats
+# TODO align polygons in 2D
+# TODO output visualization
+
+# maybe TODO SVG export 
+# maybe TODO kyub import
