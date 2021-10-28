@@ -8,6 +8,7 @@ The code base for the Algorithmic Folding class (Winter Term 2020/21). **Each le
 4. Describe what was done and why, but not how
 
 ## How to Run
+// TODO adapt this for python
 Import this branch into a [repl.it](repl.it) Typescript project. You can import directly with a premium account, or you can download the repository first and then upload the files to the project. The "main file" is `index.ts`.
 
 ## How to Import Models
