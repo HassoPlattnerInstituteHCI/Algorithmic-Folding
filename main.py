@@ -45,36 +45,49 @@ def is_polygon_overlapping(polygon_a, polygon_b):
 	return Polygon(polygon_a).intersects(Polygon(polygon_b))
 
 # TODO polygon 3D to local 2D coordinats
-def get_2D_polygon(mesh, face):
+def get_world_to_face_plane_mapping_fn(mesh, face):
 	# this works by rotating the face such that the face normal vector matches the z-axis
 	# https://math.stackexchange.com/questions/1956699/getting-a-transformation-matrix-from-a-normal-vector
-	face_normal = mesh.normal(face)
-	polygon_points_3d = [mesh.point(vertex_handle) for vertex_handle in get_vertecies_by_face(mesh, face)]
-
-	nx, ny, nz = face_normal
+	nx, ny, nz = mesh.normal(face)
 
 	if nx == 0.0 and ny == 0.0:
 		# nothing to do: points are already parallel to xy-plane
-		return [point[0:2] for point in polygon_points_3d]
+		transform_matrix = np.array([
+			[1,0,0],
+			[0,1,0]
+		])
+	else:
+		transform_matrix = np.array([
+			[ny / sqrt(nx**2+ny**2), -nx / sqrt(nx**2 + ny**2), 0],
+			[nx * ny / sqrt(nx**2+ny**2), ny * nz / sqrt(nx**2 + ny**2), -sqrt(nx**2 + ny**2)]
+		])
 
-	rotation_matrix = np.array([
-		[ny / sqrt(nx**2+ny**2), -nx / sqrt(nx**2 + ny**2), 0],
-		[nx * ny / sqrt(nx**2+ny**2), ny * nz / sqrt(nx**2 + ny**2), -sqrt(nx**2 + ny**2)], 
-		[nx, ny, nz]
-	])
-
-	return [rotation_matrix.dot(point)[0:2] for point in polygon_points_3d]
-
-
-polygon = get_2D_polygon(mesh, fh0)
-
-polygon2 = get_2D_polygon(mesh, fh1)
+	return lambda point: transform_matrix.dot(point)
 
 
-print(polygon)
-print(polygon2)
 
-print(is_polygon_overlapping(polygon, polygon2))
+
+
+
+print(bfs(mesh, mesh.face_handle(0)))
+
+import drawSvg as draw
+
+d = draw.Drawing(200, 100, origin='center', displayInline=False)
+
+
+for face in mesh.faces():
+	convert_to_2d = get_world_to_face_plane_mapping_fn(mesh, face)	
+	# Draw an irregular polygon
+	line = [convert_to_2d(mesh.point(vertex)) for vertex in get_vertecies_by_face(mesh, face)]
+	d.append(draw.Lines(*np.array(line).flatten(), closed=True,
+	            fill='#eeee00',
+	            stroke='black'))
+
+
+d.saveSvg('example.svg')
+# print(is_polygon_overlapping(polygon, polygon2))
+
 # TODO align polygons in 2D
 
 # TODO output visualization
