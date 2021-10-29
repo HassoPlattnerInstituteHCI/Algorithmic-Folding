@@ -33,33 +33,13 @@ def bfs(mesh, start_face):
 	
 	return tour
 
-		print(current_face.idx())
-		# print(visited_faces)
-		# print(list(queue.items))
-
-
-def dfs(mesh, start_face):
-	visited_faces = set()
-	visited_faces.add(start_face.idx())
-	current_face = start_face	
-
-	while len(visited_faces) < len(mesh.faces()):
-		for adjacent_face in get_adjacent_faces(mesh, current_face):
-			if adjacent_face.idx() not in visited_faces:
-				visited_faces.add(adjacent_face.idx())
-				queue.put(adjacent_face)
-
-		print(current_face.idx())
-		# print(visited_faces)
-		# print(list(queue.items))
-
-# bfs(mesh, fh0)
 
 # TODO model polygon cube
 
 # TODO dfs
 # TODO steepest edge
-# TODO overlap checking
+
+
 def is_polygon_overlapping(polygon_a, polygon_b):
 	from shapely.geometry import Polygon
 	return Polygon(polygon_a).intersects(Polygon(polygon_b))
