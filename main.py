@@ -11,7 +11,7 @@ mesh = om.PolyMesh()
 # add a a couple of vertices to the mesh
 vh0 = mesh.add_vertex([0, 1, 1])
 vh1 = mesh.add_vertex([1, 0, 1])
-vh2 = mesh.add_vertex([2, 1, 2])
+vh2 = mesh.add_vertex([2, 1, 1])
 vh3 = mesh.add_vertex([0,-1, 1])
 vh4 = mesh.add_vertex([2,-1, 1])
 
@@ -93,6 +93,10 @@ def dfs(mesh, start_face):
 # TODO dfs
 # TODO steepest edge
 # TODO overlap checking
+def is_polygon_overlapping(polygon_a, polygon_b):
+	from shapely.geometry import Polygon
+	return Polygon(polygon_a).intersects(Polygon(polygon_b))
+
 # TODO polygon 3D to local 2D coordinats
 def get_2D_polygon(mesh, face):
 	# this works by rotating the face such that the face normal vector matches the z-axis
@@ -103,20 +107,29 @@ def get_2D_polygon(mesh, face):
 	nx, ny, nz = face_normal
 
 	if nx == 0.0 and ny == 0.0:
-		# points are already parallel to xy-plane. we just move them to z=0.
-		return [np.array([point[0], point[2], 0.0]) for point in polygon_points_3d]
+		# nothing to do: points are already parallel to xy-plane
+		return [point[0:2] for point in polygon_points_3d]
 
 	rotation_matrix = np.array([
 		[ny / sqrt(nx**2+ny**2), -nx / sqrt(nx**2 + ny**2), 0],
 		[nx * ny / sqrt(nx**2+ny**2), ny * nz / sqrt(nx**2 + ny**2), -sqrt(nx**2 + ny**2)], 
 		[nx, ny, nz]
 	])
-	
-	return [rotation_matrix.dot(point) for point in polygon_points_3d]
+
+	return [rotation_matrix.dot(point)[0:2] for point in polygon_points_3d]
 
 
-print(get_2D_polygon(mesh, fh0))
+polygon = get_2D_polygon(mesh, fh0)
+
+polygon2 = get_2D_polygon(mesh, fh1)
+
+
+print(polygon)
+print(polygon2)
+
+print(is_polygon_overlapping(polygon, polygon2))
 # TODO align polygons in 2D
+
 # TODO output visualization
 
 # maybe TODO SVG export 
