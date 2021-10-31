@@ -11,7 +11,7 @@ from collections import defaultdict
 
 import drawSvg as draw
 
-mesh = om.read_trimesh('stanford_bunny.stl')
+mesh = om.read_trimesh('cube.ply')
 mesh.update_normals()
 
 # making it easier to read the OpenMesh API
@@ -54,7 +54,6 @@ def get_2d_projection(mesh, face):
 	source https://math.stackexchange.com/questions/1956699/getting-a-transformation-matrix-from-a-normal-vector
 	"""
 	nx, ny, nz = mesh.normal(face)
-
 	if nx == 0.0 and ny == 0.0:
 		# nothing to do: points are already parallel to xy-plane: matrix just gets rid of z-values
 		return np.array([
@@ -83,7 +82,7 @@ def unfold(mesh, spanning_tree):
 	root = spanning_tree[-1][0]
 	polygons = []
 
-	def get_mapping(node, parent):
+	def get_unfolding_coordinate_mapping(node, parent):
 		crease_halfedge = get_edge_between_faces(mesh,  mesh.face_handle(node),  mesh.face_handle(parent))
 		crease_angle = mesh.calc_dihedral_angle(crease_halfedge)
 		crease_vector = mesh.calc_edge_vector(crease_halfedge)
@@ -101,19 +100,27 @@ def unfold(mesh, spanning_tree):
 		for child in spanning_tree[node]:
 			# add a new mapping function to the 'stack' that maps the child's coordinate system to the parent's
 			# coordinate system. (which in turn will be handed of to the rest of the function stack to end up with the final coordinates)
-			new_mapping = lambda points: mapping_fn(get_mapping(child, node)(points))
-			unfolder_recursive_call(child, new_mapping)
+			new_mapping = get_unfolding_coordinate_mapping(child, node)
+			unfolder_recursive_call(child, lambda points: mapping_fn(new_mapping(points)))
 
 	map_to_2d = lambda points: get_2d_projection(mesh, mesh.face_handle(root)).dot(points)
 	unfolder_recursive_call(root, map_to_2d)
 
 	return polygons
 
+def is_result_overlapping(polygons):
+	for i in range(len(polygons)):
+		for j in range(i+1, len(polygons)):
+			if is_polygon_overlapping(polygons[i], polygons[j]):
+				return True
+	return False
 
 spanning_tree = bfs(mesh, mesh.face_handle(0))
-print(unfold(mesh, spanning_tree))
+polygons = unfold(mesh, spanning_tree)
+print(polygons)
+print(is_result_overlapping(polygons))
 
-for polygon in unfold(mesh, spanning_tree):
+for polygon in polygons:
 	# polygon = [coords[0:2] for coords in polygon]
 	d.append(draw.Lines(*np.array(polygon).flatten(), closed=True,
 	            fill='#eeee00'))
