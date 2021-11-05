@@ -11,7 +11,17 @@ from collections import defaultdict
 
 import drawSvg as draw
 
-mesh = om.read_trimesh('cube.ply')
+def set_visited(mesh, face):
+	mesh.set_face_property("visited", face, True)
+
+def is_visited(mesh, face):
+	return mesh.face_property("visited", face) == True
+
+def clear_visited(mesh):
+	for face in mesh.faces():
+		mesh.set_face_property("visited", face, False)
+
+mesh = om.read_trimesh('cube1.ply')
 mesh.update_normals()
 
 # making it easier to read the OpenMesh API
@@ -19,28 +29,41 @@ get_adjacent_faces = lambda mesh, face: mesh.ff(face)
 get_vertecies_by_face = lambda mesh, face: mesh.fv(face)
 
 
+class Tree:
+	adjacency_lists = defaultdict(list)
+
+	def get_root(self):
+		return self.adjacency_lists[-1]
+
+	def set_root(self, node):
+		self.adjacency_lists[-1] = node
+
+	def insert(self, node_id, parent_id):
+		spanning_tree[parent_id].append(node_id)
+
+	def get_children(self, node_id):
+		return self.adjacency_lists[node_id]
+
 d = draw.Drawing(10, 10, origin='center', displayInline=False)
 
+
 def bfs(mesh, start_face):
-	visited_faces = set()
 	queue = SimpleQueue()
-	
-	spanning_tree = defaultdict(list)
-	insert_to_spanningtree = lambda node_id, parent_id: spanning_tree[parent_id].append(node_id)
+	spanning_tree = Tree()
+	clear_visited(mesh)
 	
 	queue.put(start_face)
-	visited_faces.add(start_face.idx())
-	# -1 is pointer for root
-	insert_to_spanningtree(node_id=start_face.idx(), parent_id=-1)
+	set_visited(mesh, start_face)
+	spanning_tree.set_root(start_face)
 
 	while not queue.empty():
 		current_face = queue.get()
 
 		for adjacent_face in get_adjacent_faces(mesh, current_face):
-			if adjacent_face.idx() not in visited_faces:
+			if is_visited(mesh, adjacent_face):
 				queue.put(adjacent_face)
-				visited_faces.add(adjacent_face.idx())
-				insert_to_spanningtree(node_id=adjacent_face.idx(), parent_id=current_face.idx())
+				set_visited(mesh, adjacent_face)
+				spanning_tree.insert(node_id=adjacent_face.idx(), parent_id=current_face.idx())
 
 	return spanning_tree
 
@@ -73,19 +96,17 @@ def get_edge_between_faces(mesh, face_a, face_b):
 	raise Error("there is no edge between these two faces")
 
 def get_rotation_matrix(axis, angle):
-	# TODO make this work with off-center axis
 	from scipy.spatial.transform import Rotation
 	return Rotation.from_rotvec(axis/np.linalg.norm(axis) * angle).as_matrix()
 
-
 def unfold(mesh, spanning_tree):
-	root = spanning_tree[-1][0]
 	polygons = []
 
 	def get_unfolding_coordinate_mapping(node, parent):
 		crease_halfedge = get_edge_between_faces(mesh,  mesh.face_handle(node),  mesh.face_handle(parent))
 		crease_angle = mesh.calc_dihedral_angle(crease_halfedge)
 		crease_vector = mesh.calc_edge_vector(crease_halfedge)
+	
 		
 		# offset is introduces, since rotation is not occuring around the origin but along crease line
 		offset = mesh.point(mesh.from_vertex_handle(crease_halfedge))
@@ -97,14 +118,14 @@ def unfold(mesh, spanning_tree):
 		# apply previous coordinate mapping function and store polygon
 		polygons.append([mapping_fn(point_3d) for point_3d in polygon_3d])
 
-		for child in spanning_tree[node]:
+		for child in spanning_tree.get_children(node):
 			# add a new mapping function to the 'stack' that maps the child's coordinate system to the parent's
 			# coordinate system. (which in turn will be handed of to the rest of the function stack to end up with the final coordinates)
 			new_mapping = get_unfolding_coordinate_mapping(child, node)
 			unfolder_recursive_call(child, lambda points: mapping_fn(new_mapping(points)))
 
-	map_to_2d = lambda points: get_2d_projection(mesh, mesh.face_handle(root)).dot(points)
-	unfolder_recursive_call(root, map_to_2d)
+	map_to_2d = lambda points: get_2d_projection(mesh, mesh.face_handle(spanning_tree.get_root())).dot(points)
+	unfolder_recursive_call(spanning_tree.get_root(), map_to_2d)
 
 	return polygons
 
@@ -116,6 +137,7 @@ def is_result_overlapping(polygons):
 	return False
 
 spanning_tree = bfs(mesh, mesh.face_handle(0))
+print(spanning_tree)
 polygons = unfold(mesh, spanning_tree)
 print(polygons)
 print(is_result_overlapping(polygons))
@@ -127,15 +149,6 @@ for polygon in polygons:
 
 d.saveSvg('example.svg')
 
-
-# TODO model polygon cube
-# TODO dfs
-# TODO steepest edge
-
-# kyub_to_openmesh("imports/boxel.json")
-# TODO align polygons in 2D
-
-# TODO output visualization
-
-# maybe TODO SVG export 
-# maybe TODO kyub import
+# TODO steepest edge unfolding
+# TODO (maybe) model polygon cube
+# TODO check if kyub obj export and/or blender obj works
