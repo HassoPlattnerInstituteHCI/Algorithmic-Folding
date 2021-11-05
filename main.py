@@ -21,12 +21,12 @@ def clear_visited(mesh):
 	for face in mesh.faces():
 		mesh.set_face_property("visited", face, False)
 
-mesh = om.read_trimesh('cube1.ply')
+mesh = om.read_trimesh('cube.stl')
 mesh.update_normals()
 
 # making it easier to read the OpenMesh API
-get_adjacent_faces = lambda mesh, face: mesh.ff(face)
-get_vertecies_by_face = lambda mesh, face: mesh.fv(face)
+get_adjacent_faces = lambda mesh, face: list(mesh.ff(face))
+get_vertecies_by_face = lambda mesh, face: list(mesh.fv(face))
 
 
 class Tree:
@@ -35,11 +35,11 @@ class Tree:
 	def get_root(self):
 		return self.adjacency_lists[-1]
 
-	def set_root(self, node):
-		self.adjacency_lists[-1] = node
+	def set_root(self, node_id):
+		self.adjacency_lists[-1] = node_id
 
 	def insert(self, node_id, parent_id):
-		spanning_tree[parent_id].append(node_id)
+		self.adjacency_lists[parent_id].append(node_id)
 
 	def get_children(self, node_id):
 		return self.adjacency_lists[node_id]
@@ -54,15 +54,14 @@ def bfs(mesh, start_face):
 	
 	queue.put(start_face)
 	set_visited(mesh, start_face)
-	spanning_tree.set_root(start_face)
+	spanning_tree.set_root(start_face.idx())
 
 	while not queue.empty():
 		current_face = queue.get()
-
 		for adjacent_face in get_adjacent_faces(mesh, current_face):
-			if is_visited(mesh, adjacent_face):
+			if not is_visited(mesh, adjacent_face):
 				queue.put(adjacent_face)
-				set_visited(mesh, adjacent_face)
+				set_visited(mesh, adjacent_face)	
 				spanning_tree.insert(node_id=adjacent_face.idx(), parent_id=current_face.idx())
 
 	return spanning_tree
@@ -137,7 +136,8 @@ def is_result_overlapping(polygons):
 	return False
 
 spanning_tree = bfs(mesh, mesh.face_handle(0))
-print(spanning_tree)
+
+print(spanning_tree.adjacency_lists)
 polygons = unfold(mesh, spanning_tree)
 print(polygons)
 print(is_result_overlapping(polygons))
