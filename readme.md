@@ -2,7 +2,10 @@ goal:
 generate a long strip to fold any given STL file
 
 getting started:
-brew install cmake
+pip install drawSvg
 pip install openmesh
+pip install numpy
+pip install networkx
+pip install itertools
 pip install jupyterlab
 jupyter-lab
