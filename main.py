@@ -21,7 +21,7 @@ def clear_visited(mesh):
 	for face in mesh.faces():
 		mesh.set_face_property("visited", face, False)
 
-mesh = om.read_trimesh('cube.stl')
+mesh = om.read_trimesh('stanford_bunny.stl')
 mesh.update_normals()
 
 # making it easier to read the OpenMesh API

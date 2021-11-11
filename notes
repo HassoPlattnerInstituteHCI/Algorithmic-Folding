@@ -1,0 +1,6 @@
+PolyMesh vs Trimesh:
+    https://www.graphics.rwth-aachen.de/media/openmesh_static/Documentations/OpenMesh-6.3-Documentation/a00012.html
+
+Pybind:
+    https://github.com/pybind/pybind11
+    https://pybind11.readthedocs.io/en/stable/basics.html
