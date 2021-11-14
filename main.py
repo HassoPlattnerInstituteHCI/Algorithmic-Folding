@@ -19,7 +19,6 @@ def clear_visited(mesh):
 	for face in mesh.faces():
 		mesh.set_face_property("visited", face, False)
 
-# TODO make this normal functions; not lambdas
 # making it easier to read the OpenMesh API
 def get_adjacent_faces(mesh, face): return mesh.ff(face)
 def get_vertecies_by_face(mesh, face): return list(mesh.fv(face))
@@ -94,20 +93,7 @@ def dfs(mesh, start_face):
 
 	return spanning_tree
 
-# TODO get rid of this in favor of the rotation matrix approach !!
 def get_2d_projection(mesh, face):
-	# nx, ny, nz = mesh.normal(face)
-	# if nx == 0.0 and ny == 0.0:
-	# 	# nothing to do: points are already parallel to xy-plane: matrix just gets rid of z-values
-	# 	return np.array([
-	# 		[1,0,0],
-	# 		[0,1,0]
-	# 	])
-	# else:
-	# 	return np.array([
-	# 		[ny / sqrt(nx**2+ny**2), -nx / sqrt(nx**2 + ny**2), 0],
-	# 		[nx * ny / sqrt(nx**2+ny**2), ny * nz / sqrt(nx**2 + ny**2), -sqrt(nx**2 + ny**2)]
-	# 	])
 	face_normal = get_face_normal(mesh, face)
 	z_axis = np.array([0,0,1])
 	rotation_axis = np.cross(face_normal, z_axis)
@@ -124,8 +110,6 @@ def get_2d_projection(mesh, face):
 	print(rotation_axis)
 	return discard_z_matrix.dot(rotation_matrix)
 
-	# return discard_z_matrix
-
 
 def unfold(mesh, spanning_tree):
 	polygons = []  # resulting polygons, represented as lists of 2D coordinates
@@ -137,7 +121,6 @@ def unfold(mesh, spanning_tree):
 		polygons.append([world_to_canvas_mapping_fn(point_3d) for point_3d in polygon_3d])
 
 		for child in spanning_tree.get_children(node):
-		# TODO check if midpoint is needed to  !!
 			# here we are using OpenMesh function to get the values that we need
 			crease_halfedge = get_edge_between_faces(mesh,  mesh.face_handle(child),  mesh.face_handle(node))
 			crease_angle = mesh.calc_dihedral_angle(crease_halfedge)
