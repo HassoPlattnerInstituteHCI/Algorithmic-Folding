@@ -1,9 +1,11 @@
 import openmesh as om
+import matplotlib.pyplot as plt
 # OpenMesh docs are here
 # https://openmesh-python.readthedocs.io/en/latest/iterators.html
 
 import numpy as np
 from numpy.linalg import inv
+import networkx as nx
 
 from math import sqrt, pi
 from queue import SimpleQueue
@@ -21,13 +23,22 @@ def clear_visited(mesh):
 	for face in mesh.faces():
 		mesh.set_face_property("visited", face, False)
 
-mesh = om.read_trimesh('stanford_bunny.stl')
+mesh = om.read_polymesh('Models/cube.obj')
 mesh.update_normals()
 
 # making it easier to read the OpenMesh API
 get_adjacent_faces = lambda mesh, face: list(mesh.ff(face))
 get_vertecies_by_face = lambda mesh, face: list(mesh.fv(face))
 
+def get_graph(mesh):
+    faces = mesh.faces()
+    Graph = nx.Graph()
+    for f in faces:
+        for af in get_adjacent_faces(mesh, f):
+            edge = (f.idx(), af.idx())
+            if not Graph.has_edge(*edge):
+                Graph.add_edge(*edge)
+    return Graph
 
 class Tree:
 	adjacency_lists = defaultdict(list)
@@ -66,9 +77,14 @@ def bfs(mesh, start_face):
 
 	return spanning_tree
 
+
 def is_polygon_overlapping(polygon_a, polygon_b):
 	from shapely.geometry import Polygon
 	return Polygon(polygon_a).intersects(Polygon(polygon_b))
+
+def is_polygon_overlapping_fixed(polygon_a, polygon_b):
+	from shapely.geometry import Polygon
+	return Polygon(polygon_a).intersection(Polygon(polygon_b)).area
 
 def get_2d_projection(mesh, face):
 	"""
@@ -95,8 +111,8 @@ def get_edge_between_faces(mesh, face_a, face_b):
 	raise Error("there is no edge between these two faces")
 
 def get_rotation_matrix(axis, angle):
-	from scipy.spatial.transform import Rotation
-	return Rotation.from_rotvec(axis/np.linalg.norm(axis) * angle).as_matrix()
+    from scipy.spatial.transform import Rotation
+    return Rotation.from_rotvec(axis/np.linalg.norm(axis) * angle).as_matrix()
 
 def unfold(mesh, spanning_tree):
 	polygons = []
@@ -135,20 +151,30 @@ def is_result_overlapping(polygons):
 				return True
 	return False
 
+def is_result_overlapping_fixed(polygons):
+    for i in range(len(polygons)):
+        for j in range(i+1, len(polygons)):
+            if not is_polygon_overlapping_fixed(polygons[i], polygons[j]):
+                return True
+    return False
+
 spanning_tree = bfs(mesh, mesh.face_handle(0))
-
-print(spanning_tree.adjacency_lists)
 polygons = unfold(mesh, spanning_tree)
-print(polygons)
-print(is_result_overlapping(polygons))
 
-for polygon in polygons:
-	# polygon = [coords[0:2] for coords in polygon]
-	d.append(draw.Lines(*np.array(polygon).flatten(), closed=True,
-	            fill='#eeee00'))
+# Graph = get_graph(mesh)
+# print(len(list(spanning_tree_list)))
 
-d.saveSvg('example.svg')
+# print(spanning_tree.adjacency_lists)
+# polygons = unfold(mesh, spanning_tree)
+# print(polygons)
+
+print(is_result_overlapping_fixed(polygons))
+
+# for polygon in polygons:
+    # # polygon = [coords[0:2] for coords in polygon]
+    # d.append(draw.Lines(*np.array(polygon).flatten(), closed=True,
+                # fill='#eeee00'))
+
+# d.saveSvg('example.svg')
 
 # TODO steepest edge unfolding
-# TODO (maybe) model polygon cube
-# TODO check if kyub obj export and/or blender obj works
