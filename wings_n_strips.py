@@ -1,23 +1,19 @@
 # TODO: Heuristics
 # TODO: Refactor most of it in unified style
-# TODO: Not linked list like strips
-
-import openmesh as om
-from testnx import unfold, is_polygon_possible
+# from testnx import unfold, is_polygon_possible
 import drawSvg as draw
 import numpy as np
+from Mesh import Mesh
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 get_adjacent_faces = lambda mesh, face: list(mesh.ff(face))
 
 def draw_svg(polygons, file):
-    scale = 10000 * 10
+    scale = 1000
     d = draw.Drawing(scale, scale, origin='center', displayInline=False)
     for polygon in polygons:
         # polygon = [coords[0:2] for coords in polygon]
-        # d.append(draw.Lines(*np.array(polygon).flatten(), closed=True,
-                    # fill='#eeee00'))
         d.append(draw.Lines(*np.array(polygon).flatten()*50, close=True, fill='#eeee00', stroke='#000', stroke_width=.1))
     d.saveSvg(file)
 
@@ -75,21 +71,30 @@ def tree_insert_child(root, parent, child):
         tree_insert_child(c, parent, child)
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def strip_2_tree(strip, root, mesh):
-    if len(strip) == 0:
-        return root
-    # TODO: heuristic needed currently taking first child
-    child = [f for f in strip if f in get_adjacent_faces_idx(mesh, root.val)][0] 
+get_vertecies_by_face = lambda mesh, face: list(mesh.fv(face))
+# polygon_size = lambda mesh, face : Polygon([mesh.point(vertex_handle) for vertex_handle in get_vertecies_by_face(mesh, mesh.face_handle(face))]).area
+from math import sqrt
 
-    strip.remove(child)
-    child = node(child)
-    child = strip_2_tree(strip, child, mesh)
-    root.add_child_node(child)
-    return root
+# Calc Size of face not possible with Shapely bcs z cord
+def size(mesh, face):
+    points = lambda mesh, face : [mesh.point(vertex_handle) for vertex_handle in get_vertecies_by_face(mesh, mesh.face_handle(face))]
+    vec_3d = lambda p1, p2 : (p1[0] - p2[0], p1[1] - p2[1], p1[2] - p2[2])
+    vec_len = lambda v : sqrt(v[0]**2 + v[1]**2 + v[2]**2)
+
+    f_p = points(mesh, face)
+    vec1 = vec_3d(f_p[0], f_p[1])
+    vec2 = vec_3d(f_p[2], f_p[3])
+    return vec_len(vec1) * vec_len(vec2)
+
+#returns id of biggest face
+def best_root(mesh, strip):
+    s = [(size(mesh, f), f) for f in strip]
+    s.sort(key=lambda t : t[0])
+    return s[-1][1]
 
 def w_strip_2_tree(mesh, strip, trees = []):
-    print(strip)
-    root = node(strip.pop(0))
+    root_index = best_root(mesh, strip)
+    root = node(strip.pop(root_index))
     curr = root
     remaining_strip = []
     while len(strip) > 0:
@@ -115,7 +120,6 @@ def w_strip_2_tree(mesh, strip, trees = []):
     trees.append(root)
     return trees
 
-
 def w_attach_wings(mesh, trees, wings):
     remaining_wings = []
     def w_attach_wing(trees, wing):
@@ -134,42 +138,44 @@ def w_attach_wings(mesh, trees, wings):
         trees = w_strip_2_tree(mesh, remaining_wings, trees) #heuristic ????
     return trees
 
+def get_best_snw(mesh):
 
+    # Get Three Faces normal to each other (one for each axis x, y, z)
+    def three_normal(mesh):
+        all_normals = list(mesh.face_normals())
+        faces = []
+        for f in mesh.faces():
+            if not sum([not is_normal(all_normals[f.idx()], all_normals[ff.idx()]) for ff in faces]):
+                faces.append(f)
+            if len(faces) == 3:
+                return faces
 
-def attach_wings(strip_root, wings):
-    def attach_wing(strip_root, wing):
-        parent_face = (get_adjacent_faces_idx(mesh, wing))[0]
-        tree_insert_child(strip_root, parent_face, node(wing))
+    # Create Strip and Wings list out of wing_face
+    def strip_n_wings(face, mesh):
+        norm = mesh.normal(face)
+        all_normals = list(mesh.face_normals())
+        strip = [f.idx() for f in mesh.faces() if is_normal(norm, all_normals[f.idx()])]
+        wings = [f.idx() for f in mesh.faces() if f.idx() not in strip]
+        return (strip, wings)
 
-    for w in wings:
-        attach_wing(strip_root, w)
-    return strip_root
+    # Create Three (Strips, Wings) tuples for every axis 
+    snw_list = [strip_n_wings(f, mesh) for f in three_normal(mesh)]
 
-def strip_n_wings(face, mesh):
-    norm = mesh.normal(face)
-    all_normals = list(mesh.face_normals())
-    strip = [f.idx() for f in mesh.faces() if is_normal(norm, all_normals[f.idx()])]
-    wings = [f.idx() for f in mesh.faces() if f.idx() not in strip]
-    return (strip, wings)
+    #sort them by length of strip
+    snw_list.sort(key=lambda snw : len(snw[0]))
+
+    #return the one with biggest strip
+    return snw_list[-1]
+
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 if __name__ == '__main__':
-    mesh = om.read_polymesh('Models/L2.obj')
+    mesh = om.read_polymesh('Models/cube.obj')
     mesh.update_normals()
-
-    snw = strip_n_wings(list(mesh.faces())[0], mesh)
-    print(snw)
-
-    strip = list(snw[0])
-    print(strip)
-    # strip = [f for f in snw[0]]
-    # print(strip)
-    # root = node(strip.pop(0))
-    # print(strip.pop(0))
+    strip, wings = get_best_snw(mesh)
     trees = w_strip_2_tree(mesh, strip)
-    trees = w_attach_wings(mesh, trees, snw[1])
-    # dump_tree(trees[0])
+    trees = w_attach_wings(mesh, trees, wings)
     for i, t in enumerate(trees):
         dump_tree(t)
         poly = unfold(mesh, t)
-        draw_svg(poly, 'L_Shape' + str(i) + '.svg')
+        draw_svg(poly, 'Unfolded_SVGs/ex' + str(i) + '.svg')
