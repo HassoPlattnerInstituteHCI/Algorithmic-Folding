@@ -3,30 +3,14 @@ from unfolding_helper import *
 
 # TODO: GJK Algorithm
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
-#returns id of biggest face
-def best_root(mesh, strip):
-    s = [(mesh.face_size(f), i) for i, f in enumerate(strip)]
-    s.sort(key=lambda t : t[0])
-    return s[-1][1]
-
-#simpler version without checks works only on cube
-def cube_strip_2_tree(mesh, strip):
-
-    root = node(strip.pop(0))
-    curr = root
-    while strip:
-        #find all adjacent_faces to current face curr 
-        children = [f for f in strip if f in mesh.get_adjacent_faces_idx(curr.val)]
-
-        child_id = children[0] # TODO: heuristic
-        strip.remove(child_id)
-        child_node = node(child_id)
-
-        curr.add_child_node(child_node)
-        curr = child_node
-    return [root]
 
 def strip_2_tree(mesh, strip, trees = []):
+
+    #returns id of biggest face
+    def best_root(mesh, strip):
+        s = [(mesh.face_size(f), i) for i, f in enumerate(strip)]
+        s.sort(key=lambda t : t[0])
+        return s[-1][1]
 
     root_index = best_root(mesh, strip)
     root = node(strip.pop(root_index))
@@ -53,23 +37,12 @@ def strip_2_tree(mesh, strip, trees = []):
         else:
             curr = child_node
 
-    if len(strip) > 0 or len(remaining_strip) > 0:
+    if strip or remaining_strip:
         remaining_strip += strip
         trees = strip_2_tree(mesh, remaining_strip, trees)
 
     trees.append(root)
     return trees
-
-# def cube_attach_wings(mesh, tree, wings):
-    # def attach_wing(tree, wing):
-        # for parent_face in mesh.get_adjacent_faces_idx(wing): 
-            # if tree.has(parent_face):
-                # tree.insert_child(parent_face, node(wing))
-                # return
-
-    # for wing in wings:
-        # attach_wing(tree, wing)
-    # return [tree]
 
 def attach_wings(mesh, trees, wings):
     # TODO: Implement Heuristics
