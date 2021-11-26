@@ -89,11 +89,11 @@ def get_best_snw(mesh):
     return snw_list[-1]
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
-    mesh = Mesh('../Models/L2.obj')
+    mesh = Mesh('../shortest_path/test.obj')
     strip, wings = get_best_snw(mesh)
     trees = strip_2_tree(mesh, strip)
     trees = attach_wings(mesh, trees, wings)
     for i, t in enumerate(trees):
         t.dump_tree()
         poly = t.unfold(mesh)
-        draw_svg(poly, '../Unfolded_SVGs/ex' + str(i) + '.svg')
+        draw_svg(poly, '../shortest_path/test' + str(i) + '.svg')
