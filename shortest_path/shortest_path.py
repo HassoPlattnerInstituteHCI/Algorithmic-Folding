@@ -31,26 +31,10 @@ class Insertion_Vertex:
         self.edge_id = edge_id
         self.dist = dist
 
-
     def calc_pos(self, edge):
         edge = ( Vec(edge[0][0], edge[0][1], edge[0][2]), Vec(edge[1][0], edge[1][1], edge[1][2]))
         #BA/len(BA) * dist + A = point between B and A dist away from A
         return (edge[1].dif(edge[0])).normal().s_mult(self.dist).add(edge[0])
-
-def strip_2_tree(mesh, strip):
-    root = node(strip.pop(0))
-    curr = root
-    while strip:
-        #find all adjacent_faces to current face curr 
-        children = [f for f in strip if f in mesh.get_adjacent_faces_idx(curr.val)]
-
-        child_id = children[0]
-        strip.remove(child_id)
-        child_node = node(child_id)
-        curr.add_child_node(child_node)
-        curr = child_node
-
-    return root
 
 def get_unfolding(mesh, faces):
     tree = node(faces[0])
