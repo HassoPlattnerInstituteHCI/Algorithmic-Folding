@@ -166,6 +166,10 @@ class node:
 
         return polygons
 
+def starting_point_3d_2_2d(mesh, root, starting_point):
+    map_to_2d = lambda points: mesh.get_2d_projection(mesh.face_handle(root.val)).dot(points)
+    return map_to_2d(starting_point)
+
 def is_unfolding_overlapping(polygons):
 
     def is_polygon_overlapping_fixed(polygon_a, polygon_b):
