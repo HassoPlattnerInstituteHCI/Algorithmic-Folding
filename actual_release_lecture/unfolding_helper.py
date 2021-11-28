@@ -197,7 +197,7 @@ def draw_svg(polygons, file):
         d.append(draw.Lines(*np.array(polygon).flatten()*50, close=True, fill='#eeee00', stroke='#000', stroke_width=.1))
     d.saveSvg(file)
 
-def map_id_2d_points(mesh, unfold, cut_faces):
+def get_2d_points(mesh, unfold, cut_faces):
     faces_as_vert = [list(vert) for vert in mesh.model.face_vertex_indices()]
     cut_faces_as_vert = [faces_as_vert[f_id] for f_id in cut_faces]
     points_2d = {}
