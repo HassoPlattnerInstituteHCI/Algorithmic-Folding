@@ -1,4 +1,5 @@
 import openmesh as om
+from itertools import chain
 import drawSvg as draw
 from math import sqrt
 import numpy as np
@@ -74,6 +75,7 @@ class Mesh:
     def get_adjacent_faces_idx(self, id):
         return [f.idx() for f in self.get_adjacent_faces(self.face_from_idx(id))]
 
+    #TODO: let students implement that 
     def face_size(self, face):
         points = lambda mesh, face : [mesh.point(vertex_handle) for vertex_handle in mesh.get_vertecies_by_face(mesh.face_handle(face))]
         vec_3d = lambda p1, p2 : (p1[0] - p2[0], p1[1] - p2[1], p1[2] - p2[2])
@@ -83,6 +85,12 @@ class Mesh:
         vec1 = vec_3d(f_p[0], f_p[1])
         vec2 = vec_3d(f_p[2], f_p[3])
         return vec_len(vec1) * vec_len(vec2)
+
+    def edge_vertex_indices(self):
+        return self.model.edge_vertex_indices()
+
+    def points(self):
+        return self.model.points()
 
 class node:
     def __init__(self, val):
@@ -165,6 +173,10 @@ class node:
 
         return polygons
 
+def starting_point_3d_2_2d(mesh, face_id, starting_point):
+    map_to_2d = lambda points: mesh.get_2d_projection(mesh.face_handle(face_id)).dot(points)
+    return map_to_2d(starting_point)
+
 def is_unfolding_overlapping(polygons):
 
     def is_polygon_overlapping_fixed(polygon_a, polygon_b):
@@ -184,3 +196,20 @@ def draw_svg(polygons, file):
         # polygon = [coords[0:2] for coords in polygon]
         d.append(draw.Lines(*np.array(polygon).flatten()*50, close=True, fill='#eeee00', stroke='#000', stroke_width=.1))
     d.saveSvg(file)
+
+def map_id_2d_points(mesh, unfold, cut_faces):
+    faces_as_vert = [list(vert) for vert in mesh.model.face_vertex_indices()]
+    cut_faces_as_vert = [faces_as_vert[f_id] for f_id in cut_faces]
+    points_2d = {}
+    for face_id, polygon in enumerate(unfold):
+        for i, coords_2d in enumerate(polygon):
+            vertex_id = cut_faces_as_vert[face_id][i]
+            points_2d[vertex_id] = coords_2d
+    return points_2d
+
+def get_cutted_edges(mesh, cutted_faces):
+    all_edges = list(mesh.model.face_edge_indices())
+    cut_edges = [e for i, e in enumerate(all_edges) if i in cutted_faces]
+    cut_edges = list(chain.from_iterable(cut_edges))
+    cut_edges = list(dict.fromkeys(cut_edges))
+    return cut_edges
