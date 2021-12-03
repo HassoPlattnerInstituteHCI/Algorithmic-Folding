@@ -20,6 +20,7 @@ To install all our packages just run:
 ```bash
 conda install igl
 conda install meshplot
+conda install jupyter
 ```
 
 **Note 1**: that you can install only the ones you need.
