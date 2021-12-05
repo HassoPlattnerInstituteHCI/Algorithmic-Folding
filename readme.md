@@ -36,6 +36,6 @@ The two packages have specific functionalities and own website.
 - [Meshplot](https://skoch9.github.io/meshplot/): fast 2d and 3d mesh viewer based on `pythreejs`.
 - [igl](https://libigl.github.io/): swiss-army-knife of geometric processing functions ([python documentation](https://libigl.github.io/libigl-python-bindings/))
 
-## Experiment 1 - Gauss map
+## Developable surfaces
 
-See the jupyter notebook [gauss_map.ipynb](https://github.com/origamidance/AF-Developable-surface/blob/main/gauss_map.ipynb).
+See the jupyter notebook [developable_surfaces.ipynb](https://github.com/HassoPlattnerInstituteHCI/Algorithmic-Folding/blob/developable_surface/developable_surfaces.ipynb).
