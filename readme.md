@@ -38,4 +38,4 @@ The two packages have specific functionalities and own website.
 
 ## Developable surfaces
 
-See the jupyter notebook [gauss_map.ipynb](https://github.com/origamidance/AF-Developable-surface/blob/main/gauss_map.ipynb).
+See the jupyter notebook [developable_surfaces.ipynb]().
