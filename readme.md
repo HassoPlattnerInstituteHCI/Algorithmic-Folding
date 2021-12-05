@@ -38,4 +38,4 @@ The two packages have specific functionalities and own website.
 
 ## Developable surfaces
 
-See the jupyter notebook [developable_surfaces.ipynb]().
+See the jupyter notebook [developable_surfaces.ipynb](https://github.com/HassoPlattnerInstituteHCI/Algorithmic-Folding/blob/developable_surface/developable_surfaces.ipynb).
