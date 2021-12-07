@@ -2,8 +2,7 @@ from math import sqrt
 from shapely.geometry import LineString
 from unfolding_helper import *
 
-class Vec:
-    def __init__(self, x, y, z):
+class Vec: def __init__(self, x, y, z):
         self.x = x
         self.y = y
         self.z = z
