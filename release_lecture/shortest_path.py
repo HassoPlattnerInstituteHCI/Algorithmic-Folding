@@ -57,7 +57,6 @@ if __name__ == '__main__':
     lines = []
     for e in cut_edges:
         verts = edge_as_vertex_ids[e]
-        # nl = LineString((tuple(points_2d[verts[0]]), tuple(points_2d[verts[1]])))
         nl = LineString((points_2d[verts[0]], points_2d[verts[1]]))
         lines.append(nl)
 

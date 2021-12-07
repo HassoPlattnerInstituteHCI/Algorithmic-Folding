@@ -102,5 +102,7 @@ if __name__ == '__main__':
         v = v.calc_pos(edge)
         new_points_3d.append(v)
 
+    # reconstructing the mesh
+
     for p in new_points_3d:
         print(p.x, p.y, p.z)
