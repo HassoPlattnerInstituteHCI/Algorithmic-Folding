@@ -75,16 +75,10 @@ class Mesh:
     def get_adjacent_faces_idx(self, id):
         return [f.idx() for f in self.get_adjacent_faces(self.face_from_idx(id))]
 
-    #TODO: let students implement that 
+    #TODO: dont let students implement that 
     def face_size(self, face):
-        points = lambda mesh, face : [mesh.point(vertex_handle) for vertex_handle in mesh.get_vertecies_by_face(mesh.face_handle(face))]
-        vec_3d = lambda p1, p2 : (p1[0] - p2[0], p1[1] - p2[1], p1[2] - p2[2])
-        vec_len = lambda v : sqrt(v[0]**2 + v[1]**2 + v[2]**2)
-
-        f_p = points(self, face)
-        vec1 = vec_3d(f_p[0], f_p[1])
-        vec2 = vec_3d(f_p[2], f_p[3])
-        return vec_len(vec1) * vec_len(vec2)
+        print("Not Implemented")
+        exit(1)
 
     def edge_vertex_indices(self):
         return self.model.edge_vertex_indices()
