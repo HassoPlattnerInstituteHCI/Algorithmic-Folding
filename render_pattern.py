@@ -22,7 +22,7 @@ def draw_geom(p,d,col,fill='none'):
     [path.L(v[0],v[1]) for v in p]
     d.append(path)
     
-def render(points,circles,creases,guides,polys,rivers):
+def render(points,circles,polys=[],creases=[],guides=[],rivers=[]):
     w,h = max_val(points)
     d = draw.Drawing (w,h)
     [draw_geom(c.exterior.coords,d,polygon_color,circle_color) for c in circles]

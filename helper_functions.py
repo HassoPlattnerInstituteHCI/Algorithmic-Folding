@@ -1,5 +1,5 @@
 import networkx as nx
-from shapely.geometry import Polygon, Point, MultiPoint, LineString, MultiLineString
+from shapely.geometry import Point,LineString,Polygon,MultiPoint,MultiLineString
 from shapely.affinity import rotate, translate, scale
 from shapely.ops import linemerge, nearest_points
 from shapely import wkt
@@ -62,6 +62,10 @@ def coords (geom):
     if type(geom) == LineString: return geom.coords[:]
     if type(geom) == Polygon: return geom.exterior.coords[:]
     if type(geom) == list or tuple: return [coords(g) for g in geom]
+def to_collection(geom_list):
+    if type(geom_list[0]) == Point: return MultiPoint(geom_list)
+    if type(geom_list[0]) == LineString: return MultiLineString(geom_list)
+    if type(geom_list[0]) == Polygon: return MultiPolygon(geom_list)
     
 # node <-> geometry maps    
 def vertex_from_node(node,node_map): return Point(next((point for point, i in node_map.items() if i == node), None))
@@ -80,14 +84,14 @@ def adjacent_edges(vertex,polygon):
     return [edge_from_indices(index,index+1,polygon), edge_from_indices(index-1,index,polygon)]
 
 # other helper functions
-def query_matrix(m,val):
-    res = np.where(m==val)
+def query_matrix(M,val):
+    res = np.where(M==val)
     return list(zip(res[0],res[1]))
 
 def extend_lines(lines,extension):
     for i,line in enumerate(lines):
         if approx(extension).touches(approx(line)):
-            merge = linemerge(MultiLineString([extension,line]))
+            merge = linemerge(to_collection([extension,line]))
             if type(merge) == LineString: lines[i] = merge
             return lines
     lines += [extension]
