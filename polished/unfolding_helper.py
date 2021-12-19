@@ -1,5 +1,6 @@
 import openmesh as om
 import drawSvg as draw
+import drawSvg as draw
 from math import sqrt
 import numpy as np
 

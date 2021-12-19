@@ -94,6 +94,11 @@ def attach_wings(mesh, trees, wings):
 
     return trees
 
+# def attach_wings(mesh, trees, wings):
+    # def attach_wing(trees, wing):
+        # for t in trees:
+            # pp = [pf for pf in get_adjacent_faces(mesh, wing) if ]
+
 def dump_tree(Tree, node, dist = 0):
     print(dist * '\t', node)
     for c in Tree.successors(node):
