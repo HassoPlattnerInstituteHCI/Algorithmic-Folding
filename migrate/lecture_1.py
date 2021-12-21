@@ -70,37 +70,62 @@ def strip_2_tree(mesh, strip, trees = []):
 
     trees.append(Tree)
     return trees
+# def attach_wings(mesh, trees, wings):
+    # #Heuristic: Sort Spanning Trees by their size
+    # trees.sort(key=lambda t : t.number_of_nodes, reverse=True)
 
-def attach_wings(mesh, trees, wings):
+    # remaining_wings = []
+    # def attach_wing(trees, wing):
+        # for t in trees: 
+
+            # # All adjacent faces to wing currently in the tree
+            # parent_faces = [f for f in get_adjacent_faces(mesh, wing) if t.has_node(f)]
+
+            # #Heuristic: Sort parent faces by number of edges
+            # #TODO: sort number of total edges minus number of occupied edges
+            # parent_faces.sort(key=lambda f : len(mesh.face_edge_indices()[f]), reverse=True)
+
+            # for parent_face in parent_faces:
+                # t.add_edge(parent_face, wing)
+                # if not is_unfolding_overlapping(unfold(mesh, t)):
+                    # return
+                # t.remove_edge(parent_face, wing)
+
+        # remaining_wings.append(wing)
+
+    # for wing in wings:
+        # attach_wing(trees, wing)
+
+    # if remaining_wings:
+        # trees = strip_2_tree(mesh, remaining_wings, trees) #heuristic ????
+
+    # return trees
+
+def attach_wings(mesh, trees, wings, remaining_wings = []):
+    # Exit Condition
+    if not wings:
+        if remaining_wings:
+            trees = strip_2_tree(mesh, remaining_wings, trees) #heuristic ????
+        return trees
+
     #Heuristic: Sort Spanning Trees by their size
     trees.sort(key=lambda t : t.number_of_nodes, reverse=True)
 
-    remaining_wings = []
-    def attach_wing(trees, wing):
-        for t in trees: 
+    wing = wings.pop(0)
+    
+    for t in trees: 
+        # All adjacent faces to wing currently in the tree
+        #Heuristic: Sort parent faces by number of edges
+        parent_faces = [f for f in get_adjacent_faces(mesh, wing) if t.has_node(f)]
+        parent_faces.sort(key=lambda f : len(mesh.face_edge_indices()[f]), reverse=True)
 
-            # All adjacent faces to wing currently in the tree
-            parent_faces = [f for f in get_adjacent_faces(mesh, wing) if t.has_node(f)]
+        for parent_face in parent_faces:
+            t.add_edge(parent_face, wing)
+            if not is_unfolding_overlapping(unfold(mesh, t)):
+                return attach_wings(mesh, trees, wings, remaining_wings)
+            t.remove_edge(parent_face, wing)
 
-            #Heuristic: Sort parent faces by number of edges
-            #TODO: sort number of total edges minus number of occupied edges
-            parent_faces.sort(key=lambda f : len(mesh.face_edge_indices()[f]), reverse=True)
-
-            for parent_face in parent_faces:
-                t.add_edge(parent_face, wing)
-                if not is_unfolding_overlapping(unfold(mesh, t)):
-                    return
-                t.remove_edge(parent_face, wing)
-
-        remaining_wings.append(wing)
-
-    for wing in wings:
-        attach_wing(trees, wing)
-
-    if remaining_wings:
-        trees = strip_2_tree(mesh, remaining_wings, trees) #heuristic ????
-
-    return trees
+    return attach_wings(mesh, trees, wings, remaining_wings)
 
 def dump_tree(Tree, node, dist = 0):
     print(dist * '\t', node)
