@@ -48,7 +48,6 @@ def is_unfolding_overlapping(polygons):
     # trees.append(Tree)
     # return trees
 
-# TODO:  Continue with Tree assembly even when piece in strip doesn't fit ?? -> need a way to rember last edge and pop it if needed 
 def strip_2_tree(mesh, strip, trees = []):
     Tree = nx.DiGraph()
 
