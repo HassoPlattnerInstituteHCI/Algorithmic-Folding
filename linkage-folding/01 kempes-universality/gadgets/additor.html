@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>additor.cdy</title>
+    <style type="text/css">
+        * {
+            margin: 0px;
+            padding: 0px;
+        }
+
+        #CSConsole {
+            background-color: #FAFAFA;
+            border-top: 1px solid #333333;
+            bottom: 0px;
+            height: 200px;
+            overflow-y: scroll;
+            position: fixed;
+            width: 100%;
+        }
+    </style>
+    <script type="text/javascript" src="http://cinderella.de/CindyJS/latest/Cindy.js"></script>
+
+    <script type="text/javascript">
+createCindy({
+	scripts: "cs*",
+	defaultAppearance: { fontFamily: "sans-serif", lineSize: 1, pointSize: 5.0, textsize: 12.0 },
+	angleUnit: "°",
+	geometry: [
+		{ name: "A", type: "Free", pos: [ 0.0, -0.0, 4.0 ], color: [ 1.0, 0.0, 0.0 ], pinned: true, labeled: true },
+		{ name: "feta2", type: "Through", pos: [ 4.0, -0.6359127282078276, 0.0 ], color: [ 0.0, 1.0, 0.0 ], args: [ "A" ], labeled: true },
+		{ name: "C0", type: "CircleByRadius", pos: { xx: -0.04, yy: -0.04, zz: 1.0, xy: 0.0, xz: 0.0, yz: 0.0 }, color: [ 0.0, 0.0, 1.0 ], radius: 5.0, args: [ "A" ], alpha: 0.1111111111111111, pinned: true, printname: "$C_{0}$" },
+		{ name: "C3", type: "CircleByRadius", pos: { xx: -0.16, yy: -0.16, zz: 1.0, xy: 0.0, xz: 0.0, yz: 0.0 }, color: [ 0.0, 0.0, 1.0 ], radius: 2.5, args: [ "A" ], alpha: 0.09401709401709402, pinned: true, printname: "$C_{3}$" },
+		{ name: "m", type: "RandomLine", color: [ 1.0, 1.0, 1.0 ], size: 0 },
+		{ name: "p", type: "RandomLine", color: [ 1.0, 1.0, 1.0 ], size: 0 },
+		{ name: "base", type: "Through", pos: [ 0.0, -4.0, 0.0 ], color: [ 0.5019608, 0.5019608, 0.5019608 ], args: [ "A" ], pinned: true },
+		{ name: "T", type: "PointOnLine", pos: [ 4.0, -0.0, 0.16 ], color: [ 1.0, 0.0, 0.0 ], args: [ "base" ], pinned: true, labeled: true },
+		{ name: "C8", type: "CircleByRadius", pos: { xx: -0.0064, yy: -0.0064, zz: 1.0, xy: 0.0, xz: 0.0, yz: 0.0 }, color: [ 0.0, 0.0, 1.0 ], radius: 12.5, args: [ "A" ], alpha: 0.07692307692307693, pinned: true, printname: "$C_{8}$" },
+		{ name: "y", type: "Segment", color: [ 0.0, 0.0, 0.0 ], args: [ "A", "T" ], size: 5, overhang: 0.96 },
+		{ name: "C11", type: "CircleByRadius", pos: { xx: -0.0256, yy: -0.0256, zz: 1.0, xy: 0.0, xz: 0.0, yz: 0.0 }, color: [ 0.0, 0.0, 1.0 ], radius: 6.25, args: [ "A" ], alpha: 0.08547008547008547, pinned: true, printname: "$C_{11}$" },
+		{ name: "C13", type: "CircleByRadius", pos: { xx: -0.0256, yy: -0.0256, zz: 1.0, xy: 0.0, xz: 0.0, yz: 0.0 }, color: [ 0.0, 0.0, 1.0 ], radius: 6.25, args: [ "A" ], alpha: 0.08547008547008547, pinned: true, printname: "$C_{13}$" },
+		{ name: "C9", type: "CircleByRadius", pos: { xx: { r: 0.0021333333333333334, i: 3.093724046222222E-19 }, yy: { r: 0.0021333333333333334, i: 3.093724046222222E-19 }, zz: 1.0, xy: 0.0, xz: { r: -0.10666666666666667, i: -1.546862023111111E-17 }, yz: 0.0 }, color: [ 0.0, 0.0, 1.0 ], radius: 12.5, args: [ "T" ], alpha: 0.07692307692307693, pinned: true, printname: "$C_{9}$" },
+		{ name: "C15", type: "CircleByRadius", pos: { xx: -0.0011718668060875668, yy: -0.0011718668060875668, zz: 1.0, xy: 0.0, xz: 0.0, yz: 0.0 }, color: [ 0.0, 0.0, 1.0 ], radius: 29.21197186086554, args: [ "A" ], visible: false, printname: "$C_{15}$" },
+		{ name: "Collection__1", type: "IntersectionConicLine", args: [ "C15", "feta2" ] },
+		{ name: "P3", type: "SelectP", pos: [ -0.6359127282078275, -4.0, -0.13864975388840772 ], color: [ 1.0, 0.0, 0.0 ], args: [ "Collection__1" ], visible: false, labeled: true, printname: "$P_{3}$" },
+		{ name: "", type: "SelectP", pos: [ -0.6359127282078275, -4.0, 0.13864975388840772 ], color: [ 1.0, 1.0, 1.0 ], args: [ "Collection__1" ], size: 0.0 },
+		{ name: "α1", type: "Angle", angle: 1.4131375354779647, color: [ 0.0, 0.0, 1.0 ], args: [ "base", "feta2", "A" ] },
+		{ name: "feta1", type: "Through", pos: [ 1.5042701056078522, -4.0, 0.0 ], color: [ 0.0, 1.0, 0.0 ], args: [ "A" ], labeled: true },
+		{ name: "Collection__2", type: "AngularBisector", args: [ "feta2", "feta1", "A" ] },
+		{ name: "c", type: "SelectL", pos: [ 4.0, -3.2636884935095947, 0.0 ], color: [ 0.0, 0.0, 1.0 ], args: [ "Collection__2" ], dashtype: "tightdash" },
+		{ name: "B", type: "PointOnLine", pos: [ 4.0, 1.5042701056078522, 0.4405855271926916 ], color: [ 0.0, 1.0, 0.0 ], args: [ "feta1" ], pinned: true, labeled: true },
+		{ name: "C1", type: "CircleByRadius", pos: { xx: { r: 0.014475503261212823, i: -2.3039985818226353E-19 }, yy: { r: 0.014475503261212823, i: -2.3039985818226353E-19 }, zz: 1.0, xy: 0.0, xz: { r: -0.2628411941435727, i: 4.183521136526073E-18 }, yz: { r: 0.09884603771811151, i: -1.5732864454636892E-18 } }, color: [ 0.0, 0.0, 1.0 ], radius: 5.0, args: [ "B" ], alpha: 0.07692307692307693, pinned: true, printname: "$C_{1}$" },
+		{ name: "Collection__3", type: "IntersectionConicLine", args: [ "C0", "c" ] },
+		{ name: "C", type: "SelectP", pos: [ -3.2636884935095947, -4.0, -1.032504965269745 ], color: [ 0.0, 1.0, 0.0 ], args: [ "Collection__3" ], labeled: true },
+		{ name: "d", type: "Parallel", color: [ 0.0, 0.0, 1.0 ], args: [ "c", "B" ], alpha: 0.07692307692307693, labeled: true },
+		{ name: "Collection__4", type: "IntersectionConicLine", args: [ "C1", "d" ] },
+		{ name: "D", type: "SelectP", pos: [ 4.0, { r: 2.381850564823794, i: -1.4314900160225887E-17 }, { r: 0.3268035351625934, i: 1.8559869227234994E-18 } ], color: [ 1.0, 0.0, 0.0 ], args: [ "Collection__4" ], alpha: 0.07692307692307693, labeled: true },
+		{ name: "e", type: "Join", color: [ 0.0, 0.0, 1.0 ], args: [ "C", "B" ], alpha: 0.07692307692307693, labeled: true },
+		{ name: "f", type: "Orthogonal", color: [ 1.0, 1.0, 1.0 ], args: [ "e", "D" ], size: 0 },
+		{ name: "E", type: "Meet", color: [ 1.0, 1.0, 1.0 ], args: [ "e", "f" ], size: 0.0 },
+		{ name: "C2", type: "CircleMP", color: [ 1.0, 1.0, 1.0 ], args: [ "E", "D" ], size: 0, printname: "$C_{2}$" },
+		{ name: "F", type: "OtherIntersectionCL", color: [ 0.0, 1.0, 0.0 ], args: [ "C2", "f", "D" ], labeled: true },
+		{ name: "g", type: "Segment", color: [ 1.0, 0.49803925, 0.0 ], args: [ "C", "F" ], size: 5, overhang: 0.92 },
+		{ name: "h", type: "Segment", color: [ 1.0, 0.49803925, 0.0 ], args: [ "F", "B" ], size: 5, overhang: 0.85 },
+		{ name: "C4", type: "CircleByRadius", pos: { xx: { r: 0.053333333333333344, i: -6.576490382222225E-19 }, yy: { r: 0.053333333333333344, i: -6.576490382222225E-19 }, zz: { r: 1.0, i: 1.5407439555097887E-33 }, xy: 0.0, xz: { r: -0.3371671656320552, i: 4.157581166213135E-18 }, yz: { r: 0.41323449379751775, i: -5.0955612638659585E-18 } }, color: [ 0.0, 0.0, 1.0 ], radius: 2.5, args: [ "C" ], alpha: 0.09401709401709402, pinned: true, printname: "$C_{4}$" },
+		{ name: "k", type: "Parallel", color: [ 0.0, 0.0, 1.0 ], args: [ "g", "A" ], alpha: 0.09401709401709402, labeled: true },
+		{ name: "Collection__5", type: "IntersectionConicLine", args: [ "C4", "g" ] },
+		{ name: "G", type: "SelectP", pos: [ 4.0, { r: 1.9810519316704207, i: 3.869372125030585E-17 }, { r: 0.7494950967882906, i: 4.667168218856759E-18 } ], color: [ 0.0, 1.0, 0.0 ], args: [ "Collection__5" ], labeled: true },
+		{ name: "Collection__6", type: "IntersectionConicLine", args: [ "C3", "k" ] },
+		{ name: "H", type: "SelectP", pos: [ 4.0, { r: -2.262684659469326, i: 3.0088175202828016E-17 }, { r: 1.838248813113081, i: -5.92564418720406E-18 } ], color: [ 1.0, 0.0, 0.0 ], args: [ "Collection__6" ], alpha: 0.09401709401709402, labeled: true },
+		{ name: "l", type: "Join", color: [ 0.0, 0.0, 1.0 ], args: [ "A", "G" ], alpha: 0.09401709401709402, labeled: true },
+		{ name: "K", type: "Meet", color: [ 1.0, 1.0, 1.0 ], args: [ "e", "l" ], size: 0.0 },
+		{ name: "L", type: "Meet", color: [ 1.0, 1.0, 1.0 ], args: [ "m", "l" ], size: 0.0 },
+		{ name: "n", type: "Orthogonal", color: [ 1.0, 1.0, 1.0 ], args: [ "e", "L" ], size: 0 },
+		{ name: "M", type: "Meet", color: [ 1.0, 1.0, 1.0 ], args: [ "e", "n" ], size: 0.0 },
+		{ name: "C5", type: "CircleMP", color: [ 1.0, 1.0, 1.0 ], args: [ "M", "L" ], size: 0, printname: "$C_{5}$" },
+		{ name: "N", type: "OtherIntersectionCL", color: [ 1.0, 1.0, 1.0 ], args: [ "C5", "n", "L" ], size: 0.0 },
+		{ name: "O", type: "Meet", color: [ 1.0, 1.0, 1.0 ], args: [ "p", "l" ], size: 0.0 },
+		{ name: "q", type: "Orthogonal", color: [ 1.0, 1.0, 1.0 ], args: [ "e", "O" ], size: 0 },
+		{ name: "P1", type: "Meet", color: [ 1.0, 1.0, 1.0 ], args: [ "e", "q" ], size: 0.0 },
+		{ name: "C6", type: "CircleMP", color: [ 1.0, 1.0, 1.0 ], args: [ "P1", "O" ], size: 0, printname: "$C_{6}$" },
+		{ name: "Q", type: "OtherIntersectionCL", color: [ 1.0, 1.0, 1.0 ], args: [ "C6", "q", "O" ], size: 0.0 },
+		{ name: "o", type: "Orthogonal", color: [ 1.0, 1.0, 1.0 ], args: [ "l", "H" ], size: 0 },
+		{ name: "R", type: "Meet", color: [ 1.0, 1.0, 1.0 ], args: [ "l", "o" ], size: 0.0 },
+		{ name: "C7", type: "CircleMP", color: [ 1.0, 1.0, 1.0 ], args: [ "R", "H" ], size: 0, printname: "$C_{7}$" },
+		{ name: "S", type: "OtherIntersectionCL", color: [ 0.0, 1.0, 0.0 ], args: [ "C7", "o", "H" ], labeled: true },
+		{ name: "r", type: "Segment", color: [ 1.0, 0.49803925, 0.0 ], args: [ "G", "S" ], size: 5, overhang: 0.86 },
+		{ name: "t", type: "Parallel", color: [ 0.0, 0.0, 1.0 ], args: [ "c", "T" ], alpha: 0.07692307692307693, labeled: true },
+		{ name: "Collection__7", type: "IntersectionConicLine", args: [ "C8", "c" ] },
+		{ name: "V", type: "SelectP", pos: [ -3.2636884935095947, -4.0, -0.41300198610789796 ], color: [ 0.0, 1.0, 0.0 ], args: [ "Collection__7" ], labeled: true },
+		{ name: "u", type: "Join", color: [ 0.0, 0.0, 1.0 ], args: [ "V", "T" ], alpha: 0.07692307692307693, labeled: true },
+		{ name: "z", type: "Segment", color: [ 1.0, 0.49803925, 0.0 ], args: [ "A", "V" ], size: 5, overhang: 0.92 },
+		{ name: "C12", type: "CircleByRadius", pos: { xx: { r: 0.008533333333333334, i: 1.6897023089777777E-19 }, yy: { r: 0.008533333333333334, i: 1.6897023089777777E-19 }, zz: 1.0, xy: 0.0, xz: { r: -0.13486686625282207, i: -2.6705256481873893E-18 }, yz: { r: 0.1652937975190071, i: 3.273015367119979E-18 } }, color: [ 0.0, 0.0, 1.0 ], radius: 6.25, args: [ "V" ], alpha: 0.05982905982905983, pinned: true, printname: "$C_{12}$" },
+		{ name: "a", type: "Segment", color: [ 1.0, 0.49803925, 0.0 ], args: [ "S", "A" ], size: 5, overhang: 0.765 },
+		{ name: "Collection__8", type: "IntersectionConicLine", args: [ "C9", "t" ] },
+		{ name: "U", type: "SelectP", pos: [ 4.0, { r: 1.1774456044298713, i: 1.9461126892660386E-16 }, { r: 0.12157184329088778, i: -6.3515055910305834E-18 } ], color: [ 1.0, 0.0, 0.0 ], args: [ "Collection__8" ], alpha: 0.07692307692307693, labeled: true },
+		{ name: "v", type: "Orthogonal", color: [ 1.0, 1.0, 1.0 ], args: [ "u", "U" ], size: 0 },
+		{ name: "W", type: "Meet", color: [ 1.0, 1.0, 1.0 ], args: [ "u", "v" ], size: 0.0 },
+		{ name: "C10", type: "CircleMP", color: [ 1.0, 1.0, 1.0 ], args: [ "W", "U" ], size: 0, printname: "$C_{10}$" },
+		{ name: "X", type: "OtherIntersectionCL", color: [ 0.0, 1.0, 0.0 ], args: [ "C10", "v", "U" ], labeled: true },
+		{ name: "w", type: "Segment", color: [ 0.0, 0.0, 0.0 ], args: [ "V", "X" ], size: 5, overhang: 0.96 },
+		{ name: "x", type: "Segment", color: [ 0.0, 0.0, 0.0 ], args: [ "X", "T" ], size: 5, overhang: 0.92 },
+		{ name: "Collection__9", type: "IntersectionConicLine", args: [ "C12", "w" ] },
+		{ name: "Y", type: "SelectP", pos: [ 4.0, { r: 1.5561807415104025, i: -1.0485980375304207E-16 }, { r: 0.35985005659703617, i: 1.1534785238919487E-17 } ], color: [ 0.0, 1.0, 0.0 ], args: [ "Collection__9" ], labeled: true },
+		{ name: "b", type: "Parallel", color: [ 0.0, 0.0, 1.0 ], args: [ "w", "A" ], alpha: 0.08547008547008547 },
+		{ name: "Collection__10", type: "IntersectionConicLine", args: [ "C11", "b" ] },
+		{ name: "Z", type: "SelectP", pos: [ { r: 2.3977545304014365, i: -4.582112900469689E-16 }, -4.0, { r: 0.7461770606058267, i: -3.769368333287951E-17 } ], color: [ 1.0, 0.0, 0.0 ], args: [ "Collection__10" ], alpha: 0.08547008547008547, labeled: true },
+		{ name: "s", type: "Join", color: [ 0.0, 0.0, 1.0 ], args: [ "A", "Y" ], alpha: 0.08547008547008547, labeled: true },
+		{ name: "l0", type: "Orthogonal", color: [ 1.0, 1.0, 1.0 ], args: [ "s", "Z" ], size: 0, printname: "$l_{0}$" },
+		{ name: "P0", type: "Meet", color: [ 1.0, 1.0, 1.0 ], args: [ "s", "l0" ], size: 0.0, printname: "$P_{0}$" },
+		{ name: "C14", type: "CircleMP", color: [ 1.0, 1.0, 1.0 ], args: [ "P0", "Z" ], size: 0, printname: "$C_{14}$" },
+		{ name: "P", type: "OtherIntersectionCL", color: [ 0.0, 1.0, 0.0 ], args: [ "C14", "l0", "Z" ], labeled: true, printname: "P" },
+		{ name: "S0", type: "Segment", color: [ 0.0, 0.0, 0.0 ], args: [ "A", "P" ], size: 5, overhang: 0.87, printname: "$S_{0}$" },
+		{ name: "S1", type: "Segment", color: [ 0.0, 0.0, 0.0 ], args: [ "P", "Y" ], size: 5, overhang: 0.935, printname: "$S_{1}$" },
+		{ name: "output", type: "Join", color: [ 0.0, 1.0, 0.0 ], args: [ "A", "P" ], printname: "output" },
+		{ name: "α0", type: "Angle", angle: 1.772843790673367, color: [ 0.0, 0.0, 1.0 ], args: [ "base", "output", "A" ] },
+		{ name: "Collection__11", type: "IntersectionConicLine", args: [ "C15", "output" ] },
+		{ name: "P2", type: "SelectP", pos: [ { r: 0.8193700820358876, i: 1.6143810536896939E-16 }, -4.0, { r: -0.13977346667978416, i: -1.1090207460918255E-18 } ], color: [ 1.0, 0.0, 0.0 ], args: [ "Collection__11" ], visible: false, labeled: true, printname: "$P_{2}$" },
+		{ name: "Collection__12", type: "IntersectionConicLine", args: [ "C15", "feta1" ] },
+		{ name: "P4", type: "SelectP", pos: [ 4.0, 1.5042701056078522, 0.14629286573085606 ], color: [ 1.0, 0.0, 0.0 ], args: [ "Collection__12" ], visible: false, labeled: true, printname: "$P_{4}$" },
+		{ name: "α2", type: "Angle", angle: 0.3597062551954024, color: [ 0.0, 0.0, 1.0 ], args: [ "base", "feta1", "A" ] },
+		{ name: "Text1", type: "Text", color: [ 0.0, 0.0, 0.0 ], args: [ "α1", "P3" ], pinned: true, text: "<)@$\"feta2\"= @#\"α1\"", dock: { to: "P3", offset: [ 7.004145433934809, -8.403501005806248 ] } },
+		{ name: "Text0", type: "Text", color: [ 0.0, 0.0, 0.0 ], args: [ "P2", "α0" ], pinned: true, text: "<)@$\"output\"= @#\"α0\"", dock: { to: "P2", offset: [ -2.877208325955621, -6.445036170468711 ] } },
+		{ name: "Text2", type: "Text", color: [ 0.0, 0.0, 0.0 ], args: [ "P4", "α2" ], pinned: true, text: "<)@$\"feta1\"= @#\"α2\"", dock: { to: "P4", offset: [ 6.904783307380967, -11.084844539997448 ] } },
+		{ name: "Text6", type: "Text", pos: [ 4.0, -0.10381696756071898, -0.14916317362212028 ], color: [ 0.0, 0.0, 0.0 ], args: [ "α1", "α0", "α2" ], text: "output = @#\"α2\" + @#\"α1\" = @#\"α0\"" },
+		{ name: "S2", type: "Segment", color: [ 1.0, 0.49803925, 0.0 ], args: [ "A", "B" ], size: 4, overhang: 0.91, printname: "$S_{2}$" } ],
+	ports: [
+		{ id: "CSCanvas", width: 1440, height: 705, transform: [ { visibleRect: [ -32.945871476270895, 33.46987446897433, 69.09604212372275, -16.488145731022556 ] } ], background: "rgb(255,255,255)" } ],
+	cinderella: { build: 1835, version: [ 2, 9, 1835 ] }});
+    </script>
+</head>
+<body>
+    <canvas id="CSCanvas"></canvas>
+</body>
+</html>

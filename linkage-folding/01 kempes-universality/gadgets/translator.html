@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>translator.cdy</title>
+    <style type="text/css">
+        * {
+            margin: 0px;
+            padding: 0px;
+        }
+
+        #CSConsole {
+            background-color: #FAFAFA;
+            border-top: 1px solid #333333;
+            bottom: 0px;
+            height: 200px;
+            overflow-y: scroll;
+            position: fixed;
+            width: 100%;
+        }
+    </style>
+    <script type="text/javascript" src="http://cinderella.de/CindyJS/latest/Cindy.js"></script>
+<script id="csmove" type="text/x-cindyscript">
+C0.radius =|K,H|;
+C2.radius =|Q,L|;
+</script>
+
+    <script type="text/javascript">
+createCindy({
+	scripts: "cs*",
+	defaultAppearance: { fontFamily: "sans-serif", lineSize: 1, pointSize: 5.0, textsize: 12.0 },
+	angleUnit: "°",
+	geometry: [
+		{ name: "F", type: "Free", pos: [ 4.0, -4.5952454462220606E-5, 0.1990707703941624 ], color: [ 1.0, 0.0, 0.0 ], visible: false },
+		{ name: "G", type: "Free", pos: [ 4.0, 2.0166666666666666, 0.19437807508738988 ], color: [ 1.0, 0.0, 0.0 ], visible: false, pinned: true, labeled: true },
+		{ name: "H", type: "Free", pos: [ 4.0, 0.6499999999999999, 0.19437807508738988 ], color: [ 1.0, 0.0, 0.0 ], visible: false, pinned: true, labeled: true },
+		{ name: "r1", type: "Segment", color: [ 0.5019608, 0.5019608, 0.5019608 ], args: [ "G", "H" ], size: 15 },
+		{ name: "K", type: "PointOnSegment", pos: [ 4.0, 1.616666666666666, 0.19437807508738986 ], color: [ 1.0, 1.0, 1.0 ], args: [ "r1" ], border: false },
+		{ name: "Text2", type: "Text", pos: [ 4.0, 2.0988593155893533, 0.17737923201891093 ], color: [ 0.0, 0.0, 0.0 ], pinned: true, text: "r2" },
+		{ name: "O", type: "Free", pos: [ 0.0, 0.0, 4.0 ], color: [ 1.0, 0.0, 0.0 ], pinned: true },
+		{ name: "C0", type: "CircleByRadius", pos: { xx: -0.040433474990738516, yy: -0.040433474990738516, zz: 1.0, xy: 0.0, xz: 0.0, yz: 0.0 }, color: [ 0.0, 0.0, 1.0 ], radius: 4.9731260391999745, args: [ "O" ], alpha: 0.1111111111111111, printname: "$C_{0}$" },
+		{ name: "A", type: "PointOnCircle", pos: [ 4.0, 0.9350649350649324, 0.8260075450473747 ], color: [ 0.0, 1.0, 0.0 ], args: [ "C0" ] },
+		{ name: "", type: "OtherPointOnCircle", pos: [ 4.0, 0.9350649350649324, -0.8260075450473747 ], color: [ 1.0, 1.0, 1.0 ], args: [ "A" ], pinned: true, size: 0.0 },
+		{ name: "a", type: "Segment", color: [ 0.0, 0.0, 0.0 ], args: [ "O", "A" ], size: 4, overhang: 0.79 },
+		{ name: "C1", type: "CircleByRadius", pos: { xx: -0.01, yy: -0.01, zz: 1.0, xy: 0.0, xz: 0.0, yz: 0.0 }, color: [ 0.0, 0.0, 1.0 ], radius: 10.0, args: [ "O" ], alpha: 0.1111111111111111, pinned: true, printname: "$C_{1}$" },
+		{ name: "input", type: "PointOnCircle", pos: [ -0.330275229357901, -4.0, -0.40136120548861487 ], color: [ 0.0, 1.0, 0.0 ], args: [ "C1" ], labeled: true },
+		{ name: "b", type: "Segment", color: [ 0.0, 0.0, 0.0 ], args: [ "O", "input" ], size: 4, overhang: 0.895 },
+		{ name: "c", type: "Parallel", color: [ 0.0, 0.0, 0.0 ], args: [ "b", "A" ], size: 4, overhang: 0.895, clip: "inci" },
+		{ name: "d", type: "Parallel", color: [ 0.0, 0.0, 0.0 ], args: [ "a", "input" ], size: 4, overhang: 0.79, clip: "inci" },
+		{ name: "C", type: "Meet", color: [ 0.0, 1.0, 0.0 ], args: [ "c", "d" ] },
+		{ name: "h", type: "Join", color: [ 0.0, 0.0, 0.0 ], args: [ "O", "F" ], dashtype: "dashed" },
+		{ name: "�0", type: "Angle", angle: 1.4884258843167955, color: [ 0.0, 0.0, 1.0 ], args: [ "h", "b", "O" ] },
+		{ name: "Text0", type: "Text", color: [ 0.0, 0.0, 0.0 ], args: [ "�0", "O" ], pinned: true, text: " @#\"�0\"", dock: { to: "O", offset: [ 5.0, 9.0 ] } },
+		{ name: "C2", type: "CircleByRadius", pos: { xx: -0.20650188626184365, yy: -0.20650188626184365, zz: { r: 0.17762857426173373, i: -1.6095629991585517E-33 }, xy: -0.0, xz: 1.9999999999999998, yz: -0.46753246753246613 }, color: [ 0.0, 0.0, 1.0 ], radius: 5.058869591599976, args: [ "A" ], alpha: 0.09401709401709402, printname: "$C_{2}$" },
+		{ name: "D", type: "PointOnCircle", pos: [ 4.0, { r: -0.4632761604836419, i: 1.5328336065519156E-17 }, { r: 0.4260485780375206, i: -7.544171392959378E-19 } ], color: [ 0.0, 1.0, 0.0 ], args: [ "C2" ] },
+		{ name: "e", type: "Segment", color: [ 0.0, 0.0, 0.0 ], args: [ "A", "D" ], size: 4, overhang: 0.8 },
+		{ name: "f", type: "Parallel", color: [ 0.0, 0.0, 0.0 ], args: [ "e", "C" ], size: 4, overhang: 0.8, clip: "inci" },
+		{ name: "g", type: "Parallel", color: [ 0.0, 0.0, 0.0 ], args: [ "c", "D" ], size: 4, overhang: 0.9, clip: "inci" },
+		{ name: "E", type: "Meet", color: [ 0.0, 1.0, 0.0 ], args: [ "f", "g" ] },
+		{ name: "M", type: "PointOnSegment", pos: [ 4.0, 1.9999999999999984, 0.19437807508738988 ], color: [ 1.0, 0.0, 0.0 ], args: [ "r1" ], visible: false, labeled: true },
+		{ name: "l", type: "Orthogonal", color: [ 0.0, 0.0, 1.0 ], args: [ "r1", "M" ], visible: false, labeled: true },
+		{ name: "P", type: "PointOnSegment", pos: [ 4.0, 0.6499999999999996, 0.19437807508738988 ], color: [ 1.0, 0.0, 0.0 ], args: [ "r1" ], visible: false, labeled: true },
+		{ name: "m", type: "Orthogonal", color: [ 0.0, 0.0, 1.0 ], args: [ "r1", "P" ], visible: false, labeled: true },
+		{ name: "L", type: "PointOnLine", pos: [ 4.0, 0.5799256505576205, 0.17342281792183487 ], color: [ 1.0, 0.0, 0.0 ], args: [ "m" ], visible: false, labeled: true },
+		{ name: "k", type: "Parallel", color: [ 0.5019608, 0.5019608, 0.5019608 ], args: [ "r1", "L" ], size: 14, clip: "inci" },
+		{ name: "N", type: "Meet", color: [ 1.0, 0.0, 0.0 ], args: [ "k", "l" ], visible: false, labeled: true },
+		{ name: "Q", type: "PointOnLine", pos: [ 4.0, 1.4572490706319705, 0.17342281792183487 ], color: [ 1.0, 1.0, 1.0 ], args: [ "k" ], border: false },
+		{ name: "G'", type: "Free", pos: [ 4.0, 2.0166666666666666, 0.19437807508738988 ], color: [ 1.0, 0.0, 0.0 ], visible: false, pinned: true, labeled: true },
+		{ name: "Text2'", type: "Text", color: [ 0.0, 0.0, 0.0 ], args: [ "G'" ], pinned: true, text: "r1", dock: { to: "G'", offset: [ -4.0, 16.999999999999986 ] } },
+		{ name: "n", type: "Parallel", color: [ 0.0, 0.0, 0.0 ], args: [ "h", "D" ], dashtype: "dashed" },
+		{ name: "Text1", type: "Text", color: [ 0.0, 0.0, 0.0 ], args: [ "�0", "D" ], pinned: true, text: "@#\"�0\"", dock: { to: "D", offset: [ 8.684806321849123, 4.766295204369101 ] } } ],
+	ports: [
+		{ id: "CSCanvas", width: 680, height: 322, transform: [ { visibleRect: [ -24.737014867399875, 19.077940408999904, 33.56860076459983, -8.531483463799956 ] } ], background: "rgb(255,255,255)" } ], 
+	cinderella: { build: 1835, version: [ 2, 9, 1835 ] } });
+    </script>
+</head>
+<body>
+    <canvas id="CSCanvas"></canvas>
+</body>
+</html>
