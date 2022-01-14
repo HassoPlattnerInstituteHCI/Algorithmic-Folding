@@ -25,9 +25,9 @@ def laman_comparison(G,d):
 def get_subgraphs(G):
     subgraphs = []
     for nb_nodes in range(3, G.number_of_nodes()):  # find all subsets of 3 or more neighboring nodes in the graph
-        for SG in (G.subgraph(selected_nodes)
+        for sg in (G.subgraph(selected_nodes)
             for selected_nodes in itertools.combinations(G, nb_nodes)): # select all combinations of three nodes from the graph
-                if nx.is_connected(SG):subgraphs.append(SG) # if the nodes form a connected subgraph, append them to the subgraphs
+                if nx.is_connected(sg):subgraphs.append(sg) # if the nodes form a connected subgraph, append them to the subgraphs
     return subgraphs
 
 graph = nx.Graph()
