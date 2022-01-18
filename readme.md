@@ -1,5 +1,5 @@
 # Algorithmic-Folding
-The code base for the Algorithmic Folding class (Winter Term 2020/21). **Each lecture** or set of lectures should have a **separate branch** for its codebase.
+The code base for the Algorithmic Folding class (Winter Term 2021/22). **Each lecture** or set of lectures should have a **separate branch** for its codebase.
 
 ## General Advice
 1. Never push to `master`
