@@ -3,7 +3,7 @@ from sympy import Point
 from itertools import count
 from enum import Enum
 
-EdgeType = Enum('EdgeType','STRUT BAR CABLE')
+TYPE = 'type'
 DIM = 2
 # if config is True it returns the configuration, otherwise just a graph, bracing adds a diagonal
 def parallel_4_bar(braced=False):
@@ -14,8 +14,10 @@ def parallel_4_bar(braced=False):
     p3 = Point(5,5) 
     p4 = Point(0,5) 
     graph.add_edges_from([(p1,p2),(p2,p3),(p3,p4),(p4,p1)])
-    if braced: graph.add_edge(p4,p2)
-    graph.set_edge_attributes(graph,)
+    if braced: 
+        graph.add_edge(p4,p2)
+        graph.add_edge(p1,p3)
+    nx.set_edge_attributes(graph,"bar",TYPE)
     return graph
 
 # if config is True it returns the configuration, otherwise just a graph, bracing adds a bracing bar
@@ -31,4 +33,5 @@ def jansen_walker(braced=False):
     p7 = Point(4,6)
     graph.add_edges_from([(p1,p2),(p2,p3),(p3,p4),(p4,p5),(p5,p6),(p6,p1),(p6,p4),(p4,p7),(p1,p7),(p2,p7)])
     if braced: graph.add_edge(p7,p3)
+    nx.set_edge_attributes(graph,"bar",TYPE)
     return graph
