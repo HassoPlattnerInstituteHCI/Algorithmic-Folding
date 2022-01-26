@@ -112,8 +112,8 @@ def attach_wings(mesh, trees, wings, remaining_wings = []):
     trees.sort(key=lambda t : t.number_of_nodes, reverse=True)
 
     wing = wings.pop(0)
-    
-    for t in trees: 
+
+    for t in trees:
         # All adjacent faces to wing currently in the tree
         #Heuristic: Sort parent faces by number of edges
         parent_faces = [f for f in get_adjacent_faces(mesh, wing) if t.has_node(f)]
