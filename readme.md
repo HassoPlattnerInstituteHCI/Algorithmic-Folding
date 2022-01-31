@@ -56,6 +56,6 @@ Passcode: 56942491
 | 10  | Mon 17.01.22 | [rigidity theory.ppt](https://www.dropbox.com/s/wmtjtmcobv97zpm/05%20AF-rigidity%20%5B180min%5D.pptx?dl=0) double slot | [rigidity/01](https://github.com/HassoPlattnerInstituteHCI/Algorithmic-Folding/tree/Rigidity/01)  |   |
 | 12  | Mon 24.01.22 | [tensegrities.ppt](https://www.dropbox.com/s/ub4krn4sz2nffty/12%20AF-tensegrities.pptx?dl=0) + in-depth assignment | [rigidity/02-tensegrities](https://github.com/HassoPlattnerInstituteHCI/Algorithmic-Folding/tree/Rigidity/02-tensegrities)  |   |
 | 13  | Mon 31.01.22 | [multistability and simulation(coming).ppt]() double slot | [multistable](https://github.com/HassoPlattnerInstituteHCI/Algorithmic-Folding/tree/multistable)  |  slides coming soon |
-| 14  | Mon 07.02.22 | Guest lecture by [Yasaman Tahouni](https://www.yasamantahouni.com) (Institute for Computational Design and Construction (University of Stuttgart), MIT) Programming Shape-Change: From Bioinspiration to Autonomous Origami Structures) |   |   |
+| 14  | Mon 07.02.22 | Guest lecture by [Yasaman Tahouni](https://www.yasamantahouni.com) (IDC (University of Stuttgart), MIT) Programming Shape-Change: From Bioinspiration to Autonomous Origami Structures) |   |   |
 | 15  | Mon 14.02.22 | Final Exam  |   |   |
 | 16  | Mon 28.02.22 | in-depth projects due (demo session)  |   |   |
