@@ -1,4 +1,4 @@
-# Algorithmic-Folding (WS2021/22) by Thijs Roumen and Abdullah Muhammad
+# Algorithmic-Folding (WS2021/22) by [Thijs Roumen](http://www.thijsroumen.com) and [Abdullah Muhammad](https://www.muhammad-abdullah.com)
 
 ![2022_01_31 banner folding course_1](https://user-images.githubusercontent.com/1307670/151854735-180ea79b-f2d6-4b9a-852b-8bfbd941158f.png)
 
@@ -33,9 +33,10 @@
 **further reading**: Geometric Folding Algorithms by Erik D. Demaine and Joseph o' Rourke is a fantastic standard work in this discipline and Origami Design Secrets, mathematical methods for an ancient art by Robert J. Lang takes a deep dive into the Tree Method and origami specific content
 
 **contact information**: no official office hours--contact by email, we are happy to set up extra zoom calls for support anytime
-- Thijs Roumen (instructor) : thijs.roumen@hpi.de
-- Abdullah Muhammas (co-instructor): abdullah.muhammad@hpi.de
-- Lukas Rambold (TA): lukas.rambold@hpi.de
+- [Thijs Roumen](http://www.thijsroumen.com) (instructor) : thijs.roumen@hpi.de
+- [Abdullah Muhammad](https://www.muhammad-abdullah.com) (co-instructor): abdullah.muhammad@hpi.de
+- [Lukas Rambold](https://rambold.io) (TA): lukas.rambold@hpi.de
+- [Ran Zhang](https://ran-zhang.com) (lecturer of Developable Surfaces and Multistability): ran.zhang@hpi.de
 
 **coding logistics**: this repository contains the code base for all assignments in the course. Use the individual branches or the links in the schedule to be redirected to the repository of the week (`git checkout <branchname>`). Please pull the branch right before each lecture starts so we are all using the same up-to-date code base (`git pull`)
 
@@ -59,6 +60,6 @@ Passcode: 56942491
 | 10  | Mon 17.01.22 | [rigidity theory.ppt](https://www.dropbox.com/s/wmtjtmcobv97zpm/05%20AF-rigidity%20%5B180min%5D.pptx?dl=0) double slot | [rigidity/01](https://github.com/HassoPlattnerInstituteHCI/Algorithmic-Folding/tree/Rigidity/01)  |   |
 | 12  | Mon 24.01.22 | [tensegrities.ppt](https://www.dropbox.com/s/ub4krn4sz2nffty/12%20AF-tensegrities.pptx?dl=0) + in-depth assignment | [rigidity/02-tensegrities](https://github.com/HassoPlattnerInstituteHCI/Algorithmic-Folding/tree/Rigidity/02-tensegrities)  |   |
 | 13  | Mon 31.01.22 | [multistable mechanisms.ppt](https://www.dropbox.com/s/r0ex2s2rj2toyup/multistable_lecture.pptx?dl=0) and [simulation.ppt](https://www.dropbox.com/s/jbweniufz2eabyb/Rambold_Dynamics_Simulation.pptx?dl=0) double slot | [multistable/01](https://github.com/HassoPlattnerInstituteHCI/Algorithmic-Folding/tree/Multistable/01)  |   |
-| 14  | Mon 07.02.22 | Guest lecture by [Yasaman Tahouni](https://www.yasamantahouni.com) (IDC (University of Stuttgart), MIT) Programming Shape-Change: From Bioinspiration to Autonomous Origami Structures) |   |   |
+| 14  | Mon 07.02.22 | Guest lecture by [Yasaman Tahouni](https://www.yasamantahouni.com) and [Tiffany Cheng](http://micromacro.nu) (IDC (University of Stuttgart), MIT) Programming Shape-Change: From Bioinspiration to Autonomous Origami Structures) |   |   |
 | 15  | Mon 14.02.22 | Final Exam  |   |   |
 | 16  | Mon 28.02.22 | in-depth projects due (demo session)  |   |   |
