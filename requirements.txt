@@ -1,0 +1,5 @@
+numpy
+openmesh
+Shapely
+scipy
+drawSvg
