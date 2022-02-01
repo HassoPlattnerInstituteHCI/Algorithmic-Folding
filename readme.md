@@ -12,7 +12,7 @@
 
 **language**: python
 
-**dependenies**: (please install before the lectures to maximize flow, contact a TA should you have any problems)
+**dependenies**: (please install before the lectures to maximize flow, contact a TA should you have any problems) `pip install requirements.txt`
 - jupyter notebook 
 - scipy
 - numpy
@@ -22,8 +22,9 @@
 - shapely
 - openmesh
 - drawSVG
-- igl
-- meshplot
+- conda
+- igl `conda install -c conda-forge igl`
+- meshplot `conda install meshplot`
 
 **deliverables and grading**: weekly homework assignment (ungraded, solution provided) a mid-term (30%) and final exam (70%) and in in-depth project in which you dive deeper into any of the lecture's topics. The in-depth assignment is evaluated through a question about your approach and findings as part of the final exam
 
