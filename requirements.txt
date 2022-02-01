@@ -1,0 +1,10 @@
+jupyterlab
+scipy
+numpy
+sympy
+networkx
+shapely
+openmesh
+drawSvg
+meshplot
+conda
