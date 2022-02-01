@@ -13,7 +13,7 @@
 **language**: python
 
 **dependenies**: (please install before the lectures to maximize flow, contact a TA should you have any problems)
-- jupyter notebook
+- jupyter notebook 
 - scipy
 - numpy
 - sympy
@@ -22,7 +22,6 @@
 - shapely
 - openmesh
 - drawSVG
-
 - igl
 - meshplot
 
@@ -37,7 +36,7 @@
 - Abdullah Muhammas (co-instructor): abdullah.muhammad@hpi.de
 - Lukas Rambold (TA): lukas.rambold@hpi.de
 
-**coding logistics**: this repository contains the code base for all assignments in the course. Use the individual branches or the links in the schedule to be redirected to the repository of the week.
+**coding logistics**: this repository contains the code base for all assignments in the course. Use the individual branches or the links in the schedule to be redirected to the repository of the week (`git checkout <branchname>`). Please pull the branch right before each lecture starts so we are all using the same up-to-date code base (`git pull`)
 
 **schedule, slides and code repositories**:
 [COVID]
