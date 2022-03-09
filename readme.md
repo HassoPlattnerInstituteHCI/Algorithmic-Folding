@@ -12,7 +12,7 @@ Make sure the following dependencies are installed
 * scipy>=1.7.3
 * sympy>=1.9
 
-### Usage
+### Usage/How to Run
 This project can be used through a pysimplegui. To open the GUI run `main_window.py` in the `/frontend` directory.
 Within in the interface you are able to select an approximation method. For now only _"Polynomial approximation to a degree of N"_ is implemented.
 After selecting the method for approximation and entering the degree in the field on the left for _N_ you are able to draw the desired curve on the canvas.

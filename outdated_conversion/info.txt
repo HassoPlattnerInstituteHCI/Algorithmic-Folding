@@ -1,0 +1,1 @@
+This directory is left in if anyone wants to take a closer look at earlier attempts of converting systems based on the underlying pyslvs api.
