@@ -1,65 +1,52 @@
-# Algorithmic-Folding (WS2021/22) by [Thijs Roumen](http://www.thijsroumen.com) and [Abdullah Muhammad](https://www.muhammad-abdullah.com)
+# Stroke-based-Kempe-Linkage
+Develoment out of interest and based on an assignment in Algorithmic Folding WS2021.
 
-![2022_01_31 banner folding course_1](https://user-images.githubusercontent.com/1307670/151854735-180ea79b-f2d6-4b9a-852b-8bfbd941158f.png)
+## Description
 
-**objective**: implement and study folding algorithms applied to linkages (1D), origami (2D), and polyhedra (3D). We will go through the high level algorithms as well as practical in-class hacking assignments and learn about applied engineering examples. You will furthermore learn how to represent some intractable high dimensional folding problems in lower dimensions to then leverage universal and generic algorithms. You will learn how folding algorithms formed the backbone of several research projects at our lab in in the broader HCI and graphics field. And finally, you will learn how to extend what is known by running a small in-depth research project on one of the lectures, advised by the class instructors.
+### Requirements
+Make sure the following dependencies are installed
+* Python 3
+* SolveSpace API
+* Pyslvs>=21.12.0 | https://pyslvs-ui.readthedocs.io/en/stable/
+* pysimplegui>=4.55.1
+* scipy>=1.7.3
+* sympy>=1.9
 
-**description**: Every week you will code up a simple program in python through mostly in-class assignments, continued into homework assignments. The homework serves as a self-check and we provide full solutions in the code base. We are fully available to help with this as our objective is not to confirm that you are great students (we know that), but to help you get the most out of the learning experience. The in-depth assignment gives you an opportunity to do a little research beyond the paved roads of knowledge, every lecture contains an example in-depth assignment, but you are free to propose your own too. The instructors and TA are fully available to help you succeed at this. We are generally interested in the outcomes too! We can help code things up and create use cases etc and if you are excited to pursue the project beyond the lecture period, we will collaborate to turn this into an actual research paper or practical open source software tool!
+### Usage
+This project can be used through a pysimplegui. To open the GUI run `main_window.py` in the `/frontend` directory.
+Within in the interface you are able to select an approximation method. For now only _"Polynomial approximation to a degree of N"_ is implemented.
+After selecting the method for approximation and entering the degree in the field on the left for _N_ you are able to draw the desired curve on the canvas.
+Pressing **Approximate** will display you the calculated approximation right in the canvas. <br/> <br/>
+![Unable to load gif](https://media0.giphy.com/media/DkgjjF0q90zIMrQlHC/giphy.gif) <br/> <br/>
 
-**mailing list**: please sign up to [this mailing list](https://myhpi.de/lists/p2EiNpHZWMBnltwycLTcw4kFapI01t8Rq49zRw49Q)
+If you are happy with the approximation you can export the result via a press of the **Export** button.
+You will be prompted a dialogue on the **CLI** to configure the initial values of alpha and beta (not displayed in GIF below). We can comptutaionally infer a valid configuration, but with the libraries used, this takes forever except for linear function. If you are only interested in the linkage system and do not want it to be correctly restricted by a peaucellier linkage, you can enter arbitrary values within the first quadrant. If you entered both values (or left them empty) the export starts.
+It will display an image of the calculated linkage system and print out the _mechanism expression_ that can then be imported into [pyslvs](https://github.com/KmolYuan/Pyslvs-UI) for simulation. 
 
-**pre-requisites**: Master level course, heavily building on Maths 1+2 and Programming Technology 1+2
+![Unable to load gif](https://media1.giphy.com/media/43QvhD7KjjUSh5Lu4O/giphy.gif) <br/> <br/>
 
-**language**: python
 
-**dependenies**: (please install before the lectures to maximize flow, contact a TA should you have any problems) `pip install requirements.txt`
-- jupyter notebook 
-- scipy
-- numpy
-- sympy
-- networkx
-- itertools
-- shapely
-- openmesh
-- drawSVG
-- conda
-- igl `conda install -c conda-forge igl`
-- meshplot `conda install meshplot`
+Importing a _mechanism expression_ in pyslvs is done through the usage of the **mechanism** -> **paste** option. <br/>
+![Unable to load gif](https://media4.giphy.com/media/hosZqf5Ues8V7vkfNF/giphy.gif) <br/>
+Hint: for the sake of clarity it is recommended to disable _point marks_ and reduce the width of all lines through the settings (F2)!
+<br/> <br/>
+The linakge system movement can be simulated by telling pyslvs what points should act as _base points_ and which should act as _driver points_ in the **inputs** menu.
+The correct choice for these can be checked by looking the green & blue colored areas of the displayed linkage image from the earlier steps.
 
-**deliverables and grading**: weekly homework assignment (ungraded, solution provided) a mid-term (30%) and final exam (70%) and in in-depth project in which you dive deeper into any of the lecture's topics. The in-depth assignment is evaluated through a question about your approach and findings as part of the final exam
 
-**workload**: weekly 3hr time slot, in which the first slot is lecture + in-class coding and the second slot for homework with the instructors around. Some weeks (indicated in the schedule) are 3hr lecture only.
+## Limitations
+This chapter will list the currently known limitations of this program
+* As of now the program is **work-in-progress** and might not function as intended
+* There is only one approximation technique currently implemented (Polynomial approximation to the degree of N)
+* A valid approximation can only be reached when choosing a degree of equal or less than 3 as the code currently doesn't handle squares of cos
+* The initial configuration of alpha and beta must be within the first quadrant, otherwise inconsistencies may occure. This does not apply for any outputs of the linkage, only for the initial angles within the rhombus. There surely is a simple mathematical error somewhere, but we were not able to find it.
+* Pyslvs is a qt-ui with underlying usage of a reduced solvespace-api, a lot of functions are unavailable and the physics simulation is bare bones
+* Without switching to a different visualization / simulation tool the complete path of the output point will not be traced
+* The output area (2*R) is not considered in pyslvs so we will most likely see the linkage breaking at some point
+* ... probably a lot more we are not even thinking of at the moment
 
-**further reading**: Geometric Folding Algorithms by Erik D. Demaine and Joseph o' Rourke is a fantastic standard work in this discipline and Origami Design Secrets, mathematical methods for an ancient art by Robert J. Lang takes a deep dive into the Tree Method and origami specific content
-
-**contact information**: no official office hours--contact by email, we are happy to set up extra zoom calls for support anytime
-- [Thijs Roumen](http://www.thijsroumen.com) (instructor) : thijs.roumen@hpi.de
-- [Abdullah Muhammad](https://www.muhammad-abdullah.com) (co-instructor): abdullah.muhammad@hpi.de
-- [Lukas Rambold](https://rambold.io) (TA): lukas.rambold@hpi.de
-- [Ran Zhang](https://ran-zhang.com) (lecturer week 6,13): ran.zhang@hpi.de
-
-**coding logistics**: this repository contains the code base for all assignments in the course. Use the individual branches or the links in the schedule to be redirected to the repository of the week (`git checkout <branchname>`). Please pull the branch right before each lecture starts so we are all using the same up-to-date code base (`git pull`)
-
-**schedule, slides and code repositories**:
-[COVID]
-unfortunately from December on, our lecture takes place via zoom:
-Meeting ID: 910 1917 9704
-Passcode: 56942491
-
-| week  | date |     content     |  code branch | notes |
-|---|----------|---|--------|---|
-| 1  | Mon 01.11.21 | [vertex unfolding.ppt](https://www.dropbox.com/s/aowysjp3rvkdwjm/05%20AF-Unfolding%20polyhedra%20%28vertex%29%20%28intro%20version%29.pptx?dl=0) + homework |  [code (soon) in repo](https://docs.google.com/document/d/1pCiY1Nrs-NpOeYKXIFngJyGDFIbKDWrsfiCv5-pspqY/edit)      | swap with lecture 2 again next year  |
-| 2  | Mon 08.11.21 | [strip folding.ppt](https://www.dropbox.com/s/yfzdljgw7a90f00/16%20Algorithmic%20Folding%20%5B120min%5D.pptx?dl=0) + homework | [folding/01](https://github.com/HassoPlattnerInstituteHCI/Algorithmic-Folding/tree/Folding/01)   |   |
-| 3  | Mon 15.11.21 | [edge unfolding.ppt](https://www.dropbox.com/s/5zli3li184w394l/13%20AF-Unfolding%20polyhedra%20%28120%20min%29.pptx?dl=0) + homework | [unfolding/01](https://github.com/HassoPlattnerInstituteHCI/Algorithmic-Folding/tree/Unfolding/01)   |   |
-| 4  | Mon 22.11.21 | [unfolding+lasercutting.ppt](https://www.dropbox.com/s/uakfww4knxg0xfk/08%20AF-Unfolding%20polyhedra%20%28application%29%2873%20min%29.pptx?dl=0) + homework | [unfolding/02](https://github.com/HassoPlattnerInstituteHCI/Algorithmic-Folding/tree/Unfolding/02)   |   |
-| 5  | Mon 29.11.21 | [general unfolding.ppt](https://www.dropbox.com/s/w6s583px4sn7wcg/05%20AF-Unfolding%20polyhedra%20%28general%29%20%2860%20min%29.pptx?dl=0) + homework | [unfolding/03](https://github.com/HassoPlattnerInstituteHCI/Algorithmic-Folding/tree/Unfolding/03)   |   |
-| 6  | Mon 06.12.21 | [developable surfaces.ppt](https://www.dropbox.com/s/h4zagik8t7f9qbi/Developable%20surface%20modeling.pptx?dl=0) double slot | [developable_surface](https://github.com/HassoPlattnerInstituteHCI/Algorithmic-Folding/tree/developable_surface)   |   |
-| 7  | Mon 13.12.21 | [efficient origami (tree method).ppt](https://www.dropbox.com/s/lgsazzs65ejmzfa/11%20AF-TreeMethod.pptx?dl=0) + homework  | [folding/02](https://github.com/HassoPlattnerInstituteHCI/Algorithmic-Folding/tree/Folding/02)   |   |
-| 8  | Mon 20.12.21 | mid-term exam  |   |   |
-| 9  | Mon 10.01.22 | [linkage folding (kempe's universality).ppt](https://www.dropbox.com/s/izky9yvkxipzzgc/16%20AF-Linkage%20Folding%20%20%5B150min%5D.pptx?dl=0) + homework | [linkages_kempe](https://github.com/HassoPlattnerInstituteHCI/Algorithmic-Folding/tree/linkages-kempe) |   |
-| 10  | Mon 17.01.22 | [rigidity theory.ppt](https://www.dropbox.com/s/wmtjtmcobv97zpm/05%20AF-rigidity%20%5B180min%5D.pptx?dl=0) double slot | [rigidity/01](https://github.com/HassoPlattnerInstituteHCI/Algorithmic-Folding/tree/Rigidity/01)  |   |
-| 12  | Mon 24.01.22 | [tensegrities.ppt](https://www.dropbox.com/s/ub4krn4sz2nffty/12%20AF-tensegrities.pptx?dl=0) + in-depth assignment | [rigidity/02-tensegrities](https://github.com/HassoPlattnerInstituteHCI/Algorithmic-Folding/tree/Rigidity/02-tensegrities)  |   |
-| 13  | Mon 31.01.22 | [multistable mechanisms.ppt](https://www.dropbox.com/s/r0ex2s2rj2toyup/multistable_lecture.pptx?dl=0) and [simulation.ppt](https://www.dropbox.com/s/jbweniufz2eabyb/Rambold_Dynamics_Simulation.pptx?dl=0) double slot | [multistable/01](https://github.com/HassoPlattnerInstituteHCI/Algorithmic-Folding/tree/Multistable/01)  |   |
-| 14  | Mon 07.02.22 | [Programming Shape Change.pdf](https://www.dropbox.com/s/zq3wmii2y39eoq5/2022_02_07%20Yasaman_Part1.pdf?dl=0) and [AutoOrigami.pdf](https://www.dropbox.com/s/pwqw2j3ejz8kxc7/2022_02_07%20Yasaman_Part2.pdf?dl=0) by [Yasaman Tahouni](https://www.yasamantahouni.com) and [Bio-inspired 4D Printing.pdf](https://www.dropbox.com/s/7ycl5ijwalgoryh/2022_02_07%20TiffanyCheng%20bio-inspired%204d%20printing.pdf?dl=0) by [Tiffany Cheng](http://micromacro.nu) (ICD, University of Stuttgart) |   |   |
-| 15  | Mon 14.02.22 | Final Exam  |   |   |
-| 16  | Mon 28.02.22 | in-depth projects due (demo session)  |   |   |
+## Pre-view
+Here is what a partially linear simulation might look like.
+Keep in mind this is still only partially correct.
+<br/> <br/>
+![Unable to load gif](https://media1.giphy.com/media/UOakG4pqyalqeR8QvF/giphy.gif) <br/>

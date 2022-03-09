@@ -1,0 +1,6 @@
+Python 3
+SolveSpace API
+Pyslvs>=21.12.0 | https://pyslvs-ui.readthedocs.io/en/stable/
+pysimplegui>=4.55.1
+scipy>=1.7.3
+sympy>=1.9
