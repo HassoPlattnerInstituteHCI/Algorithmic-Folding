@@ -31,6 +31,7 @@ and open it with
 ```sh
 jupyter notebook
 ```
+or use Visual Studio Code with the respective Jupyter Notebook extensions.
 
 
 If you deviate from this setup due to personal taste, make sure that pip, conda and jupyter all point to the same environment to avoid "package not found"-errors.
