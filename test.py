@@ -34,11 +34,12 @@ class Mesh:
             faces[faces_index].append(curr_igl_face)
             seen.add(curr_igl_face)
 
+            # TODO: somehow 2 is disappears
+
             for f in adjacend_faces[curr_igl_face]:
                 if f in seen: 
                     continue
                 if np.array_equal(normals[f], normals[curr_igl_face]):
-                    # print(curr_igl_face, f, "equal")
                     seen.add(f)
                     faces[faces_index].append(f)
                     
@@ -46,14 +47,9 @@ class Mesh:
             for f in adjacend_faces[curr_igl_face]:
                 if f in seen: 
                     continue
-                if np.array_equal(normals[f] * -1, normals[curr_igl_face]):
-                    # print(curr_igl_face, f, "equal")
-                    help(f, faces_index)
-                else:
-                    # print(curr_igl_face, f, "unequal")
-                    faces.append([])
-                    adj.append((faces_index, len(faces) - 1))
-                    help(f, len(faces) - 1)
+                faces.append([])
+                adj.append((faces_index, len(faces) - 1))
+                help(f, len(faces) - 1)
 
         help(0, 0)
         print(faces)
