@@ -14,53 +14,42 @@ class Mesh:
 
         return map;
 
-    def __build_non_triangular_mesh(self):
+    def __build_polyhedral_mesh(self):
         normals = self.__get_face_normals()
         seen = set()
         adj = []
         faces = [[]]
         adjacend_faces, _ = igl.triangle_triangle_adjacency(self.igl_f)
 
-        # for k, v in normals.items():
-            # print(k, v)
-        # print("\n\n")
-        # for n in adjacend_faces:
-            # print(n)
-        # print("\n\n")
+        normal_vec_equal = lambda a, b: np.array_equal(a, b) or np.array_equal(a * -1, b)
 
         def help(curr_igl_face, faces_index):
-            print(curr_igl_face, faces_index)
-
             faces[faces_index].append(curr_igl_face)
             seen.add(curr_igl_face)
 
-            # TODO: somehow 2 is disappears
+            for f in adjacend_faces[curr_igl_face]:
+                if f in seen:
+                    continue
+                if normal_vec_equal(normals[f], normals[curr_igl_face]):
+                    help(f, faces_index)
 
             for f in adjacend_faces[curr_igl_face]:
-                if f in seen: 
+                if f in seen:
                     continue
-                if np.array_equal(normals[f], normals[curr_igl_face]):
-                    seen.add(f)
-                    faces[faces_index].append(f)
-                    
-
-            for f in adjacend_faces[curr_igl_face]:
-                if f in seen: 
-                    continue
-                faces.append([])
-                adj.append((faces_index, len(faces) - 1))
-                help(f, len(faces) - 1)
+                if not normal_vec_equal(normals[f], normals[curr_igl_face]):
+                    faces.append([])
+                    adj.append((faces_index, len(faces) - 1))
+                    help(f, len(faces) - 1)
 
         help(0, 0)
-        print(faces)
-        print(adjacend_faces)
-        return self.igl_v, self.igl_f
+        return faces, adj
 
     def __init__(self, path):
         self.igl_v, self.igl_f = igl.read_triangle_mesh("./cube.stl")
-        # TODO: what is h
         self.igl_v, self.igl_f, h = igl.remove_duplicates(self.igl_v, self.igl_f, 0.00001)
-        self.v, self.f = self.__build_non_triangular_mesh()
+        self.v = self.igl_v
+        self.faces, self.adjacend_faces = self.__build_polyhedral_mesh()
+        print(self.faces, self.adjacend_faces)
 
     def draw(self):
         print("v")
