@@ -16,6 +16,7 @@ class Mesh:
 
     def __build_polyhedral_mesh(self):
         normals = self.__get_face_normals()
+        normals_polyhedral = []
         seen = set()
         adj = []
         faces = [[]]
@@ -23,7 +24,11 @@ class Mesh:
 
         normal_vec_equal = lambda a, b: np.array_equal(a, b) or np.array_equal(a * -1, b)
 
-        def help(curr_igl_face, faces_index):
+        def help(curr_igl_face, faces_index, normal_vec):
+
+            if faces_index >= len(normals_polyhedral):
+                normals_polyhedral.append(normal_vec)
+
             faces[faces_index].append(curr_igl_face)
             seen.add(curr_igl_face)
 
@@ -31,7 +36,7 @@ class Mesh:
                 if f in seen:
                     continue
                 if normal_vec_equal(normals[f], normals[curr_igl_face]):
-                    help(f, faces_index)
+                    help(f, faces_index, None)
 
             for f in adjacend_faces[curr_igl_face]:
                 if f in seen:
@@ -39,17 +44,23 @@ class Mesh:
                 if not normal_vec_equal(normals[f], normals[curr_igl_face]):
                     faces.append([])
                     adj.append((faces_index, len(faces) - 1))
-                    help(f, len(faces) - 1)
+                    help(f, len(faces) - 1, normals[f])
 
-        help(0, 0)
-        return faces, adj
+        help(0, 0, normals[0])
+        return faces, adj, normals_polyhedral
 
     def __init__(self, path):
         self.igl_v, self.igl_f = igl.read_triangle_mesh("./cube.stl")
         self.igl_v, self.igl_f, h = igl.remove_duplicates(self.igl_v, self.igl_f, 0.00001)
         self.v = self.igl_v
-        self.faces, self.adjacend_faces = self.__build_polyhedral_mesh()
-        print(self.faces, self.adjacend_faces)
+        self.faces, self.adjacend_faces, self.normals = self.__build_polyhedral_mesh()
+
+        print("Faces")
+        print(self.faces)
+        print("Adjecend Faces")
+        print(self.adjacend_faces)
+        print("NOrmals")
+        print(self.normals)
 
     def draw(self):
         print("v")
