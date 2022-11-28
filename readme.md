@@ -35,7 +35,7 @@
 **authors**: 
 - [Thijs Roumen](http://www.thijsroumen.com) thijs.roumen@hpi.de
 - [Abdullah Muhammad](https://www.muhammad-abdullah.com): abdullah.muhammad@hpi.de
-- [Ran Zhang](https://ran-zhang.com) (lecturer week 6,13): ran.zhang@hpi.de
+- [Ran Zhang](https://ran-zhang.com): ran.zhang@hpi.de
 - [Lukas Rambold](https://rambold.io): lukas.rambold@hpi.de
 
 **coding logistics**: this repository contains the code base for all assignments in the course. Use the individual branches or the links in the schedule to be redirected to the repository of the week (`git checkout <branchname>`). Please pull the branch right before each lecture starts so we are all using the same up-to-date code base (`git pull`)
