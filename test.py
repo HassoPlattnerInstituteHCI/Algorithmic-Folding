@@ -23,11 +23,13 @@ class Mesh:
         adjacend_faces, _ = igl.triangle_triangle_adjacency(self.igl_f)
         face_mapping = {}
 
+        for a in adjacend_faces:
+            print(a)
+
         normal_vec_equal = lambda a, b: np.array_equal(a, b) or np.array_equal(a * -1, b)
 
         def help(curr_igl_face, faces_index, normal_vec):
             face_mapping[curr_igl_face] = faces_index
-
             if faces_index >= len(normals_polyhedral):
                 normals_polyhedral.append(normal_vec)
 
@@ -48,13 +50,27 @@ class Mesh:
                     help(f, len(faces) - 1, normals[f])
 
         help(0, 0, normals[0])
+
+        print("face_mappings")
+        for k, v in face_mapping.items():
+            print(k, v)
+
         for igl_f, af in enumerate(adjacend_faces):
             for f in af:
                 adj.append((face_mapping[igl_f], face_mapping[f]))
 
-        # TODO: remove duplicates in adj
+        remove_duplicates = lambda l: list(set(l))
+        remove_self_reference = lambda l: [t for t in l if t[0] != t[1]]
+        adj = remove_duplicates(adj)
+        adj = remove_self_reference(adj)
+        adj2 = []
+        for i in range(len(faces)):
+            adj2.append([])
+            for a in adj:
+                if a[0] == i:
+                    adj2[i].append(a[1])
             
-        return faces, adj, normals_polyhedral
+        return faces, adj2, normals_polyhedral
 
     def __init__(self, path):
         self.igl_v, self.igl_f = igl.read_triangle_mesh("./cube.stl")
