@@ -1,9 +1,11 @@
 import igl
 import numpy as np
+import networkx as nx
 
 # prefixes:
 #   - everything with tri_ is something related to triangular
 #   - everything with ply_ is something related to polyhedral
+normal_vec_equal = lambda a, b: np.linalg.norm(np.cross(a, b)) < 1e-5
 
 def build_polyhedral_mesh(tri_vertices, tri_faces):
 
@@ -17,7 +19,6 @@ def build_polyhedral_mesh(tri_vertices, tri_faces):
     ply_normals = []
 
     # checks if normals are equal according to certain tolerance 1e-5
-    normal_vec_equal = lambda a, b: np.linalg.norm(np.cross(a, b)) < 1e-5
 
 
     # weird DFS too actualy detriangulate mesh
@@ -89,9 +90,37 @@ igl_v, igl_f, _ = igl.remove_duplicates(igl_v, igl_f, 0.00001)
 
 faces, adjacency, normals = build_polyhedral_mesh(igl_v, igl_f)
 
-print("Faces")
-print(faces)
-print("Adjacency")
-print(adjacency)
-print("Normals")
-print(normals)
+def strip_unfold(faces, adjacency, normals):
+    unfolding = nx.Graph()
+
+    # find suitable strip faces
+    # TODO: go through all posibble strips
+    ignored_normal = normals[0]
+
+    strip_faces = []
+    for f_id in range(len(faces)):
+        if not normal_vec_equal(normals[f_id], ignored_normal):
+            strip_faces.append(f_id)
+
+    # TODO: this can be done with set difference
+    wing_faces = [f for f in range(len(faces)) if f not in strip_faces]
+
+    # connect strip_faces using nx
+    unfolding.add_nodes_from(strip_faces)
+    for f in strip_faces:
+        for adj_f in adjacency[f]:
+            if adj_f in strip_faces:
+                unfolding.add_edge(f, adj_f)
+    unfolding = nx.minimum_spanning_tree(unfolding)
+
+    # add wing faces on first adjacency found
+    # TODO: this can be done with set.intersect()
+    for f in wing_faces:
+        for adj_f in adjacency[f]:
+            if adj_f in strip_faces:
+                unfolding.add_edge(f, adj_f)
+                break
+    return unfolding
+
+unfolding = strip_unfold(faces, adjacency, normals)
+print(unfolding.edges())
