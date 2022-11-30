@@ -97,13 +97,14 @@ def strip_unfold(faces, adjacency, normals):
     # TODO: go through all posibble strips
     ignored_normal = normals[0]
 
-    strip_faces = []
-    for f_id in range(len(faces)):
-        if not normal_vec_equal(normals[f_id], ignored_normal):
-            strip_faces.append(f_id)
+    all_faces = list(range(len(faces)))
+    filter_prefix = lambda f: not normal_vec_equal(normals[f], ignored_normal)
 
-    # TODO: this can be done with set difference
-    wing_faces = [f for f in range(len(faces)) if f not in strip_faces]
+    # strip faces are all_faces except with certain normal
+    strip_faces = list(filter(filter_prefix, all_faces))
+
+    # wing faces are all_faces which are not wing_faces
+    wing_faces = set(all_faces).difference(strip_faces)
 
     # connect strip_faces using nx
     unfolding.add_nodes_from(strip_faces)
@@ -115,7 +116,7 @@ def strip_unfold(faces, adjacency, normals):
 
     # add wing faces on first adjacency found
 
-    strip_faces = set(strip_faces)
+    # strip_faces = set(strip_faces)
     for f in wing_faces:
         adj_faces = set(adjacency[f])
         pos_positions = list(adj_faces.intersection(strip_faces))
