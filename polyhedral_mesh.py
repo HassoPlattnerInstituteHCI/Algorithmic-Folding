@@ -114,12 +114,19 @@ def strip_unfold(faces, adjacency, normals):
     unfolding = nx.minimum_spanning_tree(unfolding)
 
     # add wing faces on first adjacency found
-    # TODO: this can be done with set.intersect()
+
+    strip_faces = set(strip_faces)
     for f in wing_faces:
-        for adj_f in adjacency[f]:
-            if adj_f in strip_faces:
-                unfolding.add_edge(f, adj_f)
-                break
+        adj_faces = set(adjacency[f])
+        pos_positions = list(adj_faces.intersection(strip_faces))
+
+        # check if wing is not connectable
+        if len(pos_positions) == 0:
+            unfolding.add_node(f)
+        else:
+            unfolding.add_edge(f, pos_positions[0])
+
+
     return unfolding
 
 unfolding = strip_unfold(faces, adjacency, normals)
