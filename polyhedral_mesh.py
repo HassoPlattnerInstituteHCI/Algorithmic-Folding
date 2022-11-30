@@ -90,6 +90,13 @@ igl_v, igl_f, _ = igl.remove_duplicates(igl_v, igl_f, 0.00001)
 
 faces, adjacency, normals = build_polyhedral_mesh(igl_v, igl_f)
 
+def expand_adjacency(adjacency):
+    r = []
+    for f_id, faces in enumerate(adjacency):
+        for f2_id in faces:
+            r.append((f_id, f2_id))
+    return r
+
 def strip_unfold(faces, adjacency, normals):
     unfolding = nx.Graph()
 
@@ -107,16 +114,16 @@ def strip_unfold(faces, adjacency, normals):
     wing_faces = set(all_faces).difference(strip_faces)
 
     # connect strip_faces using nx
+
     unfolding.add_nodes_from(strip_faces)
     for f in strip_faces:
         for adj_f in adjacency[f]:
             if adj_f in strip_faces:
                 unfolding.add_edge(f, adj_f)
+
     unfolding = nx.minimum_spanning_tree(unfolding)
 
     # add wing faces on first adjacency found
-
-    # strip_faces = set(strip_faces)
     for f in wing_faces:
         adj_faces = set(adjacency[f])
         pos_positions = list(adj_faces.intersection(strip_faces))
