@@ -115,7 +115,6 @@ def strip_unfold(faces, adjacency, normals):
 
     # connect strip_faces using nx
 
-    unfolding.add_nodes_from(strip_faces)
     for f in strip_faces:
         for adj_f in adjacency[f]:
             if adj_f in strip_faces:
