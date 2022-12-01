@@ -1,6 +1,7 @@
 import igl
 import numpy as np
 import networkx as nx
+import matplotlib.pyplot as plt
 
 # prefixes:
 #   - everything with tri_ is something related to triangular
@@ -111,9 +112,8 @@ def strip_unfold(faces, adjacency, normals):
     # create all possible strips by filtering all_faces to all filter prefixs
     pos_strips = [set(filter(prefix, all_faces)) for prefix in filter_prefixs]
 
-    #use the best (= longest) strip in further code
+    # use the best (= longest) strip in further code
     strip_faces = max(pos_strips, key=lambda a: len(a))
-
 
     # wing faces are all_faces which are not wing_faces
     wing_faces = set(all_faces).difference(strip_faces)
@@ -153,3 +153,5 @@ def strip_unfold(faces, adjacency, normals):
 
 unfolding, _ = strip_unfold(faces, adjacency, normals)
 print(unfolding.edges())
+nx.draw(unfolding)
+plt.show()
