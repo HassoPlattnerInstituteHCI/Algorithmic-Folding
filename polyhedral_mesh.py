@@ -94,14 +94,26 @@ def strip_unfold(faces, adjacency, normals):
     unfolding = nx.Graph()
 
     # find suitable strip faces
-    # TODO: go through all posibble strips
-    ignored_normal = normals[0]
-
     all_faces = list(range(len(faces)))
-    filter_prefix = lambda f: not normal_vec_equal(normals[f], ignored_normal)
 
+    ignored_normals = [
+        np.array([1, 0, 0]),
+        np.array([0, 1, 0]),
+        np.array([0, 0, 1]),
+    ]
+    
+    # create a filter prefix for all ignored normals
+    filter_prefixs = [lambda f: not normal_vec_equal(normals[f], i) for i in
+        ignored_normals]
+
+    # find best strip
     # strip faces are all_faces except with certain normal
-    strip_faces = set(filter(filter_prefix, all_faces))
+    # create all possible strips by filtering all_faces to all filter prefixs
+    pos_strips = [set(filter(prefix, all_faces)) for prefix in filter_prefixs]
+
+    #use the best (= longest) strip in further code
+    strip_faces = max(pos_strips, key=lambda a: len(a))
+
 
     # wing faces are all_faces which are not wing_faces
     wing_faces = set(all_faces).difference(strip_faces)
