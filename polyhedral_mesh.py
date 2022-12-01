@@ -106,27 +106,34 @@ def strip_unfold(faces, adjacency, normals):
     # wing faces are all_faces which are not wing_faces
     wing_faces = set(all_faces).difference(strip_faces)
 
-    # connect strip_faces using nx
-
+    # build a 'circle' out of the strip_faces
     for f in strip_faces:
         for adj_f in adjacency[f]:
             if adj_f in strip_faces:
                 unfolding.add_edge(f, adj_f)
 
+    # minimum_spanning_tree will disconnect one of the connections and build a
+    # strip
     unfolding = nx.minimum_spanning_tree(unfolding)
 
     unattachable = []
     # add wing faces on first adjacency found
     for f in wing_faces:
         adj_faces = set(adjacency[f])
+        # all possible positions where the face could attach 
         pos_positions = list(adj_faces.intersection(strip_faces))
 
-        # check if wing is not connectable
+        # check if wing is connectable
         if len(pos_positions) == 0:
+            # if not add it to unattachable array to build subassembly later
             unattachable.append(f)
         else:
+            # if so add_edge to unfolding itsef and to the strip so later a wing
+            # could be attached to the newly attached wing f
+
+            # currently choosing just the first found position to attach the
+            # wing, here optimizations could be done
             unfolding.add_edge(f, pos_positions[0])
-            # add wing to strip itself so other wings can attach to it
             strip_faces.add(f)
 
 
