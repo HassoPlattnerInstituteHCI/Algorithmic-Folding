@@ -90,13 +90,6 @@ igl_v, igl_f, _ = igl.remove_duplicates(igl_v, igl_f, 0.00001)
 
 faces, adjacency, normals = build_polyhedral_mesh(igl_v, igl_f)
 
-def expand_adjacency(adjacency):
-    r = []
-    for f_id, faces in enumerate(adjacency):
-        for f2_id in faces:
-            r.append((f_id, f2_id))
-    return r
-
 def strip_unfold(faces, adjacency, normals):
     unfolding = nx.Graph()
 
@@ -108,7 +101,7 @@ def strip_unfold(faces, adjacency, normals):
     filter_prefix = lambda f: not normal_vec_equal(normals[f], ignored_normal)
 
     # strip faces are all_faces except with certain normal
-    strip_faces = list(filter(filter_prefix, all_faces))
+    strip_faces = set(filter(filter_prefix, all_faces))
 
     # wing faces are all_faces which are not wing_faces
     wing_faces = set(all_faces).difference(strip_faces)
