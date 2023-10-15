@@ -8,7 +8,9 @@ You can install it using
 
 ```sh
 pip install igl
-```(This will also install things like Numpy and SciPy as well.)
+```
+
+(This will also install things like Numpy and SciPy as well.)
 
 
 Furthermore, we need a way of dealing with vector graphics. We use drawSvg for this, which in turn uses the [Cairo Graphics library](https://www.cairographics.org/).
