@@ -2,14 +2,19 @@
 
 ![2022_01_31 banner folding course_1](https://user-images.githubusercontent.com/1307670/151854735-180ea79b-f2d6-4b9a-852b-8bfbd941158f.png)
 
----
+
+## Enrolling
+
+--
 
 **[MOODLE](https://moodle.hpi.de/course/view.php?id=976), [CAMPUS PORTAL](https://sv-cms.hpi.de/campus/all/event.asp?gguid=0x0EA42EF9235F49A88A0AA1E5F2754C6B&tguid=0xD60E3C11D9804465AE45BDD840DF1675&lang=en)**
+
+--
 
 **First Class: Thursday, Oct 16, 2025, 3:15pm, A-2.1**
 (this class was moved from Monday 9:15am to avoid scheduling conflict with a mandatory class)
 
----
+## Content
 
 **objective**: implement and study folding algorithms applied to linkages (1D), origami (2D), and polyhedra (3D). We will go through the high level algorithms as well as practical in-class hacking assignments and learn about applied engineering examples. You will furthermore learn how to represent some intractable high dimensional folding problems in lower dimensions to then leverage universal and generic algorithms. You will learn how folding algorithms formed the backbone of several research projects at our lab in in the broader HCI and graphics field. And finally, you will learn how to extend what is known by running a small in-depth research project on one of the lectures, advised by the class instructors.
 
