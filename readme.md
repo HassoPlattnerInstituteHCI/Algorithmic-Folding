@@ -1,4 +1,4 @@
-# Algorithmic Folding Lecture @ HPI
+# Algorithmic Folding WiSe 25/26
 
 ![2022_01_31 banner folding course_1](https://user-images.githubusercontent.com/1307670/151854735-180ea79b-f2d6-4b9a-852b-8bfbd941158f.png)
 
@@ -6,7 +6,8 @@
 
 **[MOODLE](https://moodle.hpi.de/course/view.php?id=976), [CAMPUS PORTAL](https://sv-cms.hpi.de/campus/all/event.asp?gguid=0x0EA42EF9235F49A88A0AA1E5F2754C6B&tguid=0xD60E3C11D9804465AE45BDD840DF1675&lang=en)**
 
-**First Class: Thursday Oct 16, 3:15pm, A-2.1**
+**First Class: Thursday, Oct 16, 2025, 3:15pm, A-2.1**
+(this class was moved from Monday 9:15am to avoid scheduling conflict with a mandatory class)
 
 ---
 
