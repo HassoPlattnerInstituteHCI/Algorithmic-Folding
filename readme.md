@@ -4,7 +4,7 @@
 
 ---
 
-**please refer to the wiki page for logistics: https://hpi.de/baudisch/dokuwiki/algorithmic-folding-ws2023/start**
+**please refer to the wiki page for logistics: https://moodle.hpi.de/course/view.php?id=976**
 
 ---
 
