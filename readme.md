@@ -4,7 +4,9 @@
 
 ---
 
-**please refer to the wiki page for logistics: https://moodle.hpi.de/course/view.php?id=976**
+**please refer to the wiki page for logistics: [Moodle](https://moodle.hpi.de/course/view.php?id=976), [Campus Portal](https://sv-cms.hpi.de/campus/all/event.asp?gguid=0x0EA42EF9235F49A88A0AA1E5F2754C6B&tguid=0xD60E3C11D9804465AE45BDD840DF1675&lang=en)**
+
+First Class: Thursday Oct 16, 3:15pm, A-2.1
 
 ---
 
